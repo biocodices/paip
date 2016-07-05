@@ -24,16 +24,17 @@ Options:
                                         fastq files.
 """
 
+import re
+from os import getcwd
+from os.path import join
 from docopt import docopt
 from termcolor import colored
-import os
 import luigi
 
 from paip import software_name
-from paip.helpers import logo, touch_all_the_logs, DB
-from paip.components import Cohort, Sample
+from paip.helpers import logo, touch_all_the_logs, DB, VcfMunger
 from paip.programs import trim_adapters, BWA, Picard, GATK
-from paip.variant_calling import VcfMunger
+from paip.components import Cohort, Sample
 
 
 class UnzipAndCoppyFastqs(luigi.ExternalTask):
@@ -219,13 +220,20 @@ def run_pipeline():
 
     # TODO: Improve this.
     if arguments['TASK'] == 'MakeReports':
-        cohort = Cohort(os.getcwd())
+        cohort = Cohort(getcwd())
         touch_all_the_logs(cohort)
         print(colored(cohort, 'green'))
         print('\nYou can follow the details of the process with:')
         print('tail -n0 -f {}/{{*/,}}*.log\n'.format(cohort.results_dir))
 
-    luigi.run()
+    try:
+        luigi.run()
+    except luigi.task_register.TaskClassNotFoundException as err:
+        with open(__file__, 'r') as f:
+            tasks = [' * %s' % re.search('class (.+)\(', line).group(1)
+                     for line in f.readlines() if line.startswith('class')]
+            print('No task "%s". Did you mean:' % arguments['TASK'], '\n')
+        print('\n'.join(tasks))
 
 if __name__ == '__main__':
     run_pipeline()

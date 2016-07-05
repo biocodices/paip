@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from reports_pipe import __version__, software_name
+from paip import __version__, software_name
 
 
 dependencies = [

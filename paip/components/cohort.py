@@ -6,7 +6,7 @@ from shutil import move
 import pandas as pd
 
 from paip.components import Sample, Project
-from paip.variant_calling import VcfMunger
+from paip.helpers import VcfMunger
 from paip.helpers import plural
 from paip.plotters import AlignmentMetricsPlotter
 
