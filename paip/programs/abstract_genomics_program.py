@@ -11,3 +11,4 @@ class AbstractGenomicsProgram:
                              Resource('indels:mills')]
         self.panel_amplicons = Resource('panel_amplicons')
         self.known_variants = Resource('dbsnp:GRCh37')
+        self.panel_design_vcf = Resource('panel_design_vcf')

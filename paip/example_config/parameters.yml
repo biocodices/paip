@@ -70,13 +70,17 @@ GATK:
         L: '{limits}'
 
     HaplotypeCaller:
-        vcf:
+
+        # This set of options to genotype a fixed set of loci is exemplified and discussed here: http://gatkforums.broadinstitute.org/wdl/discussion/4353/genotype-given-alleles-mode-in-haplotypecaller
+        given_alleles:
             <<: *gatk_defaults
-            gt_mode: DISCOVERY
-            L: '{limits}'
-            stand_emit_conf: 10
-            stand_call_conf: 30
-            nct: *cores
+            L: '{panel_design_vcf}'
+            alleles: '{panel_design_vcf}'
+            gt_mode: GENOTYPE_GIVEN_ALLELES
+            # ERC: GVCF
+            variant_index_type: LINEAR
+            variant_index_parameter: 128000
+
         gvcf:
             <<: *gatk_defaults
             gt_mode: DISCOVERY
@@ -86,8 +90,8 @@ GATK:
             nct: *cores
 
             ERC: BP_RESOLUTION
-            variant_index_parameter: 128000
             variant_index_type: LINEAR
+            variant_index_parameter: 128000
             # The gVCF output from BP_RESOLUTION contains extra info about the
             # confidence of a 0/0 call. This differs from an "all-sites" VCF
             # produced with EMIT_ALL_CONFIDENT_SITES
@@ -99,7 +103,7 @@ GATK:
         D: '{known_variants}'
         o: '{output}'
         nda: ''  # Annotate discovered alleles (not necessesarily genotyped)
-        allSites: ''  # Include non variant sites!
+        # allSites: ''  # Include non variant sites!
         nt: *cores
 
     SelectVariants:

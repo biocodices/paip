@@ -21,6 +21,7 @@ class GATK(AbstractGenomicsProgram):
             'reference_genome': self.reference_genome,
             'known_variants': self.known_variants,
             'limits': self.panel_amplicons,
+            'panel_design_vcf': self.panel_design_vcf,
             'input': infile,
             'output': outfile + '.temp',
         }
@@ -45,29 +46,23 @@ class GATK(AbstractGenomicsProgram):
                  extra_output_extension='idx')
         return outfile
 
-    def create_vcf(self, recalibrated_bam):
-        """
-        Expects a recalibrated BAM as infile, ready for the variant calling.
-        Generates a new VCF file in the same directory and returns its path.
-        """
-        outfile = basename(recalibrated_bam).split('.')[0]
-        outfile += Config.filenames['sample_raw_vcf']
-        outfile = join(dirname(recalibrated_bam), outfile)
-        self.run('HaplotypeCaller', recalibrated_bam, outfile,
-                 extra_output_extension='idx', task_subtype='vcf')
-        return outfile
-
-    def create_gvcf(self, recalibrated_bam, out_path=None):
+    def create_gvcf(self, recalibrated_bam, out_path):
         """
         Expects a recalibrated BAM as infile, ready for the variant calling.
         Generates a new gVCF file in the same directory and returns its path.
         """
-        if not out_path:
-            out_path = basename(recalibrated_bam).split('.')[0]
-            out_path = join(dirname(recalibrated_bam), out_path)
-
         self.run('HaplotypeCaller', recalibrated_bam, out_path,
                  extra_output_extension='idx', task_subtype='gvcf')
+        return out_path
+
+    def genotype_given_alleles(self, recalibrated_bam, out_path):
+        """
+        Expects a recalibrated BAM as infile, ready for the variant calling.
+        Generates a new VCF file in the same directory and returns its path.
+        Will need a helper VCF with the desired specific SNPs that should be included.
+        """
+        self.run('HaplotypeCaller', recalibrated_bam, out_path,
+                 extra_output_extension='idx', task_subtype='given_alleles')
         return out_path
 
     def joint_genotyping(self, gvcf_list, out_path):
