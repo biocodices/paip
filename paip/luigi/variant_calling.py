@@ -7,15 +7,17 @@
 
 Usage:
     paip TASK [options]
+    paip --tasks
     paip (-h | --help)
 
 Options:
+    --tasks                             List available tasks to run.
     --database DB_NAME                  Database name to use for annotation
                                         of the variatns in the task
                                         DatabaseAnnotation. If you run this
                                         task without providing this option,
                                         the process will exit with an error.
-    --sample SAMPLE_ID                  Sample ID that must match the name
+    --sample-id SAMPLE_ID               Sample ID that must match the name
                                         of a subdirectory of the cwd. FOr tasks
                                         that operate on a single sample.
                                         Not needed for Cohort tasks.
@@ -26,7 +28,7 @@ Options:
 
 import re
 from os import getcwd
-from os.path import join
+import sys
 from docopt import docopt
 from termcolor import colored
 import luigi
@@ -108,7 +110,9 @@ class HaplotypeCall(luigi.Task):
     def requires(self): return RealignReads(self.sample_id)
     def run(self):
         recalibrated_bam = self.requires().output().fn
-        GATK().create_gvcf(recalibrated_bam, out_path=self.output().fn)
+        # GATK().create_gvcf(recalibrated_bam, out_path=self.output().fn)
+        GATK().genotype_given_alleles(recalibrated_bam,
+                                      out_path=self.output().fn)
     def output(self):
         self.sample = Sample(self.sample_id)
         return luigi.LocalTarget(self.sample.file('raw_variants.g.vcf'))
@@ -210,6 +214,10 @@ class MakeReports(luigi.Task):
 def run_pipeline():
     arguments = docopt(__doc__, version=software_name)
 
+    if arguments['--tasks']:
+        list_tasks()
+        sys.exit()
+
     print(logo())
     welcome_msg = 'Welcome to {}! Starting the Luigi pipeline...\n'
     print(welcome_msg.format(software_name))
@@ -228,12 +236,16 @@ def run_pipeline():
 
     try:
         luigi.run()
-    except luigi.task_register.TaskClassNotFoundException as err:
-        with open(__file__, 'r') as f:
-            tasks = [' * %s' % re.search('class (.+)\(', line).group(1)
-                     for line in f.readlines() if line.startswith('class')]
-            print('No task "%s". Did you mean:' % arguments['TASK'], '\n')
-        print('\n'.join(tasks))
+    except luigi.task_register.TaskClassNotFoundException:
+        print('No task with name "%s". Here are the available tasks:' % arguments['TASK'])
+        list_tasks()
+
+def list_tasks():
+    with open(__file__, 'r') as f:
+        tasks = [' * %s' % re.search('class (.+)\(', line).group(1)
+                    for line in f.readlines() if line.startswith('class')]
+
+    print('\n' + '\n'.join(tasks) + '\n')
 
 if __name__ == '__main__':
     run_pipeline()

@@ -2,7 +2,7 @@ import re
 from glob import glob
 from os import makedirs
 from os.path import join, basename, dirname
-from shutil import move
+from shutil import copy2
 import pandas as pd
 
 from paip.components import Sample, Project
@@ -75,7 +75,7 @@ class Cohort(Project):
             sample_id = re.search(r'(.*).R(1|2)', basename(reads_fp)).groups(1)[0]
             sample_dir = join(self.results_dir, sample_id)
             makedirs(sample_dir, exist_ok=True)
-            move(reads_fp, join(sample_dir, basename(reads_fp)))
+            copy2(reads_fp, join(sample_dir, basename(reads_fp)))
 
     def _available_samples(self):
         for reads_fp in sorted(glob(join(self.results_dir, '*/*.R1.fastq'))):
