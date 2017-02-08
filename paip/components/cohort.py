@@ -4,8 +4,9 @@ from os import makedirs
 from os.path import join, basename, dirname
 from shutil import copy2
 import pandas as pd
+from project import Project
 
-from paip.components import Sample, Project
+from paip.components import Sample
 from paip.helpers import VcfMunger
 from paip.helpers import plural
 from paip.plotters import AlignmentMetricsPlotter

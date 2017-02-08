@@ -1,3 +1,4 @@
+#!/urs/bin/env python
 """
       _________________________________
    ~~ |  _____  _______ _____  _____  | ~~
@@ -69,11 +70,11 @@ class AlignReads(luigi.Task):
 class AddOrReplaceReadGroups(luigi.Task):
     sample_id = luigi.Parameter()
     def requires(self): return AlignReads(self.sample_id)
-    def run(self):
 
+    def run(self):
         # Nasty hardcoding of biocodices-specific DB connection.
         # FIXME: think how to solve this in a general way.
-        db = DB('biocodices')
+        db = DB('lab_production')
         samples = db.table('NGS_MUESTRAS').set_index('SAMPLE_ID')
         library_id = samples.loc[self.sample_id]['LIB_ID']
         sequencer_run_id = samples.loc[self.sample_id]['NGS_ID']
@@ -185,30 +186,30 @@ class VEPAnnotation(luigi.Task):
         return luigi.LocalTarget(self.outfile)
 
 
-class DatabaseAnnotation(luigi.Task):
-    base_dir = luigi.Parameter(default='.')
-    database = luigi.Parameter()
-    def requires(self): return VEPAnnotation(self.base_dir)
-    def run(self):
-        VcfMunger().annotate_pubmed_with_DB(
-            vcf_path=self.input().fn,
-            database=self.database,
-            citations_table='variationscitations',
-            rs_column='VariationName',
-            pubmed_column='PubmedID',
-            out_path=self.outfile,
-        )
-    def output(self):
-        self.outfile = self.input().fn.replace('.vcf', '.db.vcf')
-        return luigi.LocalTarget(self.outfile)
+#  class DatabaseAnnotation(luigi.Task):
+    #  base_dir = luigi.Parameter(default='.')
+    #  database = luigi.Parameter()
+    #  def requires(self): return VEPAnnotation(self.base_dir)
+    #  def run(self):
+        #  VcfMunger().annotate_pubmed_with_DB(
+            #  vcf_path=self.input().fn,
+            #  database=self.database,
+            #  citations_table='variationscitations',
+            #  rs_column='VariationName',
+            #  pubmed_column='PubmedID',
+            #  out_path=self.outfile,
+        #  )
+    #  def output(self):
+        #  self.outfile = self.input().fn.replace('.vcf', '.db.vcf')
+        #  return luigi.LocalTarget(self.outfile)
 
 
-class MakeReports(luigi.Task):
-    base_dir = luigi.Parameter(default='.')
-    database = luigi.Parameter()
-    def requires(self): return DatabaseAnnotation(self.base_dir, self.database)
-    def run(self): pass  # TODO: implement
-    def output(self): pass  # TODO: implement
+#  class MakeReports(luigi.Task):
+    #  base_dir = luigi.Parameter(default='.')
+    #  database = luigi.Parameter()
+    #  def requires(self): return DatabaseAnnotation(self.base_dir, self.database)
+    #  def run(self): pass  # TODO: implement
+    #  def output(self): pass  # TODO: implement
 
 
 def run_pipeline():
