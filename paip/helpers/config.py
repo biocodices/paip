@@ -14,25 +14,41 @@ class Config:
 
         > Config.parameters()  # Same as Config.read('parameters')
         > Config.executables()  # Same as Config.read('executables')
+        > Config.commands()  # Same as Config.read('commands')
         > Config.resources()  # Same as Config.read('resources')
+
+    You can also query keys inside each dictionary directly:
+
+        > Config.parameters('foo')  # Searches the 'foo' key in parameters
+        > Config.executables('foo')
+
     """
+    BASE_DIR = expanduser('~/.paip')
+
     @classmethod
     def read(cls, yaml_filename):
         if not yaml_filename.endswith('.yml'):
             yaml_filename += '.yml'
 
-        base_dir = expanduser('~/.paip')
-        return yaml.load(open(join(base_dir, yaml_filename)))
+        return yaml.load(open(join(cls.BASE_DIR, yaml_filename)))
 
     @classmethod
-    def parameters(cls):
-        return cls.read('parameters')
+    def parameters(cls, key=None):
+        dic = cls.read('parameters')
+        return dic if key is None else dic[key]
 
     @classmethod
-    def executables(cls):
-        return cls.read('executables')
+    def executables(cls, key=None):
+        dic = cls.read('executables')
+        return dic if key is None else dic[key]
 
     @classmethod
-    def resources(cls):
-        return cls.read('resources')
+    def resources(cls, key=None):
+        dic = cls.read('resources')
+        return dic if key is None else dic[key]
+
+    @classmethod
+    def commands(cls, key=None):
+        dic = cls.read('commands')
+        return dic if key is None else dic[key]
 

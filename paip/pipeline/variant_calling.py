@@ -28,7 +28,7 @@ from docopt import docopt
 import luigi
 
 from paip import software_name
-from paip.helpers import logo, DB, VcfMunger
+from paip.helpers import logo, DB, VcfMunger, run_command
 from paip.programs import trim_adapters, BWA, Picard, GATK
 from paip.components import Cohort, Sample
 
@@ -42,8 +42,14 @@ class UnzipAndCoppyFastqs(luigi.ExternalTask):
 
 class TrimReads(luigi.Task):
     sample_id = luigi.Parameter()
-    def requires(self): return UnzipAndCoppyFastqs(self.sample_id)
-    def run(self): trim_adapters([target.fn for target in self.input()])
+
+    def requires(self):
+        return UnzipAndCoppyFastqs(self.sample_id)
+
+    def run(self):
+        command = trim_adapters(*[target.fn for target in self.input()])
+        # run_command(command, logfile=self.__class__.__name__.lower() + '.log')
+
     def output(self):
         self.sample = Sample(self.sample_id)
         return [luigi.LocalTarget(fn) for fn in self.sample.trimmed_fastqs]

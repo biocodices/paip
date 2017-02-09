@@ -1,33 +1,24 @@
-from os.path import join, dirname
-
-from paip.helpers import Config, Resource
-from paip.programs import ProgramCaller
-from paip.helpers.general import params_dict_to_str
+from paip.helpers import Config, path_to_resource
 
 
 def trim_adapters(forward_reads, reverse_reads):
     """
     Expects two filepaths: forward and reverse .fastq files of the same
     sample. It will search for an adapters file defined in resources.yml.
+
+    Returns the command to trim the adapters of those reads files.
     """
-    fastqs = [forward_reads, reverse_reads]
-    trimmed_fastqs = [filepath.replace('.fastq', '.trimmed.fastq')
-                      for filepath in fastqs]
+    program = 'fastq-mcf'
 
-    params_dict = Config.parameters()['fastq-mcf']
-    executable_path = Config.executables['fastq-mcf']
+    command_template = Config.commands(program)
+    command = command_template.format(**{
+        'executable': Config.executables(program),
+        'forward_reads': forward_reads,
+        'reverse_reads': reverse_reads,
+        'forward_output': forward_reads.replace('.fastq', '.trimmed.fastq'),
+        'reverse_output': reverse_reads.replace('.fastq', '.trimmed.fastq'),
+        'adapters': path_to_resource('illumina_adapters'),
+    })
 
-    params_str = params_dict_to_str(params_dict)
-    for trimmed_fastq in trimmed_fastqs:
-        params_str += ' -o {}'.format(trimmed_fastq)
-
-    command = '{} {}'.format(executable_path, params_str)
-    adapters_file = Resource('illumina_adapters_file')
-    command += ' {} {} {}'.format(adapters_file, *reads_filepaths)
-
-    log_filepath = join(dirname(trimmed_fastqs[0]), 'fastq-mcf')
     return command
-    #  ProgramCaller(command).run(log_filepath=log_filepath)
-
-    #  return trimmed_fastqs
 
