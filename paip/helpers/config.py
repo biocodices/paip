@@ -2,18 +2,37 @@ import yaml
 from os.path import join, expanduser
 
 
-def read_config(filename):
-    base_dir = expanduser('~/.paip')
-    return yaml.load(open(join(base_dir, filename + '.yml')))
-
-
 class Config:
-    def __new__(self, config_label):
-        """
-        Expects a ~/.paip dir with yml config files in it.
-        Call directly Config(config_label) to get a dictionary with settings.
-        """
-        return read_config(config_label)
+    """
+    This class is not meant to be initialized. Check the usage:
 
-    params = read_config('parameters')
-    executables = read_config('executables')
+    Example:
+
+        > Config.read('parameters')  # Returns dict of ~/.paip/parameters.yml
+
+    Some handy shortcuts:
+
+        > Config.parameters()  # Same as Config.read('parameters')
+        > Config.executables()  # Same as Config.read('executables')
+        > Config.resources()  # Same as Config.read('resources')
+    """
+    @classmethod
+    def read(cls, yaml_filename):
+        if not yaml_filename.endswith('.yml'):
+            yaml_filename += '.yml'
+
+        base_dir = expanduser('~/.paip')
+        return yaml.load(open(join(base_dir, yaml_filename)))
+
+    @classmethod
+    def parameters(cls):
+        return cls.read('parameters')
+
+    @classmethod
+    def executables(cls):
+        return cls.read('executables')
+
+    @classmethod
+    def resources(cls):
+        return cls.read('resources')
+

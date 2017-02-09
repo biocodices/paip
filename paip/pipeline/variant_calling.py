@@ -1,4 +1,4 @@
-#!/urs/bin/env python
+#!/usr/bin/env python3.5
 """
       _________________________________
    ~~ |  _____  _______ _____  _____  | ~~
@@ -13,13 +13,8 @@ Usage:
 
 Options:
     --tasks                             List available tasks to run.
-    --database DB_NAME                  Database name to use for annotation
-                                        of the variatns in the task
-                                        DatabaseAnnotation. If you run this
-                                        task without providing this option,
-                                        the process will exit with an error.
     --sample-id SAMPLE_ID               Sample ID that must match the name
-                                        of a subdirectory of the cwd. FOr tasks
+                                        of a subdirectory of the cwd. For tasks
                                         that operate on a single sample.
                                         Not needed for Cohort tasks.
     --base-dir BASE_DIR                 Base directory for the run, parent
@@ -28,14 +23,12 @@ Options:
 """
 
 import re
-from os import getcwd
 import sys
 from docopt import docopt
-from termcolor import colored
 import luigi
 
 from paip import software_name
-from paip.helpers import logo, touch_all_the_logs, DB, VcfMunger
+from paip.helpers import logo, DB, VcfMunger
 from paip.programs import trim_adapters, BWA, Picard, GATK
 from paip.components import Cohort, Sample
 
@@ -186,67 +179,39 @@ class VEPAnnotation(luigi.Task):
         return luigi.LocalTarget(self.outfile)
 
 
-#  class DatabaseAnnotation(luigi.Task):
-    #  base_dir = luigi.Parameter(default='.')
-    #  database = luigi.Parameter()
-    #  def requires(self): return VEPAnnotation(self.base_dir)
-    #  def run(self):
-        #  VcfMunger().annotate_pubmed_with_DB(
-            #  vcf_path=self.input().fn,
-            #  database=self.database,
-            #  citations_table='variationscitations',
-            #  rs_column='VariationName',
-            #  pubmed_column='PubmedID',
-            #  out_path=self.outfile,
-        #  )
-    #  def output(self):
-        #  self.outfile = self.input().fn.replace('.vcf', '.db.vcf')
-        #  return luigi.LocalTarget(self.outfile)
-
-
-#  class MakeReports(luigi.Task):
-    #  base_dir = luigi.Parameter(default='.')
-    #  database = luigi.Parameter()
-    #  def requires(self): return DatabaseAnnotation(self.base_dir, self.database)
-    #  def run(self): pass  # TODO: implement
-    #  def output(self): pass  # TODO: implement
-
-
 def run_pipeline():
     arguments = docopt(__doc__, version=software_name)
 
     if arguments['--tasks']:
-        list_tasks()
+        print('\n'.join(list_classes(__file__)))
         sys.exit()
 
     print(logo())
-    welcome_msg = 'Welcome to {}! Starting the Luigi pipeline...\n'
-    print(welcome_msg.format(software_name))
+    print('Welcome to {}! Starting the pipeline...\n'
+          .format(software_name))
+
     print('Options in effect:')
     for k, v in arguments.items():
-        if v: print(' {} {}'.format(k, v))
+        if v:
+            print(' {} {}'.format(k, v))
     print()
-
-    # TODO: Improve this.
-    if arguments['TASK'] == 'MakeReports':
-        cohort = Cohort(getcwd())
-        touch_all_the_logs(cohort)
-        print(colored(cohort, 'green'))
-        print('\nYou can follow the details of the process with:')
-        print('tail -n0 -f {}/{{*/,}}*.log\n'.format(cohort.results_dir))
 
     try:
         luigi.run()
     except luigi.task_register.TaskClassNotFoundException:
-        print('No task with name "%s". Here are the available tasks:' % arguments['TASK'])
-        list_tasks()
+        print('No task with name "{}". Here are the available tasks:'
+              .format(arguments['TASK']))
+        luigi_classes = list_classes(__file__)
+        print('\n' + '\n'.join(luigi_classes) + '\n')
 
-def list_tasks():
-    with open(__file__, 'r') as f:
+
+def list_classes(filepath):
+    """Reads the filepath and returns the defined classes names."""
+    with open(filepath, 'r') as f:
         tasks = [' * %s' % re.search('class (.+)\(', line).group(1)
-                    for line in f.readlines() if line.startswith('class')]
+                 for line in f.readlines() if line.startswith('class')]
+    return tasks
 
-    print('\n' + '\n'.join(tasks) + '\n')
 
 if __name__ == '__main__':
     run_pipeline()
