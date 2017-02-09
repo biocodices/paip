@@ -4,6 +4,5 @@ from .gatk import GATK
 from .picard import Picard
 from .bwa import BWA
 from .fastqc import FastQC
-from .trim_adapters import trim_adapters
 from .vcf_tools import VcfTools
 from .bcf_tools import BcfTools
