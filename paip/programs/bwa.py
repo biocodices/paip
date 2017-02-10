@@ -25,7 +25,9 @@ class BWA(AbstractGenomicsProgram):
         command = '{} {}'.format(self.executable, params_str)
         # redirect stdout to samfile and stderr to logfile
         log_filepath = join(dirname(outfile), 'bwa')
-        ProgramCaller(command).run(stdout_sink=outfile + '.temp',
-                                   log_filepath=log_filepath)
-        rename_tempfile(outfile)
-        return outfile
+        return command
+        #  ProgramCaller(command).run(stdout_sink=outfile + '.temp',
+                                   #  log_filepath=log_filepath)
+        #  rename_tempfile(outfile)
+        #  return outfile
+

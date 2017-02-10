@@ -29,9 +29,16 @@ import luigi
 from os.path import join
 
 from paip import software_name
-from paip.helpers import run_command, logo
+from paip.helpers import (
+    Sample,
+    run_command,
+    logo,
+)
 # , logo, DB, VcfMunger
-from paip.pipeline import trim_adapters
+from paip.pipeline import (
+    trim_adapters,
+    align_to_reference,
+)
 # from paip.programs import BWA, Picard, GATK
 # from paip.components import Cohort
 
@@ -74,15 +81,29 @@ class TrimReads(luigi.Task):
         return [luigi.LocalTarget(fn) for fn in targets]
 
 
-#  class AlignReads(luigi.Task):
-    #  sample_id = luigi.Parameter()
-    #  def requires(self): return TrimReads(self.sample_id)
-    #  def run(self):
-        #  trimmed_fastqs = [target.fn for target in self.input()]
-        #  BWA().align_to_reference(trimmed_fastqs)
-    #  def output(self):
-        #  sample = Sample(self.sample_id)
-        #  return luigi.LocalTarget(sample.file('sam'))
+class AlignToReference(luigi.Task):
+    sample_id = luigi.Parameter()
+
+    def requires(self):
+        return TrimReads(self.sample_id)
+
+    def run(self):
+        fwd_reads, rev_reads = [target.fn for target in self.input()]
+        command = align_to_reference(forward_reads=fwd_reads,
+                                     reverse_reads=rev_reads)
+        log_filename = Sample(self.sample_id).path('{}.log.align_to_reference')
+
+        # BWA writes the aligned reads to STDOUT, so we capture that:
+        stdout, _ = run_command(command, logfile=log_filename,
+                                log_stdout=False)
+
+        # And then we write that BWA output in the intended file:
+        with open(self.output().fn, 'wb') as f:
+            f.write(stdout)
+
+    def output(self):
+        target = Sample(self.sample_id).path('{}.sam')
+        return luigi.LocalTarget(target)
 
 
 #  class AddOrReplaceReadGroups(luigi.Task):

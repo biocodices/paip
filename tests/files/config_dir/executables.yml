@@ -1,1 +1,5 @@
+fastq-mcf: /path/to/fastq-mcf
+bwa: /path/to/bwa
+
 exec-1: value-1
+

@@ -4,16 +4,18 @@ from datetime import datetime
 from humanfriendly import format_timespan
 
 
-def run_command(command, logfile=None, append=False, capture_stdout=True,
-                capture_stderr=True):
+def run_command(command, logfile=None, append=False, log_stdout=True,
+                log_stderr=True):
     """
-    Accepts a *command* and runs it in the shell. If the command fails, an
-    Exception will be raised. Pass a *logfile* to write STDERR and STDOUT
-    outputs to a given filepath. Optionally, disable those redirections
-    with capture_stdout=False and/or capture_stderr=False.
+    Accepts a *command* and runs it in the shell. Returns (STDOUT, STDERR).
+    If the command fails, an Exception will be raised.
 
-    By default the logfile is truncated. You can append to the logfile with
-    append=True.
+    Pass a *logfile* to write STDERR and STDOUT outputs to a given filepath.
+    You can choose not to write them to the logfile with log_stdout=False
+    and/or log_stderr=False (they will still be returned as a tuple).
+
+    If logging to a file, by default the logfile will be truncated. You can
+    append to the logfile instead by setting append=True.
     """
     if logfile:
         start_time = datetime.now()
@@ -23,15 +25,10 @@ def run_command(command, logfile=None, append=False, capture_stdout=True,
             f.write('{} TIME\n\n{}\n\n'.format(log_separator, start_time))
             f.write('{} COMMAND\n\n{}\n\n'.format(log_separator, command))
 
-    # This will capture the STDOUT and/or STDERR to put it in the logfile:
-    stdout_option = PIPE if capture_stdout else None
-    stderr_option = PIPE if capture_stderr else None
+    result = run(command, shell=True, check=True, stdout=PIPE, stderr=PIPE)
 
-    result = run(command, shell=True, check=True,
-                 stdout=stdout_option, stderr=stderr_option)
-
-    stdout = result.stdout is not None and result.stdout.decode().strip()
-    stderr = result.stderr is not None and result.stderr.decode().strip()
+    stdout = result.stdout
+    stderr = result.stderr
 
     if logfile:
         end_time = datetime.now()
@@ -39,10 +36,12 @@ def run_command(command, logfile=None, append=False, capture_stdout=True,
 
         with open(logfile, 'a') as f:
 
-            if capture_stdout and stdout:
+            if log_stdout:
+                stdout = stdout.decode().strip()
                 f.write('{} STDOUT\n\n{}\n\n'.format(log_separator, stdout))
 
-            if capture_stderr and stderr:
+            if log_stderr:
+                stderr = stderr.decode().strip()
                 f.write('{} STDERR\n\n{}\n\n'.format(log_separator, stderr))
 
             f.write('{} END\n\nFinished at {}\nTook {}\n'

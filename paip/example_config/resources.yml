@@ -16,5 +16,3 @@ dbsnp_GRCh37: dbsnp_138.b37.vcf
 ENPv1_amplicons: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
 panel_amplicons: *ENPv1_amplicons
 panel_design_vcf: ENPv1_markers.vcf
-
-1000G_samples: /home/juan/tesina/1000Genomes/original-1000Genomes-files

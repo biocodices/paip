@@ -10,12 +10,12 @@ from paip.helpers import run_command
 
 def test_run_command():
     stdout, stderr = run_command('echo foo')
-    assert stdout == 'foo'
-    assert stderr == ''
+    assert stdout == b'foo\n'
+    assert stderr == b''
 
     stdout, stderr = run_command('echo foo >&2')
-    assert stdout == ''
-    assert stderr == 'foo'
+    assert stdout == b''
+    assert stderr == b'foo\n'
 
     with pytest.raises(CalledProcessError):
         run_command('non-existent-command')
@@ -38,7 +38,7 @@ def test_log_to_file():
     assert 'Took' in log_lines[-1]
 
     # Test STDERR is logged correctly
-    run_command('echo foo >&2', logfile=logfile, capture_stderr=True)
+    run_command('echo foo >&2', logfile=logfile, log_stderr=True)
 
     with open(logfile) as f:
         log_lines = [line.strip() for line in f.readlines()]
@@ -46,7 +46,7 @@ def test_log_to_file():
     assert 'foo' in log_lines
 
     # Test STDERR is not logged
-    run_command('echo foo >&2', logfile=logfile, capture_stderr=False)
+    run_command('echo foo >&2', logfile=logfile, log_stderr=False)
 
     with open(logfile) as f:
         log_lines = [line.strip() for line in f.readlines()]
@@ -54,7 +54,7 @@ def test_log_to_file():
     assert 'foo' not in log_lines
 
     # Test STDOUT is not logged
-    run_command('echo foo', logfile=logfile, capture_stdout=False)
+    run_command('echo foo', logfile=logfile, log_stdout=False)
 
     with open(logfile) as f:
         log_lines = [line.strip() for line in f.readlines()]

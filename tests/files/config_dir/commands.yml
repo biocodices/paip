@@ -1,1 +1,7 @@
+fastq-mcf:
+    '{executable} -u -q 20 -P 33 -x 10 -l 50 -o {forward_output} -o {reverse_output} {adapters} {forward_reads} {reverse_reads}'
+
+bwa:
+    '{executable} mem -t 8 {reference_genome} {forward_reads} {reverse_reads}'
+
 command-1: value-1
