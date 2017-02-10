@@ -35,6 +35,7 @@ from paip.components import Cohort, Sample
 
 class UnzipAndCoppyFastqs(luigi.ExternalTask):
     sample_id = luigi.Parameter()
+
     def output(self):
         sample = Sample(self.sample_id)
         return [luigi.LocalTarget(fn) for fn in sample.fastqs]
@@ -42,13 +43,14 @@ class UnzipAndCoppyFastqs(luigi.ExternalTask):
 
 class TrimReads(luigi.Task):
     sample_id = luigi.Parameter()
+    log_filename = 'trim_reads.log'
 
     def requires(self):
         return UnzipAndCoppyFastqs(self.sample_id)
 
     def run(self):
         command = trim_adapters(*[target.fn for target in self.input()])
-        # run_command(command, logfile=self.__class__.__name__.lower() + '.log')
+        run_command(command, logfile=self.log_filename)
 
     def output(self):
         self.sample = Sample(self.sample_id)
