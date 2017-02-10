@@ -23,9 +23,10 @@ class Picard(AbstractGenomicsProgram):
         params_str = ' '.join(params).format(**params_variables)
         command = '{} {} {}'.format(self.executable, module_name, params_str)
         log_filepath = join(dirname(infile), module_name)
-        ProgramCaller(command).run(log_filepath=log_filepath)
-        if out_rename:
-            rename_tempfile(outfile, extra_output_extension)
+        return command
+        #  ProgramCaller(command).run(log_filepath=log_filepath)
+        #  if out_rename:
+            #  rename_tempfile(outfile, extra_output_extension)
 
     def generate_alignment_metrics(self, recalibrated_bam, out_path=None):
         outfile = out_path or \
@@ -42,6 +43,6 @@ class Picard(AbstractGenomicsProgram):
             'library_id': sample_library_id,
             'ngs_id': sequencer_run_id,
         }
-        self.run('AddOrReplaceReadGroups', sam_path, outfile,
+        return self.run('AddOrReplaceReadGroups', sam_path, outfile,
                  extra_params_variables, 'bai')
-        return outfile
+        #  return outfile

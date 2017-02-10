@@ -2,5 +2,8 @@ fastq-mcf:
     '{executable} -u -q 20 -P 33 -x 10 -l 50 -o {forward_output} -o {reverse_output} {adapters} {forward_reads} {reverse_reads}'
 
 bwa:
-    '{executable} mem -t 8 {reference_genome} {forward_reads} {reverse_reads}'
+    '{executable} mem -t 8 -M {reference_genome} {forward_reads} {reverse_reads}'
+
+picard AddOrReplaceReadGroups:
+    '{executable} AddOrReplaceReadGroups SO=coordinate PL=ILLUMINA O={output_bamfile} ID={seq_id}.{lib_id}.{pu}.{seq_sample_id} SM={seq_sample_id} PU={pu} I={input_samfile} CREATE_INDEX=True LB={lib_id} VALIDATION_STRINGENCY=LENIENT'
 

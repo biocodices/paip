@@ -1,10 +1,13 @@
 #!/usr/bin/env python3.5
 """
-      _________________________________
-   ~~ |  _____  _______ _____  _____  | ~~
-   ~~ | |_____] |_____|   |   |_____] | ~~
-   ~~ | |       |     | __|__ |       | ~~
-   ~~ |_______________________________| ~~
+
+ .########.....###....####.########.
+ .##.....##...##.##....##..##.....##
+ .##.....##..##...##...##..##.....##
+ .########..##.....##..##..########.
+ .##........#########..##..##.......
+ .##........##.....##..##..##.......
+ .##........##.....##.####.##.......
 
 Usage:
     paip TASK [options]
@@ -108,7 +111,9 @@ class AlignToReference(luigi.Task):
 
 #  class AddOrReplaceReadGroups(luigi.Task):
     #  sample_id = luigi.Parameter()
-    #  def requires(self): return AlignReads(self.sample_id)
+
+    #  def requires(self):
+        #  return AlignReads(self.sample_id)
 
     #  def run(self):
         #  # Nasty hardcoding of biocodices-specific DB connection.
@@ -128,6 +133,7 @@ class AlignToReference(luigi.Task):
 
     #  def output(self):
         #  sample = Sample(self.sample_id)
+
         #  return luigi.LocalTarget(sample.file('raw.bam'))
 
 

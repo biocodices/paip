@@ -1,5 +1,7 @@
 fastq-mcf: /home/juan/software/ea-utils.1.1.2-537/fastq-mcf
 bwa: /usr/bin/bwa
+picard: &picard java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
+picard AddOrReplaceReadGroups: *picard
 
 fastqc: /home/juan/software/FastQC/fastqc
 bedtools: /home/juan/software/bedtools2/bin/bedtools
@@ -8,7 +10,6 @@ GATK: java -jar /home/juan/software/GenomeAnalysisTK/GenomeAnalysisTK.jar
 vcftools: /usr/local/bin/vcftools
 bcftools: /usr/local/bin/bcftools
 vcf-subset: /usr/local/bin/vcf-subset
-picard-tools: java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
 bgzip: /usr/local/bin/bgzip
 SnpEff: java -jar /home/juan/software/snpEff/snpEff.jar
 VEP: /home/juan/software/ensembl-tools-release-84/scripts/variant_effect_predictor/variant_effect_predictor.pl
