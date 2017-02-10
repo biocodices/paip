@@ -9,4 +9,5 @@ from .general import *
 from .language import *
 from .vcf_munger import VcfMunger
 from .run_command import run_command
+from .sample import Sample
 

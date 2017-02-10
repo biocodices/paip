@@ -36,28 +36,6 @@ from paip.pipeline import trim_adapters
 # from paip.components import Cohort
 
 
-class Sample:
-    def __init__(self, sample_id):
-        self.sample_id = sample_id
-
-    def path(self, filename_template):
-        """
-        Given a filename that might contain format holes to fill in,
-        return a path to a directory named after the sample and with the
-        holes filled with the sample name.
-
-        Example:
-
-            > Sample('foo').path('{}.some_process.log')
-              # => 'foo/foo.some_process.log'
-
-        """
-        return join(self.sample_id, filename_template.format(self.sample_id))
-
-    def paths(self, filename_templates):
-        return [self.path(filename) for filename in filename_templates]
-
-
 class CheckFastqs(luigi.ExternalTask):
     # From the start, we will assume that all files for a given sample
     # will be located in a subdirectory with the name of the sample:
