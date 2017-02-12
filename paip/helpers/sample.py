@@ -1,4 +1,5 @@
-from os.path import join
+from os.path import join, abspath, expanduser
+import yaml
 
 
 class Sample:
@@ -34,4 +35,29 @@ class Sample:
 
     def paths(self, filename_templates):
         return [self.path(filename) for filename in filename_templates]
+
+    def load_sequencing_data_from_yaml(self, yml_path):
+        """
+        Given a path to a YAML file, read 'library_id', 'sequencing_id', and
+        'id_in_sequencing' for this sample's ID key. For instance, if the YAML
+        file looks like this:
+
+            S1:
+                library_id: Lib1
+                sequencing_id: Seq1
+                id_in_sequencing: Spl1
+
+        This method will work this way:
+
+            > sample = Sample('S1')
+            > sample.load_sequencing_data_from_yaml('/path/to/data.yml')
+            > sample.library_id  # => 'Lib1'
+            > sample.sequencing_id  # => 'Seq1'
+            > sample.id_in_sequencing  # => 'Spl1'
+        """
+        with open(abspath(expanduser(yml_path))) as f:
+            data = yaml.load(f)
+
+        for key in ['library_id', 'sequencing_id', 'id_in_sequencing']:
+            setattr(self, key, data[self.sample_id][key])
 

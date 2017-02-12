@@ -5,5 +5,5 @@ bwa:
     '{executable} mem -t 8 -M {reference_genome} {forward_reads} {reverse_reads}'
 
 picard AddOrReplaceReadGroups:
-    '{executable} AddOrReplaceReadGroups SO=coordinate PL=ILLUMINA O={output_bamfile} ID={seq_id}.{lib_id}.{pu}.{seq_sample_id} SM={seq_sample_id} PU={pu} I={input_samfile} CREATE_INDEX=True LB={lib_id} VALIDATION_STRINGENCY=LENIENT'
+    '{executable} AddOrReplaceReadGroups SO=coordinate PL=ILLUMINA O={output_bamfile} ID={sequencing_id}.{library_id}.{pu}.{seq_sample_id} SM={seq_sample_id} PU={pu} I={input_samfile} CREATE_INDEX=True LB={lib_id} VALIDATION_STRINGENCY=LENIENT'
 

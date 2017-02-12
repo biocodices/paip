@@ -29,7 +29,6 @@ import re
 import sys
 from docopt import docopt
 import luigi
-from os.path import join
 
 from paip import software_name
 from paip.helpers import (
@@ -41,6 +40,7 @@ from paip.helpers import (
 from paip.pipeline import (
     trim_adapters,
     align_to_reference,
+    add_or_replace_read_groups,
 )
 # from paip.programs import BWA, Picard, GATK
 # from paip.components import Cohort
@@ -109,32 +109,27 @@ class AlignToReference(luigi.Task):
         return luigi.LocalTarget(target)
 
 
-#  class AddOrReplaceReadGroups(luigi.Task):
-    #  sample_id = luigi.Parameter()
+class AddOrReplaceReadGroups(luigi.Task):
+    sample_id = luigi.Parameter()
 
-    #  def requires(self):
-        #  return AlignReads(self.sample_id)
+    def requires(self):
+        return AlignToReference(self.sample_id)
 
-    #  def run(self):
-        #  # Nasty hardcoding of biocodices-specific DB connection.
-        #  # FIXME: think how to solve this in a general way.
-        #  db = DB('lab_production')
-        #  samples = db.table('NGS_MUESTRAS').set_index('SAMPLE_ID')
-        #  library_id = samples.loc[self.sample_id]['LIB_ID']
-        #  sequencer_run_id = samples.loc[self.sample_id]['NGS_ID']
+    def run(self):
+        sample = Sample(self.sample_id)
+        sample.load_sequencing_data_from_yaml('../sequencing_data.yml')
 
-        #  Picard().add_or_replace_read_groups(
-            #  sam_path=self.requires().output().fn,
-            #  sample_id=self.sample_id,
-            #  sample_library_id=library_id,
-            #  sequencer_run_id=sequencer_run_id,
-            #  out_path=self.output().fn,
-        #  )
+        add_or_replace_read_groups(
+            sam_path=self.input().fn,
+            sample_id=sample.id_in_sequencing,
+            sample_library_id=sample.library_id,
+            sequencing_id=sample.sequencing_id,
+            out_path=self.output().fn,
+        )
 
-    #  def output(self):
-        #  sample = Sample(self.sample_id)
-
-        #  return luigi.LocalTarget(sample.file('raw.bam'))
+    def output(self):
+        fn = '{}.not-recalibrated.bam'
+        return luigi.LocalTarget(Sample(self.sample_id).path(fn))
 
 
 #  class RealignReads(luigi.Task):
