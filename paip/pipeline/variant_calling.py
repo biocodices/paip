@@ -119,13 +119,17 @@ class AddOrReplaceReadGroups(luigi.Task):
         sample = Sample(self.sample_id)
         sample.load_sequencing_data_from_yaml('../sequencing_data.yml')
 
-        add_or_replace_read_groups(
+        command = add_or_replace_read_groups(
             sam_path=self.input().fn,
             sample_id=sample.id_in_sequencing,
             sample_library_id=sample.library_id,
             sequencing_id=sample.sequencing_id,
             out_path=self.output().fn,
         )
+
+        log_file = (Sample(self.sample_id)
+                    .path('{}.log.add_or_replace_read_groups'))
+        run_command(command, logfile=log_file)
 
     def output(self):
         fn = '{}.not-recalibrated.bam'

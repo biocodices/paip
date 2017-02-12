@@ -58,6 +58,8 @@ class Sample:
         with open(abspath(expanduser(yml_path))) as f:
             data = yaml.load(f)
 
-        for key in ['library_id', 'sequencing_id', 'id_in_sequencing']:
-            setattr(self, key, data[self.sample_id][key])
+        data = data[self.sample_id]
+
+        for key in data.keys():
+            setattr(self, key, data[key])
 

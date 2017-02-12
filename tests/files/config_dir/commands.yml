@@ -4,4 +4,8 @@ fastq-mcf:
 bwa:
     '{executable} mem -t 8 {reference_genome} {forward_reads} {reverse_reads}'
 
+picard AddOrReplaceReadGroups:
+    # SO = SortOrder for the output
+    '{executable} AddOrReplaceReadGroups I={input_samfile} ID={sequencing_id}.{library_id}.{platform_unit}.{sample_id} SM={sample_id} LB={library_id} PL={platform} PU={platform_unit} O={output_bamfile} SO=coordinate CREATE_INDEX=True VALIDATION_STRINGENCY=LENIENT'
+
 command-1: value-1

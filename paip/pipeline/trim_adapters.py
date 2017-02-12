@@ -1,4 +1,4 @@
-from paip.helpers import Config, path_to_resource
+from paip.helpers import generate_command, path_to_resource
 
 
 def trim_adapters(forward_reads, reverse_reads):
@@ -8,17 +8,14 @@ def trim_adapters(forward_reads, reverse_reads):
 
     Returns the command to trim the adapters of those reads files.
     """
-    program = 'fastq-mcf'
-
-    command_template = Config.commands(program)
-    command = command_template.format(**{
-        'executable': Config.executables(program),
+    program_name = 'fastq-mcf'
+    options = {
         'forward_reads': forward_reads,
         'reverse_reads': reverse_reads,
         'forward_output': forward_reads.replace('.fastq', '.trimmed.fastq'),
         'reverse_output': reverse_reads.replace('.fastq', '.trimmed.fastq'),
         'adapters': path_to_resource('illumina_adapters'),
-    })
+    }
 
-    return command
+    return generate_command(program_name, options)
 

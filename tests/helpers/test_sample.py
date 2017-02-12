@@ -20,4 +20,6 @@ def test_load_sequencing_data_from_yaml():
     assert sample.sequencing_id == 'Seq1'
     assert sample.library_id == 'Lib1'
     assert sample.id_in_sequencing == 'Spl1'
+    assert sample.platform == 'Plat'
+    assert sample.platform_unit == 'PlatUnit'
 

@@ -1,4 +1,6 @@
 Sample1:
+  platform: Plat
+  platform_unit: PlatUnit
   id_in_sequencing: Spl1
   library_id: Lib1
   sequencing_id: Seq1

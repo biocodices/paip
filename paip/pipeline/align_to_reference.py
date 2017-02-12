@@ -1,4 +1,4 @@
-from paip.helpers import Config, path_to_resource
+from paip.helpers import generate_command, path_to_resource
 
 
 def align_to_reference(forward_reads, reverse_reads):
@@ -8,15 +8,12 @@ def align_to_reference(forward_reads, reverse_reads):
 
     Returns the command to align the reads to that genome.
     """
-    program = 'bwa'
-
-    command_template = Config.commands(program)
-    command = command_template.format(**{
-        'executable': Config.executables(program),
+    program_name = 'bwa'
+    options = {
         'forward_reads': forward_reads,
         'reverse_reads': reverse_reads,
         'reference_genome': path_to_resource('reference_genome'),
-    })
+    }
 
-    return command
+    return generate_command(program_name, options)
 

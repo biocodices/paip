@@ -1,9 +1,10 @@
 fastq-mcf:
-    '{executable} -u -q 20 -P 33 -x 10 -l 50 -o {forward_output} -o {reverse_output} {adapters} {forward_reads} {reverse_reads}'
+  '{executable} -u -q 20 -P 33 -x 10 -l 50 -o {forward_output} -o {reverse_output} {adapters} {forward_reads} {reverse_reads}'
 
 bwa:
-    '{executable} mem -t 8 -M {reference_genome} {forward_reads} {reverse_reads}'
+  # -t number of threads
+  '{executable} mem -t 8 -M {reference_genome} {forward_reads} {reverse_reads}'
 
 picard AddOrReplaceReadGroups:
-    '{executable} AddOrReplaceReadGroups SO=coordinate PL=ILLUMINA O={output_bamfile} ID={sequencing_id}.{library_id}.{pu}.{seq_sample_id} SM={seq_sample_id} PU={pu} I={input_samfile} CREATE_INDEX=True LB={lib_id} VALIDATION_STRINGENCY=LENIENT'
-
+  # SO = SortOrder for the output
+  '{executable} AddOrReplaceReadGroups I={input_samfile} ID={sequencing_id}.{library_id}.{platform_unit}.{sample_id} SM={sample_id} LB={library_id} PL={platform} PU={platform_unit} O={output_bamfile} SO=coordinate CREATE_INDEX=True VALIDATION_STRINGENCY=LENIENT'
