@@ -2,6 +2,8 @@ fastq-mcf: /path/to/fastq-mcf
 bwa: /path/to/bwa
 picard: &picard /path/to/picard
 picard AddOrReplaceReadGroups: *picard
+gatk: &gatk /path/to/gatk
+gatk RealignerTargetCreator: *gatk
 
 exec-1: value-1
 

@@ -2,19 +2,19 @@ base_dir: /path/to
 
 illumina_adapters: illumina_adapters.fasta
 
-reference_genome_hg19: &reference_genome_default human_g1k_v37.fasta
+reference_genome_hg19: &reference_genome_default reference_genome.fasta
 reference_genome: *reference_genome_default
 
-reference_genome_hg19_dict: &reference_genome_default_dict human_g1k_v37.dict
+reference_genome_hg19_dict: &reference_genome_default_dict reference_genome.dict
 reference_genome_dict: *reference_genome_default_dict
 
-indels_1000G: 1000G_phase1.indels.b37.vcf
-indels_mills: Mills_and_1000G_gold_standard.indels.b37.vcf
+indels_1000G: indels_1000G.vcf
+indels_mills: indels_mills.vcf
 
-dbsnp_GRCh37: dbsnp_138.b37.vcf
+dbsnp_GRCh37: dbsnp_GRCh37.vcf
 
-ENPv1_amplicons: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
-panel_amplicons: *ENPv1_amplicons
+panel_regions: panel_regions.bed
 panel_design_vcf: ENPv1_markers.vcf
 
 resource-1: value-1
+

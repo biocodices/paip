@@ -15,14 +15,16 @@ Usage:
     paip (-h | --help)
 
 Options:
-    --tasks                             List available tasks to run.
-    --sample-id SAMPLE_ID               Sample ID that must match the name
-                                        of a subdirectory of the cwd. For tasks
-                                        that operate on a single sample.
-                                        Not needed for Cohort tasks.
-    --base-dir BASE_DIR                 Base directory for the run, parent
-                                        of the 'data' directory with the
-                                        fastq files.
+    --tasks                     List available tasks to run.
+
+    --sample-id SAMPLE_ID       Sample ID that must match the name
+                                of a subdirectory of the current dir.
+                                Use it for tasks that operate on a
+                                *single sample*.
+
+    --base-dir BASE_DIR         Base directory for the run, parent
+                                of the 'data' directory with the
+                                fastq files.
 """
 
 import re
@@ -39,14 +41,12 @@ from paip.helpers import (
     run_command,
     logo,
 )
-# , logo, DB, VcfMunger
 from paip.pipeline import (
     trim_adapters,
     align_to_reference,
     add_or_replace_read_groups,
+    create_realignment_intervals,
 )
-# from paip.programs import BWA, Picard, GATK
-# from paip.components import Cohort
 
 
 class CheckFastqs(luigi.ExternalTask):
@@ -141,18 +141,38 @@ class AddOrReplaceReadGroups(luigi.Task):
         return luigi.LocalTarget(Sample(self.sample_id).path(fn))
 
 
-#  class RealignReads(luigi.Task):
-    #  sample_id = luigi.Parameter()
-    #  def requires(self): return AddOrReplaceReadGroups(self.sample_id)
-    #  def run(self):
-        #  vcf_munger = VcfMunger()
-        #  raw_bam = self.requires().output().fn
-        #  realigned_bam = vcf_munger.realign_reads_around_indels(raw_bam)
-        #  vcf_munger.recalibrate_quality_scores(realigned_bam,
-                                              #  out_path=self.output().fn)
-    #  def output(self):
-        #  self.sample = Sample(self.sample_id)
-        #  return luigi.LocalTarget(self.sample.file('recalibrated.bam'))
+class CreateRealignmentTargets(luigi.Task):
+    sample_id = luigi.Parameter()
+
+    def requires(self):
+        return AddOrReplaceReadGroups(self.sample_id)
+
+    def run(self):
+        command = create_realignment_intervals(
+            input_bamfile=self.input().fn,
+            output_file=self.output().fn,
+        )
+        logfile = (Sample(self.sample_id)
+                   .path('{}.log.create_realignment_targets'))
+        run_command(command, logfile=logfile)
+
+    def output(self):
+        filename = Sample(self.sample_id).path('{}.realignment_intervals')
+        return luigi.LocalTarget(filename)
+
+
+class RealignAroundIndels(luigi.Task):
+    sample_id = luigi.Parameter()
+
+    def requires(self):
+        return CreateRealignmentTargets(self.sample_id)
+
+    def run(self):
+        pass
+
+    def output(self):
+        filename = Sample(self.sample_id).path('{}.realigned.bam')
+        return luigi.LocalTarget(filename)
 
 
 #  class HaplotypeCall(luigi.Task):

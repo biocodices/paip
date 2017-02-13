@@ -34,8 +34,8 @@ def test_log_to_file():
 
     # Extra checks of command running info
     assert 'echo foo' in log_lines
-    assert 'Finished at' in log_lines[-2]
-    assert 'Took' in log_lines[-1]
+    assert 'Finished at' in log_lines[-3]
+    assert 'Took' in log_lines[-2]
 
     # Test STDERR is logged correctly
     run_command('echo foo >&2', logfile=logfile, log_stderr=True)
@@ -63,7 +63,7 @@ def test_log_to_file():
 
     # Test appending
     run_command('echo foo', logfile=logfile)
-    run_command('echo bar', logfile=logfile, append=True)
+    run_command('echo bar', logfile=logfile, log_append=True)
 
     with open(logfile) as f:
         log_lines = [line.strip() for line in f.readlines()]

@@ -2,11 +2,12 @@ fastq-mcf: /home/juan/software/ea-utils.1.1.2-537/fastq-mcf
 bwa: /usr/bin/bwa
 picard: &picard java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
 picard AddOrReplaceReadGroups: *picard
+gatk: &gatk java -jar /home/juan/software/GenomeAnalysisTK/GenomeAnalysisTK.jar
+gatk RealignerTargetCreator: *gatk
 
 fastqc: /home/juan/software/FastQC/fastqc
 bedtools: /home/juan/software/bedtools2/bin/bedtools
 samtools: /home/juansoftware/samtools-1.3/samtools
-GATK: java -jar /home/juan/software/GenomeAnalysisTK/GenomeAnalysisTK.jar
 vcftools: /usr/local/bin/vcftools
 bcftools: /usr/local/bin/bcftools
 vcf-subset: /usr/local/bin/vcf-subset
