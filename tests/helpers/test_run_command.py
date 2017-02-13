@@ -17,8 +17,14 @@ def test_run_command():
     assert stdout == b''
     assert stderr == b'foo\n'
 
+
+def test_raises(caplog):
     with pytest.raises(CalledProcessError):
         run_command('non-existent-command')
+
+    records = [record.message for record in caplog.records]
+    assert 'This command failed (return code=127):\nnon-existent-command' in records
+    assert 'STDERR:\n/bin/sh: 1: non-existent-command: not found' in records
 
 
 def test_log_to_file():

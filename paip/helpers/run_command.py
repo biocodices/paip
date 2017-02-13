@@ -1,7 +1,11 @@
-from subprocess import run, PIPE
+from subprocess import run, PIPE, CalledProcessError
 from datetime import datetime
+import logging
 
 from humanfriendly import format_timespan
+
+
+logger = logging.getLogger(__name__)
 
 
 def run_command(command, logfile=None, log_append=False, log_stdout=True,
@@ -23,7 +27,14 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
             add_to_log('TIME', start_time, f)
             add_to_log('COMMAND', command, f)
 
-    result = run(command, shell=True, check=True, stdout=PIPE, stderr=PIPE)
+    try:
+        result = run(command, shell=True, check=True, stdout=PIPE, stderr=PIPE)
+    except CalledProcessError as error:
+        logger.error('This command failed (return code={}):\n{}'
+                     .format(error.returncode, error.cmd))
+        logger.error('STDOUT:\n{}'.format(error.output.decode().strip()))
+        logger.error('STDERR:\n{}'.format(error.stderr.decode().strip()))
+        raise
 
     stdout = result.stdout
     stderr = result.stderr

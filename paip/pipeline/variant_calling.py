@@ -46,6 +46,7 @@ from paip.pipeline import (
     align_to_reference,
     add_or_replace_read_groups,
     create_realignment_intervals,
+    realign_around_indels,
 )
 
 
@@ -137,7 +138,7 @@ class AddOrReplaceReadGroups(luigi.Task):
         run_command(command, logfile=log_file)
 
     def output(self):
-        fn = '{}.not-recalibrated.bam'
+        fn = '{}.bam'
         return luigi.LocalTarget(Sample(self.sample_id).path(fn))
 
 
@@ -165,14 +166,47 @@ class RealignAroundIndels(luigi.Task):
     sample_id = luigi.Parameter()
 
     def requires(self):
-        return CreateRealignmentTargets(self.sample_id)
+        return [AddOrReplaceReadGroups(self.sample_id),
+                CreateRealignmentTargets(self.sample_id)]
+
+    def run(self):
+        command = realign_around_indels(
+            input_bam=self.input()[0].fn,
+            targets_file=self.input()[1].fn,
+            output_bam=self.output().fn,
+        )
+        logfile = Sample(self.sample_id).path('{}.log.realign_around_indels')
+        run_command(command, logfile=logfile)
+
+    def output(self):
+        filename = Sample(self.sample_id).path('{}.realigned.bam')
+        return luigi.LocalTarget(filename)
+
+
+class CreateRecalibrationTable(luigi.Task):
+    sample_id = luigi.Parameter()
+
+    def requires(self):
+        pass
 
     def run(self):
         pass
 
     def output(self):
-        filename = Sample(self.sample_id).path('{}.realigned.bam')
-        return luigi.LocalTarget(filename)
+        pass
+
+
+class RecalibrateScores(luigi.Task):
+    sample_id = luigi.Parameter()
+
+    def requires(self):
+        pass
+
+    def run(self):
+        pass
+
+    def output(self):
+        pass
 
 
 #  class HaplotypeCall(luigi.Task):
