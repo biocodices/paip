@@ -28,7 +28,10 @@ Options:
 import re
 import sys
 from docopt import docopt
+from os.path import expanduser, join, dirname
+
 import luigi
+import coloredlogs
 
 from paip import software_name
 from paip.helpers import (
@@ -117,13 +120,15 @@ class AddOrReplaceReadGroups(luigi.Task):
 
     def run(self):
         sample = Sample(self.sample_id)
-        sample.load_sequencing_data_from_yaml('../sequencing_data.yml')
+        sample.load_sequencing_data_from_yaml('sequencing_data.yml')
 
         command = add_or_replace_read_groups(
             sam_path=self.input().fn,
             sample_id=sample.id_in_sequencing,
-            sample_library_id=sample.library_id,
+            library_id=sample.library_id,
             sequencing_id=sample.sequencing_id,
+            platform=sample.platform,
+            platform_unit=sample.platform_unit,
             out_path=self.output().fn,
         )
 
@@ -248,12 +253,30 @@ def run_pipeline():
     print()
 
     try:
+        set_luigi_logging()
         luigi.run()
     except luigi.task_register.TaskClassNotFoundException:
         print('No task with name "{}". Here are the available tasks:'
               .format(arguments['TASK']))
         luigi_classes = list_classes(__file__)
         print('\n' + '\n'.join(luigi_classes) + '\n')
+
+
+def set_luigi_logging():
+    config_file = join(dirname(dirname(__file__)), 'example_config',
+                       'luigi_logging.conf')
+
+    # For luigi's interface see:
+    # http://luigi.readthedocs.io/en/stable/api/luigi.interface.html
+    luigi.interface.setup_interface_logging(
+        conf_file=expanduser(config_file)
+    )
+    # ^ Here I replace luigi's default logger config with a custom
+    # file. The details of that file are not relevant anyway,
+    # because the actual log config will come from coloredlogs below:
+    log_format = '[%(asctime)s] @%(hostname)s %(levelname)s %(message)s'
+    coloredlogs.DEFAULT_LOG_FORMAT = log_format
+    coloredlogs.install(level='INFO')
 
 
 def list_classes(filepath):
