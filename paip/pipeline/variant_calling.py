@@ -36,12 +36,7 @@ import luigi
 import coloredlogs
 
 from paip import software_name
-from paip.helpers import (
-    SampleTask,
-    run_command,
-    generate_command,
-    logo,
-)
+from paip.helpers import SampleTask
 
 
 # We will generate all of the files for a given sample
@@ -106,7 +101,7 @@ class AlignToReference(luigi.Task, SampleTask):
     sample_id = luigi.Parameter()
 
     def requires(self):
-        return TrimReads(self.sample_id)
+        return TrimAdapters(self.sample_id)
 
     def run(self):
         program_options = {
@@ -390,6 +385,19 @@ def list_classes(filepath):
                  for line in f.readlines() if line.startswith('class')]
     return tasks
 
+
+def logo():
+    return """
+
+ .########.....###....####.########.
+ .##.....##...##.##....##..##.....##
+ .##.....##..##...##...##..##.....##
+ .########..##.....##..##..########.
+ .##........#########..##..##.......
+ .##........##.....##..##..##.......
+ .##........##.....##.####.##.......
+
+"""
 
 if __name__ == '__main__':
     run_pipeline()
