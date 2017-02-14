@@ -1,4 +1,4 @@
-from paip.helpers import generate_command, path_to_resource
+from paip.helpers import generate_command
 
 
 def trim_adapters(forward_reads, reverse_reads):
@@ -14,7 +14,6 @@ def trim_adapters(forward_reads, reverse_reads):
         'reverse_reads': reverse_reads,
         'forward_output': forward_reads.replace('.fastq', '.trimmed.fastq'),
         'reverse_output': reverse_reads.replace('.fastq', '.trimmed.fastq'),
-        'adapters': path_to_resource('illumina_adapters'),
     }
 
     return generate_command(program_name, options)

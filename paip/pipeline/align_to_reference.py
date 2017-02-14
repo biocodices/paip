@@ -1,4 +1,4 @@
-from paip.helpers import generate_command, path_to_resource
+from paip.helpers import generate_command
 
 
 def align_to_reference(forward_reads, reverse_reads):
@@ -12,7 +12,6 @@ def align_to_reference(forward_reads, reverse_reads):
     options = {
         'forward_reads': forward_reads,
         'reverse_reads': reverse_reads,
-        'reference_genome': path_to_resource('reference_genome'),
     }
 
     return generate_command(program_name, options)

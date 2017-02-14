@@ -3,7 +3,7 @@ from paip.pipeline import create_realignment_intervals
 
 def test_create_realignment_intervals():
     command = create_realignment_intervals(
-        input_bamfile='/path/to/bamfile',
+        input_bam='/path/to/bamfile',
         output_file='/path/to/outfile',
     )
 

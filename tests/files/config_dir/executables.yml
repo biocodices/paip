@@ -5,6 +5,7 @@ picard AddOrReplaceReadGroups: *picard
 gatk: &gatk /path/to/gatk
 gatk RealignerTargetCreator: *gatk
 gatk IndelRealigner: *gatk
+gatk BaseRecalibrator: *gatk
 
 exec-1: value-1
 

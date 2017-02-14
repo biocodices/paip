@@ -3,4 +3,6 @@ from .align_to_reference import align_to_reference
 from .add_or_replace_read_groups import add_or_replace_read_groups
 from .create_realignment_intervals import create_realignment_intervals
 from .realign_around_indels import realign_around_indels
+from .create_recalibration_table import create_recalibration_table
+from .recalibrate_scores import recalibrate_scores
 

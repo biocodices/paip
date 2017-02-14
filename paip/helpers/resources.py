@@ -1,9 +1,19 @@
 from os.path import join
-from paip.helpers.config import Config
+from paip.helpers import Config
 
 
 def available_resources():
-    return Config('resources')
+    """
+    Return a dictionary with the complete path for each resource found in
+    ~/.paip/resources.yml. Something like:
+
+        {'reference_genome': /path/to/ref.fasta,
+         'panel_regions': /path/to/panel.bed,
+          ...}
+    """
+    resources = Config.resources()
+    del(resources['base_dir'])
+    return {key: path_to_resource(key) for key in resources}
 
 
 def path_to_resource(label):

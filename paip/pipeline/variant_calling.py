@@ -47,6 +47,7 @@ from paip.pipeline import (
     add_or_replace_read_groups,
     create_realignment_intervals,
     realign_around_indels,
+    create_recalibration_table,
 )
 
 
@@ -158,7 +159,7 @@ class CreateRealignmentTargets(luigi.Task):
         run_command(command, logfile=logfile)
 
     def output(self):
-        filename = Sample(self.sample_id).path('{}.realignment_intervals')
+        filename = Sample(self.sample_id).path('{}.intervals')
         return luigi.LocalTarget(filename)
 
 
@@ -187,13 +188,20 @@ class CreateRecalibrationTable(luigi.Task):
     sample_id = luigi.Parameter()
 
     def requires(self):
-        pass
+        return RealignAroundIndels(self.sample_id)
 
     def run(self):
-        pass
+        command = create_recalibration_table(
+            input_bam=self.input().fn,
+            outfile=self.output().fn,
+        )
+        logfile = (Sample(self.sample_id)
+                   .path('{}.log.create_recalibration_table'))
+        run_command(command, logfile=logfile)
 
     def output(self):
-        pass
+        filename = Sample(self.sample_id).path('{}.recalibration_table')
+        return luigi.LocalTarget(filename)
 
 
 class RecalibrateScores(luigi.Task):

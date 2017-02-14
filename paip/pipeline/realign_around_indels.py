@@ -1,4 +1,4 @@
-from paip.helpers import generate_command, path_to_resource
+from paip.helpers import generate_command
 
 
 def realign_around_indels(input_bam, targets_file, output_bam):
@@ -10,7 +10,6 @@ def realign_around_indels(input_bam, targets_file, output_bam):
     options = {
         'input_bam': input_bam,
         'targets_file': targets_file,
-        'reference_genome': path_to_resource('reference_genome'),
         'output_bam': output_bam,
     }
 

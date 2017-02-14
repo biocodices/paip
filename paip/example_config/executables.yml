@@ -4,6 +4,8 @@ picard: &picard java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
 picard AddOrReplaceReadGroups: *picard
 gatk: &gatk java -jar /home/juan/software/GenomeAnalysisTK/GenomeAnalysisTK.jar
 gatk RealignerTargetCreator: *gatk
+gatk IndelRealigner: *gatk
+gatk BaseRecalibrator: *gatk
 
 fastqc: /home/juan/software/FastQC/fastqc
 bedtools: /home/juan/software/bedtools2/bin/bedtools
