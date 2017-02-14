@@ -22,13 +22,13 @@ picard AddOrReplaceReadGroups:
     # SO = SortOrder for the output
     '{executable}
      AddOrReplaceReadGroups
-     I={input_samfile}
+     I={input_sam}
      ID={sequencing_id}.{library_id}.{platform_unit}.{sample_id}
      SM={sample_id}
      LB={library_id}
      PL={platform}
      PU={platform_unit}
-     O={output_bamfile}
+     O={output_bam}
      SO=coordinate
      CREATE_INDEX=True
      VALIDATION_STRINGENCY=LENIENT'
@@ -41,7 +41,7 @@ gatk RealignerTargetCreator:
      -known {indels_1000G}
      -known {indels_mills}
      -L {panel_regions}
-     -o {output_file}'
+     -o {outfile}'
 
 gatk IndelRealigner:
     '{executable}
@@ -61,4 +61,13 @@ gatk BaseRecalibrator:
      -knownSites {indels_1000G}
      -knownSites {indels_mills}
      -o {outfile}'
+
+gatk PrintReads:
+    '{executable}
+     -T PrintReads
+     -nct 8
+     -I {input_bam}
+     -BQSR {recalibration_table}
+     -R {reference_genome}
+     -o {output_bam}'
 
