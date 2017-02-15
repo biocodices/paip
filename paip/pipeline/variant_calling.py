@@ -33,10 +33,14 @@ from docopt import docopt
 from os.path import expanduser, join, dirname
 
 import luigi
+import logging
 import coloredlogs
 
 from paip import software_name
 from paip.helpers import SampleTask
+
+
+logger = logging.getLogger('paip')
 
 
 # We will generate all of the files for a given sample
@@ -333,32 +337,31 @@ class RecalibrateScores(luigi.Task, SampleTask):
         #  self.outfile = self.input().fn.replace('.vcf', '.VEP.vcf')
         #  return luigi.LocalTarget(self.outfile)
 
-
 def run_pipeline():
     arguments = docopt(__doc__, version=software_name)
+    set_luigi_logging()
 
     if arguments['--tasks']:
-        print('\n'.join(list_classes(__file__)))
+        logger.info('\n'.join(list_classes(__file__)))
         sys.exit()
 
-    print(logo())
-    print('Welcome to {}! Starting the pipeline...\n'
+    logger.info('\n' + logo())
+    logger.info('Welcome to {}! Starting the pipeline...'
           .format(software_name))
 
-    print('Options in effect:')
+    logger.info('Options in effect:')
     for k, v in arguments.items():
         if v:
-            print(' {} {}'.format(k, v))
-    print()
+            logger.info(' {:<13} -> {:20} '.format(k, v))
 
     try:
-        set_luigi_logging()
         luigi.run()
     except luigi.task_register.TaskClassNotFoundException:
-        print('No task with name "{}". Here are the available tasks:'
-              .format(arguments['TASK']))
+        logger.info('No task with name "{}". '
+                    'Available tasks are:\n'
+                    .format(arguments['TASK']))
         luigi_classes = list_classes(__file__)
-        print('\n' + '\n'.join(luigi_classes) + '\n')
+        logger.info('\n' + '\n'.join(luigi_classes) + '\n')
 
 
 def set_luigi_logging():
@@ -373,7 +376,7 @@ def set_luigi_logging():
     # ^ Here I replace luigi's default logger config with a custom
     # file. The details of that file are not relevant anyway,
     # because the actual log config will come from coloredlogs below:
-    log_format = '[%(asctime)s] @%(hostname)s %(levelname)s %(message)s'
+    log_format = '[%(asctime)s] @%(hostname)s %(message)s'
     coloredlogs.DEFAULT_LOG_FORMAT = log_format
     coloredlogs.install(level='INFO')
 
