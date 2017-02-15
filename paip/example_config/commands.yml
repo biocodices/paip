@@ -71,3 +71,56 @@ gatk PrintReads:
      -R {reference_genome}
      -o {output_bam}'
 
+gatk HaplotypeCaller variant_sites:
+    '{executable}
+     -T HaplotypeCaller
+     -I {input_bam}
+     -gt_mode DISCOVERY
+     -ERC BP_RESOLUTION
+     -variant_index_parameter 128000
+     -variant_index_type LINEAR
+     -L {panel_regions}
+     -R {reference_genome}
+     --dbsnp {dbsnp_GRCh37}
+     -nct 8
+     -o {output_vcf}'
+
+gatk HaplotypeCaller target_sites:
+    # GENOTYPE_GIVEN_ALLELES is not very well documented in GATK's guides.
+    # https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php
+    #
+    # I used this comment as a guide first:
+    # http://gatkforums.broadinstitute.org/gatk/discussion/comment/16780/#Comment_16780
+    #
+    # Which has these particular options:
+    #
+    # --emitRefConfidence GVCF
+    # --variant_index_type LINEAR
+    # --variant_index_parameter 128000
+    #
+    # But this user takes another approach:
+    # http://gatkforums.broadinstitute.org/gatk/discussion/comment/22854/#Comment_22854
+    #
+    # (no --variant_index_type)
+    # (no --variant_index_parameter)
+    #
+    # --emitRefConfidence NONE
+    # --output_mode EMIT_ALL_SITES
+    # -stand_call_conf 0  # Deprecated, fails
+    # -stand_emit_conf 0  # Deprecated, fails
+    #
+    # I trust the latter more, since 'GVCF' mode is meant for the regular
+    # 'non-ref variants only' workflow.
+    #
+    '{executable}
+     -T HaplotypeCaller
+     -I {input_bam}
+     -gt_mode GENOTYPE_GIVEN_ALLELES
+     --alleles {panel_variants}
+     --output_mode EMIT_ALL_SITES
+     -L {panel_regions}
+     -R {reference_genome}
+     --dbsnp {dbsnp_GRCh37}
+     -nct 8
+     -o {output_vcf}'
+

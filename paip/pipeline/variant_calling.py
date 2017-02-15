@@ -171,12 +171,14 @@ class CreateRealignmentIntervals(luigi.Task, SampleTask):
         return AddOrReplaceReadGroups(self.sample_id)
 
     def run(self):
-        program_options = {
-            'input_bam': self.input().fn,
-            'outfile': self.output().fn,
-        }
 
-        self.run_program('gatk RealignerTargetCreator', program_options)
+        with self.output().temporary_path() as self.temp_output_path:
+            program_options = {
+                'input_bam': self.input().fn,
+                'outfile': self.temp_output_path,
+            }
+
+            self.run_program('gatk RealignerTargetCreator', program_options)
 
     def output(self):
         filename = self.sample_path('realignment.intervals')
@@ -195,13 +197,17 @@ class RealignAroundIndels(luigi.Task, SampleTask):
                 CreateRealignmentIntervals(self.sample_id)]
 
     def run(self):
-        program_options = {
-            'input_bam': self.input()[0].fn,
-            'targets_file': self.input()[1].fn,
-            'output_bam': self.output().fn,
-        }
 
-        self.run_program('gatk IndelRealigner', program_options)
+        with self.output().temporary_path() as self.temp_output_path:
+            program_options = {
+                'input_bam': self.input()[0].fn,
+                'targets_file': self.input()[1].fn,
+                'output_bam': self.temp_output_path,
+            }
+
+            self.run_program('gatk IndelRealigner', program_options)
+
+        self.rename_extra_temp_output_file('.bai')
 
     def output(self):
         filename = self.sample_path('realignment.bam')
@@ -220,12 +226,14 @@ class CreateRecalibrationTable(luigi.Task, SampleTask):
         return RealignAroundIndels(self.sample_id)
 
     def run(self):
-        program_options = {
-            'input_bam': self.input().fn,
-            'outfile': self.output().fn,
-        }
 
-        self.run_program('gatk BaseRecalibrator', program_options)
+        with self.output().temporary_path() as self.temp_output_path:
+            program_options = {
+                'input_bam': self.input().fn,
+                'outfile': self.temp_output_path,
+            }
+
+            self.run_program('gatk BaseRecalibrator', program_options)
 
     def output(self):
         filename = self.sample_path('recalibration_table')
@@ -245,31 +253,83 @@ class RecalibrateScores(luigi.Task, SampleTask):
                 CreateRecalibrationTable(self.sample_id)]
 
     def run(self):
-        program_options = {
-            'input_bam': self.input()[0].fn,
-            'recalibration_table': self.input()[1].fn,
-            'output_bam': self.output().fn,
-        }
 
-        self.run_program('gatk PrintReads', program_options)
+        with self.output().temporary_path() as self.temp_output_path:
+            program_options = {
+                'input_bam': self.input()[0].fn,
+                'recalibration_table': self.input()[1].fn,
+                'output_bam': self.temp_output_path,
+            }
+
+            self.run_program('gatk PrintReads', program_options)
+
+        self.rename_extra_temp_output_file('.bai')
 
     def output(self):
         filename = self.sample_path('recalibrated.bam')
         return luigi.LocalTarget(filename)
 
 
-#  class HaplotypeCall(luigi.Task):
-    #  sample_id = luigi.Parameter()
-    #  def requires(self): return RealignReads(self.sample_id)
-    #  def run(self):
-        #  recalibrated_bam = self.requires().output().fn
-        #  # GATK().create_gvcf(recalibrated_bam, out_path=self.output().fn)
-        #  GATK().genotype_given_alleles(recalibrated_bam,
-                                      #  out_path=self.output().fn)
-    #  def output(self):
-        #  self.sample = Sample(self.sample_id)
-        #  return luigi.LocalTarget(self.sample.file('raw_variants.g.vcf'))
+class CallVariants(luigi.Task, SampleTask):
+    """
+    Expects a BAM file. Runs GATK's HaplotypeCaller to discover non-REF
+    variant sites in the sample. The discovery is limited to the
+    panel_regions.
+    """
+    sample_id = luigi.Parameter()
 
+    def requires(self):
+        return RecalibrateScores(self.sample_id)
+
+    def run(self):
+
+        with self.output().temporary_path() as self.temp_output_path:
+            program_options = {
+                'input_bam': self.input().fn,
+                'output_vcf': self.temp_output_path,
+            }
+
+            self.run_program('gatk HaplotypeCaller variant_sites',
+                             program_options)
+
+    def output(self):
+        fn = self.sample_path('raw_variants.vcf')
+        return luigi.LocalTarget(fn)
+
+
+class CallTargets(luigi.Task, SampleTask):
+    """
+    Expects a BAM file. Runs GATK's HaplotypeCaller to call the genotypes
+    of the variants specified in a panel_variants VCF.
+    """
+    sample_id = luigi.Parameter()
+
+    def requires(self):
+        return RecalibrateScores(self.sample_id)
+
+    def run(self):
+
+        with self.output().temporary_path() as self.temp_output_path:
+            program_options = {
+                'input_bam': self.input().fn,
+                'output_vcf': self.temp_output_path,
+            }
+
+            self.run_program('gatk HaplotypeCaller target_sites',
+                             program_options)
+
+    def output(self):
+        fn = self.sample_path('raw_targets.vcf')
+        return luigi.LocalTarget(fn)
+
+
+class CallGenotypes(luigi.Task, SampleTask):
+    """Wrapper Task to run both CallVariants and CallTargets."""
+    sample_id = luigi.Parameter()
+
+    def requires(self):
+        yield CallTargets(self.sample_id)
+        yield CallVariants(self.sample_id)
 
 #  class JointGenotyping(luigi.Task):
     #  base_dir = luigi.Parameter(default='.')
