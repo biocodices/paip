@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import isdir, basename, join
+from os.path import isdir, basename, join, expanduser, abspath
 
 import luigi
 
@@ -21,7 +21,11 @@ class CohortTask(BaseTask):
 
     def __init__(self, **kwargs):
         super(BaseTask, self).__init__(**kwargs)
+        self.basedir = abspath(expanduser(self.basedir))
         self.samples = self._find_samples(self.samples, self.basedir)
+        if not self.samples:
+            raise EmptyCohortException('No samples found in: {}'
+                                       .format(self.basedir))
         self.cohort_name = self._define_cohort_name()
 
     def log_path(self, log_name):
@@ -61,4 +65,8 @@ class CohortTask(BaseTask):
         """
         return '{}__{}_Samples'.format(basename(self.basedir),
                                        len(self.samples))
+
+
+class EmptyCohortException(Exception):
+    pass
 

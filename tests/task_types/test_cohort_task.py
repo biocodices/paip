@@ -1,6 +1,9 @@
+from os.path import expanduser
+
 import pytest
 
 from paip.task_types import CohortTask
+from paip.task_types.cohort_task import EmptyCohortException
 
 
 @pytest.fixture
@@ -16,6 +19,15 @@ def cohort_task_all(basedir):
 @pytest.fixture
 def cohort_task_2(basedir):
     return CohortTask(basedir=basedir, samples='Sample1,Sample2')
+
+
+def test_init(basedir):
+    assert CohortTask(basedir='~', samples='ALL').basedir == expanduser('~')
+    assert CohortTask(basedir='~/..', samples='ALL').basedir == '/home'
+
+    with pytest.raises(EmptyCohortException):
+        CohortTask(basedir=pytest.helpers.test_file('Cohort1/Sample1'),
+                   samples='ALL')
 
 
 def test_find_samples_ALL(basedir):
