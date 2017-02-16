@@ -81,9 +81,29 @@ gatk HaplotypeCaller variant_sites:
      -variant_index_type LINEAR
      -L {panel_regions}
      -R {reference_genome}
-     --dbsnp {dbsnp_GRCh37}
+     -D {dbsnp_GRCh37}
      -nct 8
      -o {output_vcf}'
+
+# gatk HaplotypeCaller variant_sites for_exomes:
+    # # https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_engine_CommandLineGATK.php#--interval_padding
+    # # --interval_padding: This is typically used to add padding around exons
+    # # when analyzing exomes. The general Broad exome calling pipeline uses
+    # # 100 bp padding by default.
+    # '{executable}
+     # -T HaplotypeCaller
+     # -I {input_bam}
+     # -gt_mode DISCOVERY
+     # -ERC BP_RESOLUTION
+     # -variant_index_parameter 128000
+     # -variant_index_type LINEAR
+     # --interval_padding 100
+     # -L {panel_regions}
+     # -R {reference_genome}
+     # -D {dbsnp_GRCh37}
+     # -nct 8
+     # -o {output_vcf}'
+
 
 gatk HaplotypeCaller target_sites:
     # GENOTYPE_GIVEN_ALLELES is not very well documented in GATK's guides.
@@ -106,8 +126,8 @@ gatk HaplotypeCaller target_sites:
     #
     # --emitRefConfidence NONE
     # --output_mode EMIT_ALL_SITES
-    # -stand_call_conf 0  # Deprecated, fails
-    # -stand_emit_conf 0  # Deprecated, fails
+    # -stand_call_conf 0
+    # -stand_emit_conf 0
     #
     # I trust the latter more, since 'GVCF' mode is meant for the regular
     # 'non-ref variants only' workflow.
@@ -120,7 +140,20 @@ gatk HaplotypeCaller target_sites:
      --output_mode EMIT_ALL_SITES
      -L {panel_regions}
      -R {reference_genome}
-     --dbsnp {dbsnp_GRCh37}
+     -D {dbsnp_GRCh37}
      -nct 8
+     -o {output_vcf}'
+
+gatk GenotypeGVCFs:
+    # The {input_gvcfs_param_string} will be filled in the corresponding
+    # task with --variant <GVCF path> for each sample GVCF.
+    '{executable}
+     -T GenotypeGVCFs
+     -allSites
+     -L {panel_regions}
+     -R {reference_genome}
+     -D {dbsnp_GRCh37}
+     -nt 8
+     {input_gvcfs_param_string}
      -o {output_vcf}'
 
