@@ -1,36 +1,18 @@
-import paip.helpers
-
 import pytest
+
+import paip.task_types
 
 
 @pytest.fixture
-def sample_task():
-    task = paip.helpers.SampleTask()
-    task.sample_id = 'Sample1'
-    return task
+def base_task():
+    return paip.task_types.BaseTask()
 
 
-def test_sample_path(sample_task):
-    assert sample_task.sample_path('foo.txt') == 'Sample1/Sample1.foo.txt'
+def test_log_path(base_task):
+    assert base_task.log_path('foo') == 'log.foo'
 
 
-def test_sample_paths(sample_task):
-    paths = sample_task.sample_paths(['foo.txt', 'bar.txt'])
-    assert paths == ['Sample1/Sample1.foo.txt', 'Sample1/Sample1.bar.txt']
-
-
-def test_sample_data_from_yaml(sample_task):
-    seq_data_yaml = pytest.helpers.test_file('sequencing_data.yml')
-    sample_task.load_sample_data_from_yaml(seq_data_yaml)
-
-    assert sample_task.sequencing_id == 'Seq1'
-    assert sample_task.library_id == 'Lib1'
-    assert sample_task.id_in_sequencing == 'Spl1'
-    assert sample_task.platform == 'Plat'
-    assert sample_task.platform_unit == 'PlatUnit'
-
-
-def test_run_program(sample_task, monkeypatch):
+def test_run_program(base_task, monkeypatch):
     # run_program uses generate_command, but we test that method elsewhere
     # so we just mock it here:
     def fake_generate_command(program_name, options):
@@ -48,12 +30,12 @@ def test_run_program(sample_task, monkeypatch):
         arguments_received.update(**kwargs)
         return arguments_received
 
-    monkeypatch.setattr(paip.helpers.sample_task, 'generate_command',
+    monkeypatch.setattr(paip.task_types.base_task, 'generate_command',
                         fake_generate_command)
-    monkeypatch.setattr(paip.helpers.sample_task, 'run_command',
+    monkeypatch.setattr(paip.task_types.base_task, 'run_command',
                         fake_run_command)
 
-    args_received = sample_task.run_program(
+    args_received = base_task.run_program(
         program_name='program',
         program_options={'foo': 'bar'},
         extra_kwarg='foo'
@@ -63,7 +45,7 @@ def test_run_program(sample_task, monkeypatch):
     assert args_received['command'] == 'program --foo bar'
 
     # Test the logfile was created from the class name of the Task
-    assert args_received['logfile'] == 'Sample1/Sample1.log.SampleTask'
+    assert args_received['logfile'] == 'log.BaseTask'
 
     # Test extra kwargs were passed to run_command
     assert args_received['extra_kwarg'] == 'foo'

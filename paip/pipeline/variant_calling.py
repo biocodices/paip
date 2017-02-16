@@ -17,19 +17,20 @@ Usage:
 Options:
     --tasks                     List available tasks to run.
 
-    --sample-id SAMPLE_ID       Sample ID that must match the name
-                                of a subdirectory of the current dir.
-                                Use it for tasks that operate on a
-                                *single sample*.
+    --sample SAMPLE       Sample ID that must match the name
+                          of a subdirectory of the current dir.
+                          Use it for tasks that operate on a
+                          *single sample*.
 
-    --base-dir BASE_DIR         Base directory for the run, parent
-                                of the 'data' directory with the
-                                fastq files.
+    --base-dir BASE_DIR   Base directory for the run, parent
+                          of the 'data' directory with the
+                          fastq files.
 """
 
 import re
 import sys
 from docopt import docopt
+from os import environ
 from os.path import expanduser, join, dirname
 
 import luigi
@@ -37,7 +38,10 @@ import logging
 import coloredlogs
 
 from paip import software_name
-from paip.helpers import SampleTask
+from paip.task_types import (
+    SampleTask,
+    CohortTask,
+)
 
 
 logger = logging.getLogger('paip')
@@ -60,23 +64,20 @@ class CheckFastqs(luigi.ExternalTask, SampleTask):
     Expects fastq files with forward and reverse reads of the same
     sample.
     """
-    sample_id = luigi.Parameter()
 
     def output(self):
         fastqs = self.sample_paths(['R1.fastq', 'R2.fastq'])
         return [luigi.LocalTarget(fn) for fn in fastqs]
 
 
-class TrimAdapters(luigi.Task, SampleTask):
+class TrimAdapters(SampleTask):
     """
     Expects fastq files with forward and reverse reads of the same
     sample. Trims the adapters of those reads files and generates
     new fastq files.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return CheckFastqs(self.sample_id)
+        return CheckFastqs(self.sample)
 
     def run(self):
         options = {
@@ -94,7 +95,7 @@ class TrimAdapters(luigi.Task, SampleTask):
         return [luigi.LocalTarget(fn) for fn in trimmed_fastqs]
 
 
-class AlignToReference(luigi.Task, SampleTask):
+class AlignToReference(SampleTask):
     """
     Expects two files: forward and reverse reads of the same sample.
     It will use the reference genome defined in resources.yml to
@@ -102,10 +103,8 @@ class AlignToReference(luigi.Task, SampleTask):
 
     Generates a .sam file with the raw alignments.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return TrimAdapters(self.sample_id)
+        return TrimAdapters(self.sample)
 
     def run(self):
         program_options = {
@@ -125,16 +124,14 @@ class AlignToReference(luigi.Task, SampleTask):
         return luigi.LocalTarget(target)
 
 
-class AddOrReplaceReadGroups(luigi.Task, SampleTask):
+class AddOrReplaceReadGroups(SampleTask):
     """
     Expects a SAM file with aligned reads. Reads sequencing data from the
     working directory and runs a command that adds (or replaces) read groups
     to each read. The result is written to a BAM file.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return AlignToReference(self.sample_id)
+        return AlignToReference(self.sample)
 
     def run(self):
         # This step assumes that the pipeline is run from the *parent*
@@ -159,16 +156,14 @@ class AddOrReplaceReadGroups(luigi.Task, SampleTask):
         return luigi.LocalTarget(self.sample_path(fn))
 
 
-class CreateRealignmentIntervals(luigi.Task, SampleTask):
+class CreateRealignmentIntervals(SampleTask):
     """
     Expects a BAM file with mapped reads and runs a command to create an
     'intervals' file with the regions that should be realigned considering
     known human indels.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return AddOrReplaceReadGroups(self.sample_id)
+        return AddOrReplaceReadGroups(self.sample)
 
     def run(self):
 
@@ -185,16 +180,14 @@ class CreateRealignmentIntervals(luigi.Task, SampleTask):
         return luigi.LocalTarget(filename)
 
 
-class RealignAroundIndels(luigi.Task, SampleTask):
+class RealignAroundIndels(SampleTask):
     """
     Expects a BAM file and an intervals file. Runs a command to realign the reads
     in those intervals and produce a new BAM file with the fixed alignments.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return [AddOrReplaceReadGroups(self.sample_id),
-                CreateRealignmentIntervals(self.sample_id)]
+        return [AddOrReplaceReadGroups(self.sample),
+                CreateRealignmentIntervals(self.sample)]
 
     def run(self):
 
@@ -214,16 +207,14 @@ class RealignAroundIndels(luigi.Task, SampleTask):
         return luigi.LocalTarget(filename)
 
 
-class CreateRecalibrationTable(luigi.Task, SampleTask):
+class CreateRecalibrationTable(SampleTask):
     """
     Expects a BAM file. Runs a command to create a plain text file with a table
     for the recalibration of the scores of each called base. The recalibration
     of scores is needed because of the previous realignment.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return RealignAroundIndels(self.sample_id)
+        return RealignAroundIndels(self.sample)
 
     def run(self):
 
@@ -240,17 +231,15 @@ class CreateRecalibrationTable(luigi.Task, SampleTask):
         return luigi.LocalTarget(filename)
 
 
-class RecalibrateScores(luigi.Task, SampleTask):
+class RecalibrateScores(SampleTask):
     """
     Expects a BAM file and a recalibration table file generated by GATK
     BaseRecalibrator. Runs a command to produce a new BAM recalibrated
     base scores.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return [RealignAroundIndels(self.sample_id),
-                CreateRecalibrationTable(self.sample_id)]
+        return [RealignAroundIndels(self.sample),
+                CreateRecalibrationTable(self.sample)]
 
     def run(self):
 
@@ -270,16 +259,14 @@ class RecalibrateScores(luigi.Task, SampleTask):
         return luigi.LocalTarget(filename)
 
 
-class CallVariants(luigi.Task, SampleTask):
+class CallVariants(SampleTask):
     """
     Expects a BAM file. Runs GATK's HaplotypeCaller to discover non-REF
     variant sites in the sample. The discovery is limited to the
     panel_regions.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return RecalibrateScores(self.sample_id)
+        return RecalibrateScores(self.sample)
 
     def run(self):
 
@@ -289,23 +276,22 @@ class CallVariants(luigi.Task, SampleTask):
                 'output_vcf': self.temp_output_path,
             }
 
-            self.run_program('gatk HaplotypeCaller variant_sites',
-                             program_options)
+            program_name = 'gatk HaplotypeCaller variant_sites'
+            program_name += ' for_exomes' if bool(environ.get('EXOME')) else ''
+            self.run_program(program_name, program_options)
 
     def output(self):
-        fn = self.sample_path('raw_variants.vcf')
+        fn = self.sample_path('raw_variants.gvcf')
         return luigi.LocalTarget(fn)
 
 
-class CallTargets(luigi.Task, SampleTask):
+class CallTargets(SampleTask):
     """
     Expects a BAM file. Runs GATK's HaplotypeCaller to call the genotypes
     of the variants specified in a panel_variants VCF.
     """
-    sample_id = luigi.Parameter()
-
     def requires(self):
-        return RecalibrateScores(self.sample_id)
+        return RecalibrateScores(self.sample)
 
     def run(self):
 
@@ -315,21 +301,22 @@ class CallTargets(luigi.Task, SampleTask):
                 'output_vcf': self.temp_output_path,
             }
 
-            self.run_program('gatk HaplotypeCaller target_sites',
-                             program_options)
+            program_name = 'gatk HaplotypeCaller target_sites'
+            program_name += ' for_exomes' if bool(environ.get('EXOME')) else ''
+            self.run_program(program_name, program_options)
 
     def output(self):
         fn = self.sample_path('raw_targets.vcf')
         return luigi.LocalTarget(fn)
 
 
-class CallGenotypes(luigi.Task, SampleTask):
-    """Wrapper Task to run both CallVariants and CallTargets."""
-    sample_id = luigi.Parameter()
-
+class CallGenotypes(SampleTask):
+    """
+    Wrapper Task to run both CallVariants and CallTargets.
+    """
     def requires(self):
-        yield CallTargets(self.sample_id)
-        yield CallVariants(self.sample_id)
+        yield CallTargets(self.sample)
+        yield CallVariants(self.sample)
 
 #  class JointGenotyping(luigi.Task):
     #  base_dir = luigi.Parameter(default='.')
