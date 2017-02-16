@@ -10,8 +10,7 @@
  .##........##.....##.####.##.......
 
 Usage:
-    paip TASK [--basedir BASEDIR] --samples SAMPLES
-    paip TASK --sample SAMPLE
+    paip TASK [options]
     paip --tasks
     paip (-h | --help)
 
@@ -20,20 +19,27 @@ Options:
 
     --sample SAMPLE      Sample ID that must match the name
                          of a subdirectory of the current dir.
-                         Use it for tasks that operate on a
-                         *single sample*.
 
-    --basedir BASEDIR    Base directory for the run; use for
-                         tasks that operate on the whole
-                         Cohort (default=current directory).
+                         Use for tasks that operate on a
+                         single sample.
 
-    --samples SAMPLES    Samples to include in the Cohort.
-                         Pass --samples ALL to use all
-                         samples found in the --basedir, or
-                         pass a list of comma-separated
-                         names like S1,S2,S3 to limit
-                         the Cohort to those samples.
+    --basedir BASEDIR    Base directory for the run
+                         (default=current directory).
+
                          Use for Cohort tasks.
+
+    --samples SAMPLES    Samples to include in the Cohort
+                         (defaults to ALL samples found in
+                         the --basedir). Pass a list of
+                         comma-separated names like
+                         S1,S2,S3 to limit the Cohort to
+                         those samples.
+
+                         Use for Cohort tasks.
+
+    --workers WORKERS    Number of parallel tasks to run.
+                         Defaults to 1.
+
 """
 
 import re
@@ -148,17 +154,20 @@ class AddOrReplaceReadGroups(SampleTask):
         # be located:
         self.load_sample_data_from_yaml('sequencing_data.yml')
 
-        program_options = {
-            'input_sam': self.input().fn,
-            'sample_id': self.id_in_sequencing,
-            'library_id': self.library_id,
-            'sequencing_id': self.sequencing_id,
-            'platform_unit': self.platform_unit,
-            'platform': self.platform,
-            'output_bam': self.output().fn,
-        }
+        with self.output().temporary_path() as self.temp_output_path:
+            program_options = {
+                'input_sam': self.input().fn,
+                'sample_id': self.id_in_sequencing,
+                'library_id': self.library_id,
+                'sequencing_id': self.sequencing_id,
+                'platform_unit': self.platform_unit,
+                'platform': self.platform,
+                'output_bam': self.temp_output_path,
+            }
 
-        self.run_program('picard AddOrReplaceReadGroups', program_options)
+            self.run_program('picard AddOrReplaceReadGroups', program_options)
+
+        self.rename_extra_temp_output_file('.bai')
 
     def output(self):
         fn = 'raw_alignment_with_read_groups.bam'
@@ -289,6 +298,8 @@ class CallVariants(SampleTask):
             program_name += ' for_exomes' if bool(environ.get('EXOME')) else ''
             self.run_program(program_name, program_options)
 
+        self.rename_extra_temp_output_file('.idx')
+
     def output(self):
         fn = self.sample_path('raw_variants.gvcf')
         return luigi.LocalTarget(fn)
@@ -313,6 +324,8 @@ class CallTargets(SampleTask):
             program_name = 'gatk HaplotypeCaller target_sites'
             program_name += ' for_exomes' if bool(environ.get('EXOME')) else ''
             self.run_program(program_name, program_options)
+
+        self.rename_extra_temp_output_file('.idx')
 
     def output(self):
         fn = self.sample_path('raw_targets.vcf')
