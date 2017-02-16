@@ -10,21 +10,30 @@
  .##........##.....##.####.##.......
 
 Usage:
-    paip TASK [options]
+    paip TASK [--basedir BASEDIR] --samples SAMPLES
+    paip TASK --sample SAMPLE
     paip --tasks
     paip (-h | --help)
 
 Options:
-    --tasks                     List available tasks to run.
+    --tasks              List available tasks to run.
 
-    --sample SAMPLE       Sample ID that must match the name
-                          of a subdirectory of the current dir.
-                          Use it for tasks that operate on a
-                          *single sample*.
+    --sample SAMPLE      Sample ID that must match the name
+                         of a subdirectory of the current dir.
+                         Use it for tasks that operate on a
+                         *single sample*.
 
-    --base-dir BASE_DIR   Base directory for the run, parent
-                          of the 'data' directory with the
-                          fastq files.
+    --basedir BASEDIR    Base directory for the run; use for
+                         tasks that operate on the whole
+                         Cohort (default=current directory).
+
+    --samples SAMPLES    Samples to include in the Cohort.
+                         Pass --samples ALL to use all
+                         samples found in the --basedir, or
+                         pass a list of comma-separated
+                         names like S1,S2,S3 to limit
+                         the Cohort to those samples.
+                         Use for Cohort tasks.
 """
 
 import re

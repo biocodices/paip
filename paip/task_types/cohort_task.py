@@ -16,7 +16,7 @@ class CohortTask(BaseTask):
     For simplicity's sake, the code will assume the task is run from the
     parent dir of all samples subdirectories.
     """
-    basedir = luigi.Parameter()
+    basedir = luigi.Parameter(default='.')
     samples = luigi.Parameter()
 
     def __init__(self, **kwargs):
