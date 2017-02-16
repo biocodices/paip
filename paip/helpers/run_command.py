@@ -61,7 +61,7 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
 
 def add_to_log(section_name, content, file_handler):
     """Adds given *content* to the log under the *section_name*."""
-    separator = '-' * 10
+    separator = '—' * 10
     message = ('{sep} {title}\n\n{content}\n\n'
                .format(sep=separator, title=section_name, content=content))
     file_handler.write(message)
