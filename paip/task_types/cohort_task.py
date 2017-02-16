@@ -21,12 +21,19 @@ class CohortTask(BaseTask):
 
     def __init__(self, **kwargs):
         super(BaseTask, self).__init__(**kwargs)
-        self.basedir = abspath(expanduser(self.basedir))
-        self.samples = self._find_samples(self.samples, self.basedir)
-        if not self.samples:
+        self.dir = abspath(expanduser(self.basedir))
+        self.sample_list = self._find_samples(self.samples, self.dir)
+        if not self.sample_list:
             raise EmptyCohortException('No samples found in: {}'
-                                       .format(self.basedir))
+                                       .format(self.dir))
         self.cohort_name = self._define_cohort_name()
+
+    def cohort_path(self, filename):
+        """
+        Generate a path to the given *filename* under the cohort's directory,
+        using the cohort's name as a prefix.
+        """
+        return join(self.dir, '{}.{}'.format(self.cohort_name, filename))
 
     def log_path(self, log_name):
         """Generate a log_path from *log_name* and self.cohort_name."""
@@ -60,11 +67,11 @@ class CohortTask(BaseTask):
 
     def _define_cohort_name(self):
         """
-        Define the Cohort name from the self.basedir and the number of
-        self.samples.
+        Define the Cohort name from the self.dir and the number of
+        self.sample_list.
         """
-        return '{}__{}_Samples'.format(basename(self.basedir),
-                                       len(self.samples))
+        return '{}__{}_Samples'.format(basename(self.dir),
+                                       len(self.sample_list))
 
 
 class EmptyCohortException(Exception):
