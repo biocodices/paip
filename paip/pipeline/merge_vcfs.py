@@ -25,6 +25,8 @@ class MergeVcfs(CohortTask):
 
             self.run_program(program_name, program_options)
 
+        self.rename_extra_temp_output_file('.idx')
+
     def output(self):
         fn = 'target_sites.raw.vcf'
         return luigi.LocalTarget(self.cohort_path(fn))
