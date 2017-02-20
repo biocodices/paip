@@ -13,9 +13,19 @@ class MergeVcfs(CohortTask):
         return [CallTargets(sample) for sample in self.sample_list]
 
     def run(self):
-        pass
+        input_vcfs_params = ['--variant {}'.format(input_vcf.fn)
+                             for input_vcf in self.input()]
+
+        with self.output().temporary_path() as self.temp_output_path:
+            program_name = 'gatk CombineVariants target_sites'
+            program_options = {
+                'input_vcfs': ' '.join(input_vcfs_params),
+                'output_vcf': self.temp_output_path,
+            }
+
+            self.run_program(program_name, program_options)
 
     def output(self):
-        fn = 'target_sites.raw_genotypes.vcf'
+        fn = 'target_sites.raw.vcf'
         return luigi.LocalTarget(self.cohort_path(fn))
 

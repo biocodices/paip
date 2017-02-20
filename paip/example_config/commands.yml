@@ -168,3 +168,13 @@ snpsift dbSNP:
      {input_vcf}'
      # output goes to STDOUT
 
+gatk CombineVariants target_sites:
+    # The {input_vcfs} will be filled in the corresponding
+    # task with --variant <VCF path> for each sample VCF.
+    '{executable}
+     -T CombineVariants
+     -nt 8
+     -R {reference_genome}
+     {input_vcfs}
+     -o {output_vcf}'
+

@@ -29,6 +29,8 @@ class AnnotateWithDbSNP(CohortTask):
             with open(self.temp_output_path, 'wb') as f:
                 f.write(stdout)
 
+        self.rename_extra_temp_output_file('.idx')
+
     def output(self):
         fn = 'all_sites.raw_genotypes.dbsnp.vcf'
         return luigi.LocalTarget(self.cohort_path(fn))
