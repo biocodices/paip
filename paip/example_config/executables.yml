@@ -10,6 +10,7 @@ gatk PrintReads: *gatk
 gatk HaplotypeCaller variant_sites: *gatk
 gatk HaplotypeCaller target_sites: *gatk
 gatk GenotypeGVCFs: *gatk
+snpsift: java -jar /home/juan/software/snpEff_4/SnpSift.jar
 
 fastqc: /home/juan/software/FastQC/fastqc
 bedtools: /home/juan/software/bedtools2/bin/bedtools

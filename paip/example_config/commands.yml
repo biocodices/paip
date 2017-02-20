@@ -157,3 +157,14 @@ gatk GenotypeGVCFs:
      {input_gvcfs_param_string}
      -o {output_vcf}'
 
+snpsift dbSNP:
+    '{executable}
+     annotate
+     -v
+     -noAlt
+     -id
+     -sorted
+     {dbsnp_GRCh37}
+     {input_vcf}'
+     # output goes to STDOUT
+

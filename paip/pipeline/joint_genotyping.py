@@ -28,5 +28,6 @@ class JointGenotyping(CohortTask):
         self.rename_extra_temp_output_file('.idx')
 
     def output(self):
-        return luigi.LocalTarget(self.cohort_path('raw_genotypes.vcf'))
+        fn = 'all_sites.raw_genotypes.vcf'
+        return luigi.LocalTarget(self.cohort_path(fn))
 

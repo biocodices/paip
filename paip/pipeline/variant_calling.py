@@ -61,15 +61,21 @@ logger = logging.getLogger('paip')
 
 # We will assume that for each sample there's a subdirectory
 # with the sample's name and their files, prefixed with the
-# same name:
+# same name. Cohort files will be put in the root directory
+# of the cohort:
 #
-# Sample-X
-# |__ Sample-X.R1.fastq
-# |__ Sample-X.R2.fastq
+# Cohort-1
 # |
-# Sample-Y
-# |__ Sample-Y.R1.fastq
-# |__ Sample-Y.R2.fastq
+# |—— Sample-X
+# |   |—— Sample-X.R1.fastq
+# |   |—— Sample-X.R2.fastq
+# |
+# |—— Sample-Y
+# |   |—— Sample-Y.R1.fastq
+# |   |—— Sample-Y.R2.fastq
+# |
+# |—— raw_genotypes.vcf
+# |—— raw_genotypes.vcf.idx
 #
 
 
