@@ -11,7 +11,7 @@ class TrimAdapters(SampleTask):
     new fastq files.
     """
     def requires(self):
-        return CheckFastqs(self.sample)
+        return CheckFastqs(sample=self.sample)
 
     def run(self):
         options = {

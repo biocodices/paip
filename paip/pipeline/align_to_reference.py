@@ -13,7 +13,7 @@ class AlignToReference(SampleTask):
     Generates a .sam file with the raw alignments.
     """
     def requires(self):
-        return TrimAdapters(self.sample)
+        return TrimAdapters(sample=self.sample)
 
     def run(self):
         program_options = {

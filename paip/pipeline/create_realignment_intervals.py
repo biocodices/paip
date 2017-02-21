@@ -11,7 +11,7 @@ class CreateRealignmentIntervals(SampleTask):
     known human indels.
     """
     def requires(self):
-        return AddOrReplaceReadGroups(self.sample)
+        return AddOrReplaceReadGroups(sample=self.sample)
 
     def run(self):
 

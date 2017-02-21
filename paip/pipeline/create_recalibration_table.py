@@ -11,7 +11,7 @@ class CreateRecalibrationTable(SampleTask):
     of scores is needed because of the previous realignment.
     """
     def requires(self):
-        return RealignAroundIndels(self.sample)
+        return RealignAroundIndels(sample=self.sample)
 
     def run(self):
 

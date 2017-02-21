@@ -10,8 +10,8 @@ class RealignAroundIndels(SampleTask):
     in those intervals and produce a new BAM file with the fixed alignments.
     """
     def requires(self):
-        return [AddOrReplaceReadGroups(self.sample),
-                CreateRealignmentIntervals(self.sample)]
+        return [AddOrReplaceReadGroups(sample=self.sample),
+                CreateRealignmentIntervals(sample=self.sample)]
 
     def run(self):
 

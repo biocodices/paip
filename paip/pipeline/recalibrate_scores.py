@@ -11,8 +11,8 @@ class RecalibrateScores(SampleTask):
     base scores.
     """
     def requires(self):
-        return [RealignAroundIndels(self.sample),
-                CreateRecalibrationTable(self.sample)]
+        return [RealignAroundIndels(sample=self.sample),
+                CreateRecalibrationTable(sample=self.sample)]
 
     def run(self):
 

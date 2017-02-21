@@ -13,7 +13,7 @@ class CallVariants(SampleTask):
     panel_regions.
     """
     def requires(self):
-        return RecalibrateScores(self.sample)
+        return RecalibrateScores(sample=self.sample)
 
     def run(self):
 

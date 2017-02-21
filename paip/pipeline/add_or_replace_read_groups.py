@@ -11,7 +11,7 @@ class AddOrReplaceReadGroups(SampleTask):
     to each read. The result is written to a BAM file.
     """
     def requires(self):
-        return AlignToReference(self.sample)
+        return AlignToReference(sample=self.sample)
 
     def run(self):
         # This step assumes that the pipeline is run from the *parent*
