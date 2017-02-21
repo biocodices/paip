@@ -18,15 +18,29 @@ class CohortTask(BaseTask):
     """
     basedir = luigi.Parameter(default='.')
     samples = luigi.Parameter(default='ALL')
+    pipeline_type = luigi.Parameter(default='target_sites')
 
     def __init__(self, **kwargs):
         super(BaseTask, self).__init__(**kwargs)
         self.dir = abspath(expanduser(self.basedir))
         self.sample_list = self._find_samples(self.samples, self.dir)
+
         if not self.sample_list:
             raise EmptyCohortException('No samples found in: {}'
                                        .format(self.dir))
+
+        known_pipes = ['all_sites', 'variant_sites', 'target_sites']
+        if self.pipeline_type not in known_pipes:
+            raise ValueError('Unknown pipeline_type "{}". Known types are: {}'
+                             .format(self.pipeline_type,
+                                     ', '.join(known_pipes)))
+
         self.cohort_name = self._define_cohort_name()
+
+        # This is handy to initialize dependent Tasks with the same kwargs:
+        self.kwargs = {'basedir': self.basedir,
+                       'samples': self.samples,
+                       'pipeline_type': self.pipeline_type}
 
     def cohort_path(self, filename):
         """

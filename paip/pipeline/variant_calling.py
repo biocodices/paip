@@ -15,37 +15,38 @@ Usage:
     paip (-h | --help)
 
 Options:
-    --tasks              List available tasks to run.
+    --tasks                 List available tasks to run.
 
-    --sample SAMPLE      Sample ID that must match the name
-                         of a subdirectory of the current dir.
+    --sample SAMPLE         Sample ID that must match the name
+                            of a subdirectory of the current dir.
 
-                         Use for tasks that operate on a
-                         single sample.
+                            Use for tasks that operate on a
+                            single sample.
 
-    --basedir BASEDIR    Base directory for the run
-                         (default=current directory).
+    --basedir BASEDIR       Base directory for the run
+                            (default=current directory).
 
-                         Use for Cohort tasks.
+                            Use for Cohort tasks.
 
-    --samples SAMPLES    Samples to include in the Cohort
-                         (defaults to ALL samples found in
-                         the --basedir). Pass a list of
-                         comma-separated names like
-                         S1,S2,S3 to limit the Cohort to
-                         those samples.
+    --samples SAMPLES       Samples to include in the Cohort
+                            (defaults to ALL samples found in
+                            the --basedir). Pass a list of
+                            comma-separated names like
+                            S1,S2,S3 to limit the Cohort to
+                            those samples.
 
-                         Use for Cohort tasks.
+                            Use for Cohort tasks.
 
-    --workers WORKERS    Number of parallel tasks to run.
-                         Defaults to 1.
+    --pipeline-type TYPE    Pipeline type: 'variant_sites',
+                            'target_sites' or 'all_sites'.
+
+    --workers WORKERS       Number of parallel tasks to run.
+                            Defaults to 1.
 
 """
 
-import re
 import sys
 from docopt import docopt
-from os import environ
 from os.path import expanduser, join, dirname
 
 import luigi
@@ -77,7 +78,6 @@ logger = logging.getLogger('paip')
 # |—— raw_genotypes.vcf
 # |—— raw_genotypes.vcf.idx
 #
-
 
 
 #  class HardFiltering(luigi.Task):
@@ -138,12 +138,13 @@ def run_pipeline():
     set_luigi_logging()
 
     if arguments['--tasks']:
-        logger.info('\n'.join(list_classes(__file__)))
+        for task in list_tasks():
+            print(' * ' + task)
         sys.exit()
 
     logger.info('\n' + logo())
     logger.info('Welcome to {}! Starting the pipeline...'
-          .format(software_name))
+                .format(software_name))
 
     logger.info('Options in effect:')
     for k, v in arguments.items():
@@ -153,11 +154,10 @@ def run_pipeline():
     try:
         luigi.run()
     except luigi.task_register.TaskClassNotFoundException:
-        logger.info('No task with name "{}". '
-                    'Available tasks are:\n'
-                    .format(arguments['TASK']))
-        luigi_classes = list_classes(__file__)
-        logger.info('\n' + '\n'.join(luigi_classes) + '\n')
+        available_tasks = '\n'.join(list_tasks())
+        logger.info('No task with named "{}". '
+                    'Available tasks are:\n\n{}\n'
+                    .format(arguments['TASK'], available_tasks))
 
 
 def set_luigi_logging():
@@ -177,12 +177,11 @@ def set_luigi_logging():
     coloredlogs.install(level='INFO')
 
 
-def list_classes(filepath):
-    """Reads the filepath and returns the defined classes names."""
-    with open(filepath, 'r') as f:
-        tasks = [' * %s' % re.search('class (.+)\(', line).group(1)
-                 for line in f.readlines() if line.startswith('class')]
-    return tasks
+def list_tasks():
+    """List all luigi tasks available."""
+    import paip
+    return [name for name, obj in paip.pipeline.__dict__.items()
+            if isinstance(obj, luigi.task_register.Register)]
 
 
 def logo():

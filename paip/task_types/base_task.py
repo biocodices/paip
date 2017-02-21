@@ -1,5 +1,3 @@
-from os import rename
-
 import luigi
 
 from paip.helpers import (
@@ -32,17 +30,4 @@ class BaseTask(luigi.Task):
         logfile = self.log_path(self.__class__.__name__)
         command_result = run_command(command, logfile=logfile, **kwargs)
         return command_result
-
-    def rename_extra_temp_output_file(self, suffix):
-        """
-        In some tasks we use a self.temp_output_path as a temporary output
-        for the GATK running program. Luigi handles the renaming of the
-        temporary output file to the proper output file (self.output()).
-        However, GATK sometimes generates a second file with a *suffix* using
-        the temporary path as a base, and Luigi is not aware of this second
-        file that also needs renaming. We deal with that file in this method.
-        """
-        temp_filename = self.temp_output_path + suffix
-        intended_filename = self.output().fn + suffix
-        rename(temp_filename, intended_filename)
 

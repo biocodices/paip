@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import JointGenotyping
+from paip.pipeline import JointGenotyping, MergeVCFs
 
 
 class AnnotateWithDbSNP(CohortTask):
@@ -13,7 +13,9 @@ class AnnotateWithDbSNP(CohortTask):
     IDs of homREF sites.
     """
     def requires(self):
-        return JointGenotyping(basedir=self.basedir, samples=self.samples)
+        in_targets_pipeline = self.pipeline_type == 'target_sites'
+        dependency = MergeVCFs if in_targets_pipeline else JointGenotyping
+        return dependency(**self.kwargs)
 
     def run(self):
 

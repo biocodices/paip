@@ -40,10 +40,24 @@ def test_find_samples_fail(basedir):
                                  basedir=basedir)
 
 
-def test_init(cohort_task_all):
+def test_init(cohort_task_all, basedir):
     assert CohortTask(basedir='~', samples='ALL').dir == expanduser('~')
     assert CohortTask(basedir='~/..', samples='ALL').dir == '/home'
     assert cohort_task_all.sample_list == ['Sample1', 'Sample2', 'Sample3']
+
+    # Test default value for pipe type
+    assert cohort_task_all.pipeline_type == 'target_sites'
+
+    # Test init kwargs are stored
+    assert cohort_task_all.kwargs == {
+        'basedir': basedir,
+        'samples': 'ALL',
+        'pipeline_type': 'target_sites',
+    }
+
+    # Test it breaks on bad pipeline_type
+    with pytest.raises(ValueError):
+        CohortTask(basedir=basedir, samples='ALL', pipeline_type='unknown')
 
     with pytest.raises(EmptyCohortException):
         CohortTask(basedir=pytest.helpers.test_file('Cohort1/Sample1'),

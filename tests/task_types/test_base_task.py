@@ -50,22 +50,3 @@ def test_run_program(base_task, monkeypatch):
     # Test extra kwargs were passed to run_command
     assert args_received['extra_kwarg'] == 'foo'
 
-
-def test_rename_extra_temp_output_file(base_task, monkeypatch):
-    class FakeOutput:
-        def __init__(self):
-            self.fn = 'out_path'
-
-    rename_params = None
-
-    def fake_rename(src, dest):
-        nonlocal rename_params
-        rename_params = {'src': src, 'dest': dest}
-
-    monkeypatch.setattr(paip.task_types.base_task, 'rename', fake_rename)
-
-    base_task.output = lambda: FakeOutput()
-    base_task.temp_output_path = 'temp_path'
-    base_task.rename_extra_temp_output_file(suffix='.bar')
-    assert rename_params == {'src': 'temp_path.bar', 'dest': 'out_path.bar'}
-
