@@ -12,7 +12,7 @@ class CallTargets(SampleTask):
     of the variants specified in a panel_variants VCF.
     """
     def requires(self):
-        return RecalibrateScores(self.sample)
+        return RecalibrateScores(sample=self.sample)
 
     def run(self):
 
