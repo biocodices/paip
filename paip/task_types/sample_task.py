@@ -1,4 +1,4 @@
-from os.path import abspath, expanduser
+from os.path import abspath, expanduser, join
 import yaml
 
 import luigi
@@ -14,6 +14,10 @@ class SampleTask(BaseTask):
     """
     sample = luigi.Parameter()
 
+    def __init__(self, **kwargs):
+        super(BaseTask, self).__init__(**kwargs)
+        self.dir = abspath(self.sample)  # The dir is named after the sample
+
     def sample_path(self, filename):
         """
         Generate a path to the given *filename* under self.sample's
@@ -22,7 +26,7 @@ class SampleTask(BaseTask):
             > sample_path('foo.txt')  # => SampleX/SampleX.foo.txt
 
         """
-        return '{0}/{0}.{1}'.format(self.sample, filename)
+        return join(self.dir, '{0}.{1}'.format(self.sample, filename))
 
     def sample_paths(self, templates):
         return [self.sample_path(template) for template in templates]
