@@ -19,7 +19,7 @@ class AnnotateWithDbSNP(CohortTask):
 
     def run(self):
 
-        with self.output().temporary_path() as self.temp_output_path:
+        with self.output().temporary_path() as self.temp_vcf:
             program_name = 'snpsift dbSNP'
             program_options = {
                 'input_vcf': self.input().fn,
@@ -28,10 +28,10 @@ class AnnotateWithDbSNP(CohortTask):
             stdout, _ = self.run_program(program_name, program_options,
                                          log_stdout=False)
 
-            with open(self.temp_output_path, 'wb') as f:
+            with open(self.temp_vcf, 'wb') as f:
                 f.write(stdout)
 
-        self.rename_extra_temp_output_file('.idx')
+        self.rename_temp_idx()
 
     def output(self):
         fn = 'all_sites.raw_genotypes.dbsnp.vcf'
