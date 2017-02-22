@@ -31,9 +31,7 @@ class AnnotateWithDbSNP(CohortTask):
             with open(self.temp_vcf, 'wb') as f:
                 f.write(stdout)
 
-        self.rename_temp_idx()
-
     def output(self):
         fn = self.input().fn.replace('.vcf', '.dbsnp.vcf')
-        return luigi.LocalTarget(self.cohort_path(fn))
+        return luigi.LocalTarget(fn)
 
