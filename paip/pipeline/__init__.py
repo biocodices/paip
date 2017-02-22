@@ -11,4 +11,5 @@ from .call_targets import CallTargets
 from .joint_genotyping import JointGenotyping
 from .merge_vcfs import MergeVCFs
 from .annotate_with_dbsnp import AnnotateWithDbSNP
+from .select_snps import SelectSNPs
 

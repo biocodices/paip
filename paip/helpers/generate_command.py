@@ -16,10 +16,16 @@ def generate_command(program_name, options):
         taken from ~/.paip/executables.yml.
 
     """
+    # Use the first word of *program_name* to get the executable.
+    # The reason is that "gatk SelectVariants", "gatk PrintReads", etc.,
+    # should all use the same "gatk" executable. This also applies to
+    # the subcommands of picard, for instance.
+    executable = Config.executables(program_name.split(' ')[0])
+
     command_template = Config.commands(program_name)
     command_options = available_resources()
     command_options.update({
-        'executable': Config.executables(program_name)
+        'executable': executable
     })
     command_options.update(options)
     return command_template.format(**command_options)
