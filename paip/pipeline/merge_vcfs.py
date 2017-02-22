@@ -30,6 +30,6 @@ class MergeVCFs(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.cohort_path('.vcf')
+        fn = self.cohort_path('vcf')
         return luigi.LocalTarget(fn)
 

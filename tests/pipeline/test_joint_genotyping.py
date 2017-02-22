@@ -17,3 +17,4 @@ def test_requires(task):
 def test_output(task, test_cohort_path):
     expected = test_cohort_path('Cohort1__2_Samples.variant_sites.vcf')
     assert task.output().fn == expected
+
