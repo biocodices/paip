@@ -11,8 +11,7 @@ class SelectIndels(CohortTask):
     This step is needed to later apply SNP-specific filters to the
     resulting VCF.
     """
-    def requires(self):
-        return AnnotateWithDbSNP(**self.param_kwargs)
+    REQUIRES = AnnotateWithDbSNP
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:

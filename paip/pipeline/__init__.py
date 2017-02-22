@@ -13,4 +13,6 @@ from .merge_vcfs import MergeVCFs
 from .annotate_with_dbsnp import AnnotateWithDbSNP
 from .select_snps import SelectSNPs
 from .select_indels import SelectIndels
+from .filter_snps import FilterSNPs
+from .filter_indels import FilterIndels
 

@@ -18,7 +18,7 @@ class CohortTask(BaseTask):
     """
     basedir = luigi.Parameter(default='.')
     samples = luigi.Parameter(default='ALL')
-    pipeline_type = luigi.Parameter(default='target_sites')
+    pipeline_type = luigi.Parameter(default='variant_sites')
 
     def __init__(self, **kwargs):
         super(BaseTask, self).__init__(**kwargs)
