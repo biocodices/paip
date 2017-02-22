@@ -14,21 +14,24 @@ class JointGenotyping(CohortTask):
                 for sample in self.sample_list]
 
     def run(self):
+        # MakeGVCF outputs both a GVCF and a BAM (in that order).
+        # We use the GVCFs here:
+        input_gvcfs = [outputs[0] for outputs in self.input()]
         input_gvcfs_params = ['--variant {}'.format(input_gvcf.fn)
-                              for input_gvcf in self.input()]
+                              for input_gvcf in input_gvcfs]
 
-        with self.output().temporary_path() as self.temp_output_path:
+        with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk GenotypeGVCFs ' + self.pipeline_type
             program_options = {
                 'input_gvcfs': ' '.join(input_gvcfs_params),
-                'output_vcf': self.temp_output_path
+                'output_vcf': self.temp_vcf
             }
 
             self.run_program(program_name, program_options)
 
-        self.rename_extra_temp_output_file('.idx')
+        self.rename_temp_idx()
 
     def output(self):
         fn = self.cohort_path(self.pipeline_type + '.vcf')
-        return luigi.LocalTarget(self.cohort_path(fn))
+        return luigi.LocalTarget(fn)
 

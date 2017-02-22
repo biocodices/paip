@@ -15,16 +15,16 @@ class AnnotateWithDbSNP(CohortTask):
     def requires(self):
         in_targets_pipeline = self.pipeline_type == 'target_sites'
         dependency = MergeVCFs if in_targets_pipeline else JointGenotyping
-        return dependency(**self.kwargs)
+        return dependency(**self.param_kwargs)
 
     def run(self):
-
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'snpsift dbSNP'
             program_options = {
                 'input_vcf': self.input().fn,
             }
 
+            # Snpsift outputs the annotated VCF to STDOUT
             stdout, _ = self.run_program(program_name, program_options,
                                          log_stdout=False)
 
@@ -34,6 +34,6 @@ class AnnotateWithDbSNP(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = 'all_sites.raw_genotypes.dbsnp.vcf'
+        fn = self.input().fn.replace('.vcf', '.dbsnp.vcf')
         return luigi.LocalTarget(self.cohort_path(fn))
 

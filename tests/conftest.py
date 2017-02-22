@@ -19,3 +19,15 @@ def config_test_files(monkeypatch):
     monkeypatch.setattr(Config, 'BASE_DIR',
                         pytest.helpers.test_file('config_dir'))
 
+
+@pytest.fixture
+def basedir():
+    return pytest.helpers.test_file('Cohort1')
+
+
+@pytest.fixture
+def test_cohort_path(basedir):
+    def func(path):
+        return join(basedir, path)
+    return func
+

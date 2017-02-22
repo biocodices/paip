@@ -7,11 +7,6 @@ from paip.task_types.cohort_task import EmptyCohortException
 
 
 @pytest.fixture
-def basedir():
-    return pytest.helpers.test_file('Cohort1')
-
-
-@pytest.fixture
 def cohort_task_all(basedir):
     return CohortTask(basedir=basedir, samples='ALL')
 
@@ -49,7 +44,7 @@ def test_init(cohort_task_all, basedir):
     assert cohort_task_all.pipeline_type == 'target_sites'
 
     # Test init kwargs are stored
-    assert cohort_task_all.kwargs == {
+    assert cohort_task_all.param_kwargs == {
         'basedir': basedir,
         'samples': 'ALL',
         'pipeline_type': 'target_sites',

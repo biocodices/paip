@@ -17,7 +17,7 @@ class MergeVCFs(CohortTask):
                              for input_vcf in self.input()]
 
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk CombineVariants ' + self.pipeline_type
+            program_name = 'gatk CombineVariants'
             program_options = {
                 'input_vcfs': ' '.join(input_vcfs_params),
                 'output_vcf': self.temp_vcf,

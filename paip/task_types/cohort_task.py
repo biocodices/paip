@@ -37,11 +37,6 @@ class CohortTask(BaseTask):
 
         self.cohort_name = self._define_cohort_name()
 
-        # This is handy to initialize dependent Tasks with the same kwargs:
-        self.kwargs = {'basedir': self.basedir,
-                       'samples': self.samples,
-                       'pipeline_type': self.pipeline_type}
-
     def cohort_path(self, filename):
         """
         Generate a path to the given *filename* under the cohort's directory,
