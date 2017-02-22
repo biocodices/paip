@@ -24,7 +24,7 @@ class AlignToReference(SampleTask):
         # BWA writes the aligned reads to STDOUT, so we capture that:
         stdout, _ = self.run_program('bwa', program_options, log_stdout=False)
 
-        # And then we write that BWA output in the intended file:
+        # And then we write it to the output file:
         with open(self.output().fn, 'wb') as f:
             f.write(stdout)
 

@@ -14,14 +14,15 @@ class TrimAdapters(SampleTask):
         return CheckFastqs(sample=self.sample)
 
     def run(self):
-        options = {
+        program_name = 'fastq-mcf'
+        program_options = {
             'forward_reads': self.input()[0].fn,
             'reverse_reads': self.input()[1].fn,
             'forward_output': self.output()[0].fn,
             'reverse_output': self.output()[1].fn,
         }
 
-        self.run_program('fastq-mcf', options)
+        self.run_program(program_name, program_options)
 
     def output(self):
         trimmed_fastqs = self.sample_paths(['R1.trimmed_reads.fastq',

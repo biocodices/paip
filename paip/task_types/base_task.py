@@ -1,3 +1,5 @@
+from os import rename
+
 import luigi
 
 from paip.helpers import (
@@ -30,4 +32,45 @@ class BaseTask(luigi.Task):
         logfile = self.log_path(self.__class__.__name__)
         command_result = run_command(command, logfile=logfile, **kwargs)
         return command_result
+
+    def rename_temp_idx(self):
+        """
+        Some tasks generate a idx file alongside the vcf output, by
+        adding '.idx' to the vcf filename. We rename the temporary
+        idx file generated here. Assumes self.temp_vcf has been defined.
+        """
+        suffix = '.idx'
+        output_vcf = self._find_output('.vcf').fn
+        intended_filename = output_vcf + suffix
+        temp_filename = self.temp_vcf + suffix
+        rename(temp_filename, intended_filename)
+
+
+    def rename_temp_bai(self):
+        """
+        Some tasks generate a bai file alongside the bam output, by
+        adding '.bai' to the vcf filename. We rename the temporary
+        bai file generated here. Assumes self.temp_bam has been defined.
+        """
+        suffix = '.bai'
+        output_bam = self._find_output('.bam').fn
+        intended_filename = output_bam + suffix
+        temp_filename = self.temp_bam + suffix
+        rename(temp_filename, intended_filename)
+
+    def _find_output(self, substring):
+        """
+        Returns the first output that matches the given substring.
+        """
+        outfiles = self.output()
+
+        if not isinstance(outfiles, list):
+            outfiles = [outfiles]
+
+        for outfile in outfiles:
+            if substring in outfile.fn:
+                return outfile
+
+        raise ValueError('No output file found that matches "{}"'
+                         .format(substring))
 

@@ -19,7 +19,8 @@ class AddOrReplaceReadGroups(SampleTask):
         # be located:
         self.load_sample_data_from_yaml('sequencing_data.yml')
 
-        with self.output().temporary_path() as self.temp_output_path:
+        with self.output().temporary_path() as self.temp_bam:
+            program_name = 'picard AddOrReplaceReadGroups'
             program_options = {
                 'input_sam': self.input().fn,
                 'sample_id': self.id_in_sequencing,
@@ -27,12 +28,12 @@ class AddOrReplaceReadGroups(SampleTask):
                 'sequencing_id': self.sequencing_id,
                 'platform_unit': self.platform_unit,
                 'platform': self.platform,
-                'output_bam': self.temp_output_path,
+                'output_bam': self.temp_bam,
             }
 
-            self.run_program('picard AddOrReplaceReadGroups', program_options)
+            self.run_program(program_name, program_options)
 
-        self.rename_extra_temp_output_file('.bai')
+        self.rename_temp_bai()
 
     def output(self):
         fn = 'raw_alignment_with_read_groups.bam'

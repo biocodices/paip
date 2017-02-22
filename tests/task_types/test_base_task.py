@@ -1,4 +1,5 @@
 import pytest
+import luigi
 
 import paip.task_types
 
@@ -6,6 +7,15 @@ import paip.task_types
 @pytest.fixture
 def base_task():
     return paip.task_types.BaseTask()
+
+
+def fake_rename(src, dest):
+    # Fake function used to test the parameters that the
+    # actual rename function will receive.
+    if not hasattr(fake_rename, 'received_parameters'):
+        fake_rename.received_parameters = []
+
+    fake_rename.received_parameters.append({'src': src, 'dest': dest})
 
 
 def test_log_path(base_task):
@@ -49,4 +59,41 @@ def test_run_program(base_task, monkeypatch):
 
     # Test extra kwargs were passed to run_command
     assert args_received['extra_kwarg'] == 'foo'
+
+
+def test_find_output(base_task):
+    output_files = ['foo.bar', 'bar.baz', 'qux.baz']
+    output_files = [luigi.LocalTarget(fn) for fn in output_files]
+    base_task.output = lambda: output_files
+
+    assert base_task._find_output('baz').fn == 'bar.baz'
+
+    # Works with only one file in the output:
+    base_task.output = lambda: output_files[0]
+    assert base_task._find_output('bar').fn == 'foo.bar'
+
+    with pytest.raises(ValueError):
+        base_task._find_output('nonexistent')
+
+
+def test_rename_temp_bai(base_task, monkeypatch):
+    monkeypatch.setattr(paip.task_types.base_task, 'rename', fake_rename)
+
+    base_task.output = lambda: luigi.LocalTarget('out.bam')
+    base_task.temp_bam = 'temp.bam'
+    base_task.rename_temp_bai()
+
+    expected_parameters = {'src': 'temp.bam.bai', 'dest': 'out.bam.bai'}
+    assert expected_parameters in fake_rename.received_parameters
+
+
+def test_rename_temp_idx(base_task, monkeypatch):
+    monkeypatch.setattr(paip.task_types.base_task, 'rename', fake_rename)
+
+    base_task.output = lambda: luigi.LocalTarget('out.bam')
+    base_task.temp_bam = 'temp.bam'
+    base_task.rename_temp_bai()
+
+    expected_parameters = {'src': 'temp.bam.bai', 'dest': 'out.bam.bai'}
+    assert expected_parameters in fake_rename.received_parameters
 
