@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import SampleTask
 from paip.pipeline import CheckFastqs
 
@@ -10,8 +8,7 @@ class TrimAdapters(SampleTask):
     sample. Trims the adapters of those reads files and generates
     new fastq files.
     """
-    def requires(self):
-        return CheckFastqs(**self.param_kwargs)
+    REQUIRES = CheckFastqs
 
     def run(self):
         program_name = 'fastq-mcf'
@@ -24,8 +21,5 @@ class TrimAdapters(SampleTask):
 
         self.run_program(program_name, program_options)
 
-    def output(self):
-        trimmed_fastqs = self.sample_paths(['R1.trimmed_reads.fastq',
-                                            'R2.trimmed_reads.fastq'])
-        return [luigi.LocalTarget(fn) for fn in trimmed_fastqs]
+    OUTPUT = ['R1.trimmed_reads.fastq', 'R2.trimmed_reads.fastq']
 

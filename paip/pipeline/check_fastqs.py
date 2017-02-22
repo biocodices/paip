@@ -8,7 +8,5 @@ class CheckFastqs(luigi.ExternalTask, SampleTask):
     Expects fastq files with forward and reverse reads of the same
     sample.
     """
-    def output(self):
-        fastqs = self.sample_paths(['R1.fastq', 'R2.fastq'])
-        return [luigi.LocalTarget(fn) for fn in fastqs]
+    OUTPUT = ['R1.fastq', 'R2.fastq']
 

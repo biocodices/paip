@@ -11,6 +11,9 @@ class SampleTask(BaseTask):
     This class is meant as a subclass of luigi Tasks that deal with a single
     sample's files. It adds some utilities to generate paths for output files
     and for log files.
+
+    To use it, it's enough to define a subclass that defines a run() method,
+    and REQUIRES and OUTPUT class variables.
     """
     sample = luigi.Parameter()
     basedir = luigi.Parameter(default='.')
@@ -19,6 +22,25 @@ class SampleTask(BaseTask):
         super(BaseTask, self).__init__(**kwargs)
         self.basedir = abspath(expanduser(self.basedir))
         self.dir = join(self.basedir, self.sample)
+
+    def requires(self):
+        if isinstance(self.REQUIRES, list):
+            return [require(**self.param_kwargs) for require in self.REQUIRES]
+
+        return self.REQUIRES(**self.param_kwargs)
+
+    def output(self):
+        """
+        Take the filename in self.OUTPUT and return it as a path to that
+        file in the sample's dir, and wrapped as a luigi.LocalTarget.
+
+        If self.OUTPUT has a list of filenames, return a list too.
+        """
+        if isinstance(self.OUTPUT, list):
+            return [luigi.LocalTarget(self.sample_path(fn))
+                    for fn in self.OUTPUT]
+
+        return luigi.LocalTarget(self.sample_path(self.OUTPUT))
 
     def sample_path(self, filename):
         """

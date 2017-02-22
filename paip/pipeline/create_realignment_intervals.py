@@ -10,8 +10,7 @@ class CreateRealignmentIntervals(SampleTask):
     'intervals' file with the regions that should be realigned considering
     known human indels.
     """
-    def requires(self):
-        return AddOrReplaceReadGroups(sample=self.sample)
+    REQUIRES = AddOrReplaceReadGroups
 
     def run(self):
 
@@ -24,7 +23,5 @@ class CreateRealignmentIntervals(SampleTask):
 
             self.run_program(program_name, program_options)
 
-    def output(self):
-        filename = self.sample_path('realignment.intervals')
-        return luigi.LocalTarget(filename)
+    OUTPUT = 'realignment.intervals'
 
