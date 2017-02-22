@@ -248,3 +248,16 @@ gatk CombineVariants snps_indels:
      -l DEBUG
      -o {output_vcf}'
 
+gatk VariantFiltration genos:
+    # TODO: Make the expression more complex to deal with cases
+    # where one of the two fields is not defined for a genotype
+    # (GQ or RGQ)
+    '{executable}
+     -T VariantFiltration
+     -R {reference_genome}
+     -V {input_vcf}
+     --genotypeFilterName geno_filter
+     --genotypeFilterExpression "GQ < 30.0 && RGQ < 30.0"
+     -l DEBUG
+     -o {output_vcf}'
+
