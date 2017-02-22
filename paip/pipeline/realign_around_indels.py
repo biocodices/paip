@@ -15,16 +15,17 @@ class RealignAroundIndels(SampleTask):
 
     def run(self):
 
-        with self.output().temporary_path() as self.temp_output_path:
+        with self.output().temporary_path() as self.temp_bam:
+            program_name = 'gatk IndelRealigner'
             program_options = {
                 'input_bam': self.input()[0].fn,
                 'targets_file': self.input()[1].fn,
-                'output_bam': self.temp_output_path,
+                'output_bam': self.temp_bam,
             }
 
-            self.run_program('gatk IndelRealigner', program_options)
+            self.run_program(program_name, program_options)
 
-        self.rename_extra_temp_output_file('.bai')
+        self.rename_temp_bai()
 
     def output(self):
         filename = self.sample_path('realignment.bam')

@@ -15,10 +15,10 @@ class CreateRecalibrationTable(SampleTask):
 
     def run(self):
 
-        with self.output().temporary_path() as self.temp_output_path:
+        with self.output().temporary_path() as temp_out:
             program_options = {
                 'input_bam': self.input().fn,
-                'outfile': self.temp_output_path,
+                'outfile': temp_out,
             }
 
             self.run_program('gatk BaseRecalibrator', program_options)

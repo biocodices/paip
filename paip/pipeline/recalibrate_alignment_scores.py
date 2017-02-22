@@ -15,20 +15,18 @@ class RecalibrateAlignmentScores(SampleTask):
                 CreateRecalibrationTable(sample=self.sample)]
 
     def run(self):
-        temp_bam = self.output()[0].temporary_path
-        temp_bai = self.output()[1].temporary_path
-
-        with temp_bam() as self.temp_bam, temp_bai():
+        with self.output().temporary_path() as self.temp_bam:
             program_options = {
                 'input_bam': self.input()[0].fn,
                 'recalibration_table': self.input()[1].fn,
-                'output_bam': self.temp_output_path,
+                'output_bam': self.temp_bam,
             }
 
             self.run_program('gatk PrintReads', program_options)
 
+        self.rename_temp_bai()
+
     def output(self):
-        bam_fn = self.sample_path('realignment_recalibrated.bam')
-        bai_fn = bam_fn + '.bai'
-        return [luigi.LocalTarget(fn) for fn in [bam_fn, bai_fn]]
+        fn = self.sample_path('realignment_recalibrated.bam')
+        return luigi.LocalTarget(fn)
 
