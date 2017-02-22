@@ -4,7 +4,7 @@ from paip.task_types import CohortTask
 from paip.pipeline import AnnotateWithDbSNP
 
 
-class SelectSNPs(CohortTask):
+class SelectIndels(CohortTask):
     """
     Take a cohort VCF and produce a new VCF keeping only the SNPs.
 
@@ -16,7 +16,7 @@ class SelectSNPs(CohortTask):
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk SelectVariants snps'
+            program_name = 'gatk SelectVariants indels'
             program_options = {
                 'input_vcf': self.input().fn,
                 'output_vcf': self.temp_vcf,
@@ -27,6 +27,6 @@ class SelectSNPs(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.snps.vcf')
+        fn = self.input().fn.replace('.vcf', '.indels.vcf')
         return luigi.LocalTarget(fn)
 
