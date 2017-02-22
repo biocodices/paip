@@ -31,3 +31,23 @@ def test_cohort_path(test_cohort_basedir):
         return join(test_cohort_basedir, path)
     return func
 
+
+@pytest.fixture
+def test_sample_path(test_cohort_basedir):
+    def func(path):
+        return join(test_cohort_basedir, 'Sample1', path)
+    return func
+
+
+@pytest.fixture
+def test_sample_task_params(test_cohort_basedir):
+    return {'basedir': test_cohort_basedir,
+            'sample': 'Sample1'}
+
+
+@pytest.fixture
+def test_cohort_task_params(test_cohort_basedir):
+    return {'basedir': test_cohort_basedir,
+            'samples': 'Sample1,Sample2',
+            'pipeline_type': 'variant_sites'}
+

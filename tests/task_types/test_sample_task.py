@@ -6,8 +6,9 @@ import pytest
 
 
 @pytest.fixture
-def sample_task():
-    task = paip.task_types.SampleTask(sample='Sample1')
+def sample_task(test_cohort_basedir):
+    task = paip.task_types.SampleTask(basedir=test_cohort_basedir,
+                                      sample='Sample1')
     return task
 
 
@@ -30,7 +31,7 @@ def test_log_path(sample_task):
 
 
 def test_load_sample_data_from_yaml(sample_task):
-    seq_data_yaml = pytest.helpers.test_file('sequencing_data.yml')
+    seq_data_yaml = 'sequencing_data.yml'
     sample_task.load_sample_data_from_yaml(seq_data_yaml)
 
     assert sample_task.sequencing_id == 'Seq1'

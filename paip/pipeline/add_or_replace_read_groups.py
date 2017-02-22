@@ -11,12 +11,9 @@ class AddOrReplaceReadGroups(SampleTask):
     to each read. The result is written to a BAM file.
     """
     def requires(self):
-        return AlignToReference(sample=self.sample)
+        return AlignToReference(**self.param_kwargs)
 
     def run(self):
-        # This step assumes that the pipeline is run from the *parent*
-        # directory of the sample dir, where sequencing_data.yml will
-        # be located:
         self.load_sample_data_from_yaml('sequencing_data.yml')
 
         with self.output().temporary_path() as self.temp_bam:

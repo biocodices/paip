@@ -13,10 +13,12 @@ class SampleTask(BaseTask):
     and for log files.
     """
     sample = luigi.Parameter()
+    basedir = luigi.Parameter(default='.')
 
     def __init__(self, **kwargs):
         super(BaseTask, self).__init__(**kwargs)
-        self.dir = abspath(self.sample)  # The dir is named after the sample
+        self.basedir = abspath(expanduser(self.basedir))
+        self.dir = join(self.basedir, self.sample)
 
     def sample_path(self, filename):
         """
@@ -41,11 +43,11 @@ class SampleTask(BaseTask):
         """
         return self.sample_path('log.{}'.format(log_name))
 
-    def load_sample_data_from_yaml(self, yml_path):
+    def load_sample_data_from_yaml(self, yml_filename):
         """
-        Given a path to a YAML file, read every key under self.sample and
-        add it to self as a new attribute. For instance, if the YAML file
-        looks like this:
+        Given a filename of a YAML file, find it in the self.basedir,
+        read every key under self.sample and add it to self as a new
+        attribute. For instance, if the YAML file looks like this:
 
             S1:
                 library_id: Lib1
@@ -55,13 +57,13 @@ class SampleTask(BaseTask):
         This method will work this way:
 
             > sample_task.sample == 'S1'  # => True
-            > sample_task.load_sequencing_data_from_yaml('/path/to/data.yml')
+            > sample_task.load_sequencing_data_from_yaml('data.yml')
             > sample_task.library_id  # => 'Lib1'
             > sample_task.sequencing_id  # => 'Seq1'
             > sample_task.id_in_sequencing  # => 'Spl1'
 
         """
-        with open(abspath(expanduser(yml_path))) as f:
+        with open(join(self.basedir, yml_filename)) as f:
             data = yaml.load(f)
 
         data = data[self.sample]
