@@ -23,12 +23,6 @@ class SampleTask(BaseTask):
         self.basedir = abspath(expanduser(self.basedir))
         self.dir = join(self.basedir, self.sample)
 
-    def requires(self):
-        if isinstance(self.REQUIRES, list):
-            return [require(**self.param_kwargs) for require in self.REQUIRES]
-
-        return self.REQUIRES(**self.param_kwargs)
-
     def output(self):
         """
         Take the filename in self.OUTPUT and return it as a path to that

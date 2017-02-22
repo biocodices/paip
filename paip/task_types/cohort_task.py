@@ -40,13 +40,16 @@ class CohortTask(BaseTask):
     def cohort_path(self, filename):
         """
         Generate a path to the given *filename* under the cohort's directory,
-        using the cohort's name as a prefix.
+        using the cohort's name as a prefix and puting the pipeline_type
+        in the name.
         """
-        return join(self.dir, '{}.{}'.format(self.cohort_name, filename))
+        return join(self.dir, '{}.{}.{}'.format(self.cohort_name,
+                                                self.pipeline_type,
+                                                filename))
 
     def log_path(self, log_name):
-        """Generate a log_path from *log_name* and self.cohort_name."""
-        return '{}.log.{}'.format(self.cohort_name, log_name)
+        """Generate a cohort_path from *log_name*."""
+        return self.cohort_path('log.{}'.format(log_name))
 
     @staticmethod
     def _find_samples(samples, basedir):

@@ -1,6 +1,5 @@
 from os.path import isabs
 
-import luigi
 import pytest
 
 import paip.task_types
@@ -11,16 +10,6 @@ def sample_task(test_cohort_basedir):
     task = paip.task_types.SampleTask(basedir=test_cohort_basedir,
                                       sample='Sample1')
     return task
-
-
-@pytest.fixture
-def MockSampleTask():
-
-    class MockClass(luigi.Task):
-        basedir = luigi.Parameter()
-        sample = luigi.Parameter()
-
-    return MockClass
 
 
 def test_sample_path(sample_task):
@@ -52,28 +41,15 @@ def test_load_sample_data_from_yaml(sample_task):
     assert sample_task.platform_unit == 'PlatUnit'
 
 
-def test_requires(sample_task, MockSampleTask):
-    # As single element
-    sample_task.REQUIRES = MockSampleTask
-    assert sample_task.requires() == MockSampleTask(**sample_task.param_kwargs)
-
-    # As list
-    sample_task.REQUIRES = [MockSampleTask, MockSampleTask]
-    assert sample_task.requires() == [MockSampleTask(**sample_task.param_kwargs),
-                                      MockSampleTask(**sample_task.param_kwargs)]
-
-
 def test_output(sample_task, test_sample_path):
     # As single element
     sample_task.OUTPUT = 'foo.bar'
-    expected_output = luigi.LocalTarget(test_sample_path('Sample1.foo.bar'))
-    assert sample_task.output().fn == expected_output.fn
+    expected_output = test_sample_path('Sample1.foo.bar')
+    assert sample_task.output().fn == expected_output
 
     # As list
     sample_task.OUTPUT = ['foo.bar', 'foo.baz']
-    expected_outputs = [
-        luigi.LocalTarget(test_sample_path('Sample1.foo.bar')).fn,
-        luigi.LocalTarget(test_sample_path('Sample1.foo.baz')).fn
-    ]
+    expected_outputs = [test_sample_path('Sample1.foo.bar'),
+                        test_sample_path('Sample1.foo.baz')]
     assert [out.fn for out in sample_task.output()] == expected_outputs
 

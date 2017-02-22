@@ -9,6 +9,15 @@ def base_task():
     return paip.task_types.BaseTask()
 
 
+@pytest.fixture
+def MockTask():
+
+    class MockClass(paip.task_types.BaseTask):
+        param = luigi.Parameter()
+
+    return MockClass
+
+
 def fake_rename(src, dest):
     # Fake function used to test the parameters that the
     # actual rename function will receive.
@@ -96,4 +105,18 @@ def test_rename_temp_idx(base_task, monkeypatch):
 
     expected_parameters = {'src': 'temp.bam.bai', 'dest': 'out.bam.bai'}
     assert expected_parameters in fake_rename.received_parameters
+
+
+def test_requires(MockTask):
+    mock_task = MockTask(param='param-value')
+
+    # As single element
+    mock_task.REQUIRES = MockTask
+    assert mock_task.requires() == MockTask(**mock_task.param_kwargs)
+
+    # As list
+    mock_task.REQUIRES = [MockTask, MockTask]
+    assert mock_task.requires() == [MockTask(**mock_task.param_kwargs),
+                                    MockTask(**mock_task.param_kwargs)]
+
 

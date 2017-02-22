@@ -13,6 +13,17 @@ class BaseTask(luigi.Task):
     Base class for SampleTask and CohortTask, provides shared logic to
     run commands and rename temporary output files.
     """
+    def requires(self):
+        """
+        Take the class or classes in self.REQUIRES and initialize them
+        with this class parameters. Returns a single object or a list
+        according to what finds in self.REQUIRES.
+        """
+        if isinstance(self.REQUIRES, list):
+            return [require(**self.param_kwargs) for require in self.REQUIRES]
+
+        return self.REQUIRES(**self.param_kwargs)
+
     def log_path(self, log_name):
         """Generate the filepath for a log with the given *log_name*."""
         return 'log.{}'.format(log_name)

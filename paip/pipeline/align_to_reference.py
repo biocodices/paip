@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import SampleTask
 from paip.pipeline import TrimAdapters
 
@@ -12,8 +10,8 @@ class AlignToReference(SampleTask):
 
     Generates a .sam file with the raw alignments.
     """
-    def requires(self):
-        return TrimAdapters(**self.param_kwargs)
+    REQUIRES = TrimAdapters
+    OUTPUT = 'raw_alignment.sam'
 
     def run(self):
         program_options = {
@@ -27,8 +25,4 @@ class AlignToReference(SampleTask):
         # And then we write it to the output file:
         with open(self.output().fn, 'wb') as f:
             f.write(stdout)
-
-    def output(self):
-        target = self.sample_path('raw_alignment.sam')
-        return luigi.LocalTarget(target)
 

@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import SampleTask
 from paip.pipeline import AlignToReference
 
@@ -10,8 +8,8 @@ class AddOrReplaceReadGroups(SampleTask):
     working directory and runs a command that adds (or replaces) read groups
     to each read. The result is written to a BAM file.
     """
-    def requires(self):
-        return AlignToReference(**self.param_kwargs)
+    REQUIRES = AlignToReference
+    OUTPUT = 'raw_alignment_with_read_groups.bam'
 
     def run(self):
         self.load_sample_data_from_yaml('sequencing_data.yml')
@@ -31,8 +29,4 @@ class AddOrReplaceReadGroups(SampleTask):
             self.run_program(program_name, program_options)
 
         self.rename_temp_bai()
-
-    def output(self):
-        fn = 'raw_alignment_with_read_groups.bam'
-        return luigi.LocalTarget(self.sample_path(fn))
 

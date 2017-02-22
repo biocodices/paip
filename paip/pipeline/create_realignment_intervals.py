@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import SampleTask
 from paip.pipeline import AddOrReplaceReadGroups
 
@@ -11,6 +9,7 @@ class CreateRealignmentIntervals(SampleTask):
     known human indels.
     """
     REQUIRES = AddOrReplaceReadGroups
+    OUTPUT = 'realignment.intervals'
 
     def run(self):
 
@@ -22,6 +21,4 @@ class CreateRealignmentIntervals(SampleTask):
             }
 
             self.run_program(program_name, program_options)
-
-    OUTPUT = 'realignment.intervals'
 

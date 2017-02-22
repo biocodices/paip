@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import SampleTask
 from paip.pipeline import RecalibrateAlignmentScores
 
@@ -9,8 +7,8 @@ class CallTargets(SampleTask):
     Expects a BAM file. Runs GATK's HaplotypeCaller to call the genotypes
     of the variants specified in a panel_variants VCF.
     """
-    def requires(self):
-        return RecalibrateAlignmentScores(sample=self.sample)
+    REQUIRES = RecalibrateAlignmentScores
+    OUTPUT = ['vcf', 'hc_target_sites_realignment.bam']
 
     def run(self):
         temp_vcf = self._find_output('.vcf').temporary_path
@@ -29,9 +27,4 @@ class CallTargets(SampleTask):
 
         self.rename_temp_idx()
         self.rename_temp_bai()
-
-    def output(self):
-        vcf_fn = self.sample_path('vcf')
-        bam_fn = self.sample_path('target_sites_realignment.bam')
-        return [luigi.LocalTarget(fn) for fn in [vcf_fn, bam_fn]]
 

@@ -10,20 +10,18 @@ class JointGenotyping(CohortTask):
     Generates a multisample VCF.
     """
     def requires(self):
-        return [MakeGVCF(sample=sample, pipeline_type=self.pipeline_type)
-                for sample in self.sample_list]
+        return [MakeGVCF(sample=sample) for sample in self.sample_list]
 
     def run(self):
         # MakeGVCF outputs both a GVCF and a BAM (in that order).
         # We use the GVCFs here:
-        input_gvcfs = [outputs[0] for outputs in self.input()]
-        input_gvcfs_params = ['--variant {}'.format(input_gvcf.fn)
-                              for input_gvcf in input_gvcfs]
+        input_vcfs = ['--variant {}'.format(inputs[0].fn)
+                      for inputs in self.input()]
 
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk GenotypeGVCFs ' + self.pipeline_type
             program_options = {
-                'input_gvcfs': ' '.join(input_gvcfs_params),
+                'input_gvcfs': ' '.join(input_vcfs),
                 'output_vcf': self.temp_vcf
             }
 
@@ -32,6 +30,6 @@ class JointGenotyping(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.cohort_path(self.pipeline_type + '.vcf')
+        fn = self.cohort_path('vcf')
         return luigi.LocalTarget(fn)
 

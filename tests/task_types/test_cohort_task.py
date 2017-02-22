@@ -8,7 +8,9 @@ from paip.task_types.cohort_task import EmptyCohortException
 
 @pytest.fixture
 def cohort_task_all(test_cohort_basedir):
-    return CohortTask(basedir=test_cohort_basedir, samples='ALL')
+    return CohortTask(basedir=test_cohort_basedir,
+                      samples='ALL',
+                      pipeline_type='variant_sites')
 
 
 @pytest.fixture
@@ -40,13 +42,13 @@ def test_init(cohort_task_all, test_cohort_basedir):
     assert cohort_task_all.sample_list == ['Sample1', 'Sample2', 'Sample3']
 
     # Test default value for pipe type
-    assert cohort_task_all.pipeline_type == 'target_sites'
+    assert cohort_task_all.pipeline_type == 'variant_sites'
 
     # Test init kwargs are stored
     assert cohort_task_all.param_kwargs == {
         'basedir': test_cohort_basedir,
         'samples': 'ALL',
-        'pipeline_type': 'target_sites',
+        'pipeline_type': 'variant_sites',
     }
 
     # Test it breaks on bad pipeline_type
@@ -65,9 +67,11 @@ def test_define_cohort_name(cohort_task_all, cohort_task_2):
 
 
 def test_log_path(cohort_task_all):
-    assert cohort_task_all.log_path('foo') == 'Cohort1__3_Samples.log.foo'
+    expected_fn = 'Cohort1__3_Samples.variant_sites.log.foo'
+    assert cohort_task_all.log_path('foo').endswith(expected_fn)
 
 
 def test_cohort_path(cohort_task_all):
-    assert cohort_task_all.cohort_path('foo').endswith('Cohort1__3_Samples.foo')
+    expected_fn = 'Cohort1__3_Samples.variant_sites.foo'
+    assert cohort_task_all.cohort_path('foo').endswith(expected_fn)
 
