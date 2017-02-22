@@ -45,7 +45,6 @@ class BaseTask(luigi.Task):
         temp_filename = self.temp_vcf + suffix
         rename(temp_filename, intended_filename)
 
-
     def rename_temp_bai(self):
         """
         Some tasks generate a bai file alongside the bam output, by

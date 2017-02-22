@@ -7,35 +7,34 @@ from paip.task_types.cohort_task import EmptyCohortException
 
 
 @pytest.fixture
-def cohort_task_all(basedir):
-    return CohortTask(basedir=basedir, samples='ALL')
+def cohort_task_all(test_cohort_basedir):
+    return CohortTask(basedir=test_cohort_basedir, samples='ALL')
 
 
 @pytest.fixture
-def cohort_task_2(basedir):
-    return CohortTask(basedir=basedir, samples='Sample1,Sample2')
+def cohort_task_2(test_cohort_basedir):
+    return CohortTask(basedir=test_cohort_basedir, samples='Sample1,Sample2')
 
 
-def test_find_samples_ALL(basedir):
-    found_samples = CohortTask._find_samples(samples='ALL', basedir=basedir)
+def test_find_samples_ALL(test_cohort_basedir):
+    found_samples = CohortTask._find_samples(samples='ALL',
+                                             basedir=test_cohort_basedir)
     assert found_samples == ['Sample1', 'Sample2', 'Sample3']
 
 
-def test_find_samples_some(basedir):
-    basedir = pytest.helpers.test_file('Cohort1')
+def test_find_samples_some(test_cohort_basedir):
     found_samples = CohortTask._find_samples(samples='Sample1,Sample2',
-                                             basedir=basedir)
+                                             basedir=test_cohort_basedir)
     assert found_samples == ['Sample1', 'Sample2']
 
 
-def test_find_samples_fail(basedir):
-    basedir = pytest.helpers.test_file('Cohort1')
+def test_find_samples_fail(test_cohort_basedir):
     with pytest.raises(ValueError):
         CohortTask._find_samples(samples='Sample1,SampleNonExistent',
-                                 basedir=basedir)
+                                 basedir=test_cohort_basedir)
 
 
-def test_init(cohort_task_all, basedir):
+def test_init(cohort_task_all, test_cohort_basedir):
     assert CohortTask(basedir='~', samples='ALL').dir == expanduser('~')
     assert CohortTask(basedir='~/..', samples='ALL').dir == '/home'
     assert cohort_task_all.sample_list == ['Sample1', 'Sample2', 'Sample3']
@@ -45,14 +44,15 @@ def test_init(cohort_task_all, basedir):
 
     # Test init kwargs are stored
     assert cohort_task_all.param_kwargs == {
-        'basedir': basedir,
+        'basedir': test_cohort_basedir,
         'samples': 'ALL',
         'pipeline_type': 'target_sites',
     }
 
     # Test it breaks on bad pipeline_type
     with pytest.raises(ValueError):
-        CohortTask(basedir=basedir, samples='ALL', pipeline_type='unknown')
+        CohortTask(basedir=test_cohort_basedir, samples='ALL',
+                   pipeline_type='unknown')
 
     with pytest.raises(EmptyCohortException):
         CohortTask(basedir=pytest.helpers.test_file('Cohort1/Sample1'),

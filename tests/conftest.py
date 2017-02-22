@@ -21,13 +21,13 @@ def config_test_files(monkeypatch):
 
 
 @pytest.fixture
-def basedir():
+def test_cohort_basedir():
     return pytest.helpers.test_file('Cohort1')
 
 
 @pytest.fixture
-def test_cohort_path(basedir):
+def test_cohort_path(test_cohort_basedir):
     def func(path):
-        return join(basedir, path)
+        return join(test_cohort_basedir, path)
     return func
 

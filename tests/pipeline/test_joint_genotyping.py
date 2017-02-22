@@ -4,8 +4,8 @@ from paip.pipeline import JointGenotyping, MakeGVCF
 
 
 @pytest.fixture
-def task(basedir):
-    return JointGenotyping(basedir=basedir,
+def task(test_cohort_basedir):
+    return JointGenotyping(basedir=test_cohort_basedir,
                            samples='Sample1,Sample2',
                            pipeline_type='variant_sites')
 
