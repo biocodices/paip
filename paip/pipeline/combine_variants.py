@@ -1,14 +1,14 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import SelectSNPs, SelectIndels
+from paip.pipeline import FilterSNPs, FilterIndels
 
 
 class CombineVariants(CohortTask):
     """
     Takes a VCF of SNPs and a VCF of Indels, and merges them in a single VCF.
     """
-    REQUIRES = [SelectSNPs, SelectIndels]
+    REQUIRES = [FilterSNPs, FilterIndels]
 
     def run(self):
         input_snps = self.input()[0].fn
