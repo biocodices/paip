@@ -42,6 +42,7 @@ gatk RealignerTargetCreator:
      -known {indels_1000G}
      -known {indels_mills}
      -L {panel_regions}
+     -l DEBUG
      -o {outfile}'
 
 gatk IndelRealigner:
@@ -50,6 +51,7 @@ gatk IndelRealigner:
      -I {input_bam}
      -R {reference_genome}
      -targetIntervals {targets_file}
+     -l DEBUG
      -o {output_bam}'
 
 gatk BaseRecalibrator:
@@ -61,6 +63,7 @@ gatk BaseRecalibrator:
      -L {panel_regions}
      -knownSites {indels_1000G}
      -knownSites {indels_mills}
+     -l DEBUG
      -o {outfile}'
 
 gatk PrintReads:
@@ -70,6 +73,7 @@ gatk PrintReads:
      -I {input_bam}
      -BQSR {recalibration_table}
      -R {reference_genome}
+     -l DEBUG
      -o {output_bam}'
 
 # gatk HaplotypeCaller variant_sites for_exomes:
@@ -89,40 +93,33 @@ gatk PrintReads:
      # -R {reference_genome}
      # -D {dbsnp_GRCh37}
      # -nct 8
+     # -l DEBUG
      # -o {output_vcf}'
 
-gatk HaplotypeCaller gvcfs: &gatk_HC_gvcfs
+gatk HaplotypeCaller:
 
     # This step is the same for two pipelines:
     #
-    #  * "all_sites" pipeline
-    #  * "variant_sites" pipeline
+    #  - "all_sites"
+    #  - "variant_sites"
     #
-    #  But it differs in the "target_sites" pipeline.
+    #  The "target_sites" pipeline uses other settings.
 
     '{executable}
      -T HaplotypeCaller
      -I {input_bam}
      -gt_mode DISCOVERY
      -ERC GVCF
+     -variant_index_parameter 128000
+     -variant_index_type LINEAR
      -L {panel_regions}
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -o {output_gvcf}
-     -bamout {bamout}'
+     -l DEBUG
+     -bamout {output_bam}'
 
-    # These two options are often seen in the documentation, but I also found
-    # that they are only needed for GATK versions older than 3.4, so we are
-    # not including them:
-    #
-    # -variant_index_parameter 128000
-    # -variant_index_type LINEAR
-    #
     # The -nt and -nct options can't be used when asking for a -bamout
-
-gatk HaplotypeCaller all_sites: *gatk_HC_gvcfs
-
-gatk HaplotypeCaller variant_sites: *gatk_HC_gvcfs
 
 gatk HaplotypeCaller target_sites:
 
@@ -142,11 +139,12 @@ gatk HaplotypeCaller target_sites:
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -o {output_vcf}
+     -l DEBUG
      -bamout {output_bam}'
 
 gatk GenotypeGVCFs all_sites:
     # The {input_gvcfs} will be filled in the corresponding
-    # task with --variant <GVCF path> for each sample GVCF.
+    # task with -V <GVCF path> for each sample GVCF.
     '{executable}
      -T GenotypeGVCFs
      -allSites
@@ -155,6 +153,7 @@ gatk GenotypeGVCFs all_sites:
      -D {dbsnp_GRCh37}
      -nt 1
      {input_gvcfs}
+     -l DEBUG
      -o {output_vcf}'
 
 gatk GenotypeGVCFs variant_sites:
@@ -163,24 +162,26 @@ gatk GenotypeGVCFs variant_sites:
     # of the "all_sites" pipeline, is the missing -allSites parameter.
 
     # The {input_gvcfs} will be filled in the corresponding
-    # task with --variant <GVCF path> for each sample GVCF.
+    # task with -V <GVCF path> for each sample GVCF.
     '{executable}
      -T GenotypeGVCFs
      -L {panel_regions}
      -R {reference_genome}
      -D {dbsnp_GRCh37}
-     -nt 1
+     -nt 8
      {input_gvcfs}
+     -l DEBUG
      -o {output_vcf}'
 
-gatk CombineVariants target_sites:
+gatk CombineVariants:
     # The {input_vcfs} will be filled in the corresponding
-    # task with --variant <VCF path> for each sample VCF.
+    # task with -V <VCF path> for each sample VCF.
     '{executable}
      -T CombineVariants
-     -nt 1
+     -nt 8
      -R {reference_genome}
      {input_vcfs}
+     -l DEBUG
      -o {output_vcf}'
 
 snpsift dbSNP:
@@ -193,4 +194,57 @@ snpsift dbSNP:
      -sorted
      {dbsnp_GRCh37}
      {input_vcf}'
+
+gatk SelectVariants snps:
+    '{executable}
+     -T SelectVariants
+     -selectType SNP
+     -nt 8
+     -R {reference_genome}
+     -V {input_vcf}
+     -l DEBUG
+     -o {output_vcf}'
+
+gatk SelectVariants indels:
+    '{executable}
+     -T SelectVariants
+     -selectType INDEL
+     -nt 8
+     -R {reference_genome}
+     -V {input_vcf}
+     -l DEBUG
+     -o {output_vcf}'
+
+gatk VariantFiltration snps:
+    '{executable}
+     -T VariantFiltration
+     -R {reference_genome}
+     -V {input_vcf}
+     --filterName snps_filter
+     --filterExpression "QD < 2.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"
+     -l DEBUG
+     -o {output_vcf}'
+
+gatk VariantFiltration indels:
+    '{executable}
+     -T VariantFiltration
+     -R {reference_genome}
+     -V {input_vcf}
+     --filterName indels_filter
+     --filterExpression "QD < 2.0 || ReadPosRankSum < 20.0"
+     -l DEBUG
+     -o {output_vcf}'
+
+gatk CombineVariants snps_indels:
+    # The :snps and :indels with -priority option seems to be necessary
+    '{executable}
+     -T CombineVariants
+     -nt 8
+     -R {reference_genome}
+     -V:snps {input_snps}
+     -V:indels {input_indels}
+     -genotypeMergeOptions PRIORITIZE
+     -priority snps,indels
+     -l DEBUG
+     -o {output_vcf}'
 

@@ -1,20 +1,8 @@
 fastq-mcf: /home/juan/software/ea-utils.1.1.2-537/fastq-mcf
 bwa: /usr/bin/bwa
 picard: &picard java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
-picard AddOrReplaceReadGroups: *picard
 gatk: &gatk java -jar /home/juan/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.jar
-gatk RealignerTargetCreator: *gatk
-gatk IndelRealigner: *gatk
-gatk BaseRecalibrator: *gatk
-gatk PrintReads: *gatk
-gatk HaplotypeCaller gvcfs: *gatk
-gatk HaplotypeCaller variant_sites: *gatk
-gatk HaplotypeCaller all_sites: *gatk
-gatk HaplotypeCaller target_sites: *gatk
-gatk GenotypeGVCFs: *gatk
-snpsift: &snpsift java -jar /home/juan/software/snpEff_4/SnpSift.jar
-snpsift dbSNP: *snpsift
-gatk CombineVariants target_sites: *gatk
+snpsift: &snpsift java -jar /home/juan/software/snpEff/SnpSift.jar
 
 fastqc: /home/juan/software/FastQC/fastqc
 bedtools: /home/juan/software/bedtools2/bin/bedtools
