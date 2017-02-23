@@ -22,8 +22,8 @@ def test_run(task, test_cohort_path):
 
     assert result['program_name'] == 'snpeff annotate'
 
-    seen_input = result['program_options']['input_vcf']
-    assert seen_input == task.input().fn
+    program_input = result['program_options']['input_vcf']
+    assert program_input == task.input().fn
 
 
 def test_output(task, test_cohort_path):

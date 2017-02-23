@@ -23,18 +23,18 @@ def test_run(task, test_cohort_path, test_sample_path):
 
     assert result['program_name'] == 'gatk GenotypeGVCFs variant_sites'
 
-    seen_inputs = result['program_options']['input_gvcfs']
+    program_inputs = result['program_options']['input_gvcfs']
     expected_inputs = '-V {} -V {}'.format(*[i[0].fn for i in task.input()])
-    assert seen_inputs == expected_inputs
+    assert program_inputs == expected_inputs
 
-    seen_output = result['program_options']['output_vcf']
+    program_output = result['program_options']['output_vcf']
     expected_output = re.compile(r'vcf-luigi-tmp')
-    assert expected_output.search(seen_output)
+    assert expected_output.search(program_output)
 
     assert task.rename_temp_idx.was_called
     assert not task.rename_temp_bai.was_called
 
-    assert os.rename.args_received[0]['src'] == seen_output
+    assert os.rename.args_received[0]['src'] == program_output
     assert os.rename.args_received[0]['dest'] == task.output().fn
 
 

@@ -17,20 +17,20 @@ def test_run(task, test_cohort_path):
 
     assert result['program_name'] == 'gatk CombineVariants snps_indels'
 
-    seen_input_snps = result['program_options']['input_snps']
-    assert seen_input_snps == task.input()[0].fn
+    program_input_snps = result['program_options']['input_snps']
+    assert program_input_snps == task.input()[0].fn
 
-    seen_input_indels = result['program_options']['input_indels']
-    assert seen_input_indels == task.input()[1].fn
+    program_input_indels = result['program_options']['input_indels']
+    assert program_input_indels == task.input()[1].fn
 
-    seen_output = result['program_options']['output_vcf']
+    program_output = result['program_options']['output_vcf']
     expected_output = re.compile(r'filt.*luigi-tmp.*')
-    assert expected_output.search(seen_output)
+    assert expected_output.search(program_output)
 
     assert task.rename_temp_idx.was_called
     assert not task.rename_temp_bai.was_called
 
-    assert os.rename.args_received[0]['src'] == seen_output
+    assert os.rename.args_received[0]['src'] == program_output
     assert os.rename.args_received[0]['dest'] == task.output().fn
 
 

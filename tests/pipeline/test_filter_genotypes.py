@@ -22,17 +22,17 @@ def test_run(task, test_cohort_path):
 
     assert result['program_name'] == 'gatk VariantFiltration genos'
 
-    seen_input = result['program_options']['input_vcf']
-    assert seen_input == task.input().fn
+    program_input = result['program_options']['input_vcf']
+    assert program_input == task.input().fn
 
-    seen_output = result['program_options']['output_vcf']
+    program_output = result['program_options']['output_vcf']
     expected_output = re.compile(r'geno_filt.*luigi-tmp.*')
-    assert expected_output.search(seen_output)
+    assert expected_output.search(program_output)
 
     assert task.rename_temp_idx.was_called
     assert not task.rename_temp_bai.was_called
 
-    assert os.rename.args_received[0]['src'] == seen_output
+    assert os.rename.args_received[0]['src'] == program_output
     assert os.rename.args_received[0]['dest'] == task.output().fn
 
 

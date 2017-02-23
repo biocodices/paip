@@ -24,21 +24,35 @@ luigid --pidfile ~/.luigi/pidfile --state-path ~/.luigi/statefile --logdir ~/.lu
 
 Get these programs and install them:
 
-* [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/download.html)
+<!-- * [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/download.html) -->
 * [ea-utils](https://code.google.com/archive/p/ea-utils/downloads)
 * [GATk suite](https://www.broadinstitute.org/gatk/download/)
 * [Picard Tools](https://github.com/broadinstitute/picard/releases/tag/2.3.0)
-* [Samtools](https://sourceforge.net/projects/samtools/files/)
-* [Vcftools](http://vcftools.sourceforge.net/downloads.html)
-* [bcftools, tabix, htslib](http://www.htslib.org/download/)
-* [Bedtools](https://github.com/arq5x/bedtools2/releases)
+<!-- * [Samtools](https://sourceforge.net/projects/samtools/files/) -->
+<!-- * [Vcftools](http://vcftools.sourceforge.net/downloads.html) -->
+<!-- * [bcftools, tabix, htslib](http://www.htslib.org/download/) -->
+<!-- * [Bedtools](https://github.com/arq5x/bedtools2/releases) -->
 * [Variant Effect Predictor](http://www.ensembl.org/info/docs/tools/vep/script/vep_download.html)
     - Install with the INSTALL.pl script and download the cache for homo
       sapiens GRCh37.
 * [SnpEff](http://snpeff.sourceforge.net/)
 
 ```bash
-snpeff download GRCh37.70  # Or check the latest version
+# Here I use ~/paip_resources as the location of the pipeline resources
+mkdir -p ~/paip_resources/snpeff_data
+mkdir -p ~/paip_resources/vep_data
+
+# Download Snpeff human genome database:
+java -jar /path/to/snpeff.jar \
+    download GRCh37.70 \
+    -datadir ~/paip_resources/snpeff_data
+
+# Install VEP:
+/path/to/VEP/INSTALL.pl \
+    -c ~/paip_resources/vep_data \
+    -d ~/paip_resources/vep_data \
+    -s homo_sapiends_merged \
+    -y GRCh37
 ```
 
 You also need to download some resources from the web:
@@ -61,9 +75,10 @@ Unzip all the GATK bundle files with a `gunzip <filename>` command.
 
 Prepare the reference genome fasta for BWA and GATK use, as detailed [here](http://gatkforums.broadinstitute.org/gatk/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference). You need the software installed in the first step for this:
 ```bash
-bwa index -a bwtsw human_g1k_v37.fasta
-samtools faidx human_g1k_v37.fasta
-java -jar picard.jar CreateSequenceDictionary \
+/path/to/bwa index -a bwtsw human_g1k_v37.fasta
+/path/to/samtools faidx human_g1k_v37.fasta
+java -jar /path/to/picard.jar \
+    CreateSequenceDictionary \
     REFERENCE=human_g1k_v37.fasta \
     OUTPUT=human_g1k_v37.dict
 ```
@@ -85,7 +100,7 @@ Mine looks like this:
 ```yaml
 base_dir: /home/juan/paip_resources
 
-illumina_adapters_file: illumina_adapters.fasta
+illumina_adapters: illumina_adapters.fasta
 
 reference_genome_hg19: &reference_genome_default human_g1k_v37.fasta
 reference_genome: *reference_genome_default
@@ -98,28 +113,28 @@ indels_mills: Mills_and_1000G_gold_standard.indels.b37.vcf
 
 dbsnp_GRCh37: dbsnp_138.b37.vcf
 
-ENPv1_amplicons: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
+ENPv1_variants: &ENPv1_variants ENPv1_variants.vcf
+panel_variants: *ENPv1_variants
 
-panel_amplicons: *ENPv1_amplicons
-panel_design_vcf: ENPv1_markers.vcf
+ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
+panel_regions: *ENPv1_amplicons
+
+snpeff_datadir: snpeff_data
+vep_datadir: vep_data
 ```
 
 Create the settings file `~/.paip/executables.yml` with paths to every executable from the software you downloaded earlier. Avoid tildes (`~`), write whole paths. This is my file, for instance:
 
 ```yaml
-fastqc: /home/juan/software/FastQC/fastqc
 fastq-mcf: /home/juan/software/ea-utils.1.1.2-537/fastq-mcf
-bedtools: /home/juan/software/bedtools2/bin/bedtools
-samtools: /home/juansoftware/samtools-1.3/samtools
-GATK: java -jar /home/juan/software/GenomeAnalysisTK/GenomeAnalysisTK.jar
-vcftools: /usr/local/bin/vcftools
-bcftools: /usr/local/bin/bcftools
-vcf-subset: /usr/local/bin/vcf-subset
-picard-tools: java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
-bwa: /usr/bin/bwa mem
-bgzip: /usr/local/bin/bgzip
-SnpEff: java -jar /home/juan/software/snpEff/snpEff.jar
-VEP: /home/juan/software/ensembl-tools-release-84/scripts/variant_effect_predictor/variant_effect_predictor.pl
+bwa: /home/juan/software/bwa-0.7.15/bwa
+picard: picard java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
+gatk: gatk java -jar /home/juan/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.jar
+snpsift: java -jar /home/juan/software/snpEff_4.3i/SnpSift.jar
+snpeff: java -jar /home/juan/software/snpEff_4.3i/snpEff.jar
+vep: /home/juan/software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
+
+
 ```
 
 # Recipes

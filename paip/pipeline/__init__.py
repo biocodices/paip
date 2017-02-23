@@ -18,4 +18,5 @@ from .filter_indels import FilterIndels
 from .combine_variants import CombineVariants
 from .filter_genotypes import FilterGenotypes
 from .annotate_with_snpeff import AnnotateWithSnpeff
+from .annotate_with_vep import AnnotateWithVEP
 

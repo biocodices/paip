@@ -267,6 +267,7 @@ gatk VariantFiltration genos:
      -G_filter "DP < 50"
      -l DEBUG
      -o {output_vcf}'
+
     # I originally included this RGQ filter for the all_sites pipeline:
     #
     #   -G_filterName LowRGQ
@@ -278,4 +279,19 @@ gatk VariantFiltration genos:
     #
     # I'll leave them commented out until a solution for that issue
     # is found.
+
+snpeff annotate:
+    '{executable}
+    ann
+    GRCh37.75
+    -canon
+    -nodownload
+    -datadir {snpeff_datadir}
+    -v
+    {input_vcf}'
+
+    # I previously used hg19 as database (instead of GRCh37.75).
+    # They should be the same.
+    # -canon: Only use canonical transcripts.
+    # -interval ?
 

@@ -45,8 +45,8 @@ def test_run(variant_sites_task, test_cohort_path, monkeypatch):
     assert result['program_name'] == 'snpsift dbSNP'
     assert result['log_stdout'] is False
 
-    seen_input = result['program_options']['input_vcf']
-    assert seen_input == variant_sites_task.input().fn
+    program_input = result['program_options']['input_vcf']
+    assert program_input == variant_sites_task.input().fn
 
     assert not variant_sites_task.rename_temp_idx.was_called
     assert not variant_sites_task.rename_temp_bai.was_called

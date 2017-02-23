@@ -3,13 +3,13 @@ bwa: /usr/bin/bwa
 picard: &picard java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
 gatk: &gatk java -jar /home/juan/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.jar
 snpsift: &snpsift java -jar /home/juan/software/snpEff/SnpSift.jar
+snpeff: java -jar /home/juan/software/snpEff/snpEff.jar
+vep: /home/juan/software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
 
 fastqc: /home/juan/software/FastQC/fastqc
+
 bedtools: /home/juan/software/bedtools2/bin/bedtools
 samtools: /home/juansoftware/samtools-1.3/samtools
 vcftools: /usr/local/bin/vcftools
 bcftools: /usr/local/bin/bcftools
-vcf-subset: /usr/local/bin/vcf-subset
 bgzip: /usr/local/bin/bgzip
-SnpEff: java -jar /home/juan/software/snpEff/snpEff.jar
-VEP: /home/juan/software/ensembl-tools-release-84/scripts/variant_effect_predictor/variant_effect_predictor.pl
