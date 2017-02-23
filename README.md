@@ -37,6 +37,10 @@ Get these programs and install them:
       sapiens GRCh37.
 * [SnpEff](http://snpeff.sourceforge.net/)
 
+```bash
+snpeff download GRCh37.70  # Or check the latest version
+```
+
 You also need to download some resources from the web:
 
 Browse GATK bundle ftp servers to get the reference genome. For the GRCh37 version, I ran this command: `wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/2.8/b37/human_g1k_v37.fasta.gz`. **Warning**: the decompressed file will weight ~3Gb.

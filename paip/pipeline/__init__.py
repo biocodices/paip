@@ -17,4 +17,5 @@ from .filter_snps import FilterSNPs
 from .filter_indels import FilterIndels
 from .combine_variants import CombineVariants
 from .filter_genotypes import FilterGenotypes
+from .annotate_with_snpeff import AnnotateWithSnpeff
 

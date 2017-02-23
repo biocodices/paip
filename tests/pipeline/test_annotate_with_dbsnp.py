@@ -1,10 +1,5 @@
-import os
-import re
-from io import StringIO
-
 import pytest
 
-import paip
 from paip.pipeline import AnnotateWithDbSNP, MergeVCFs, JointGenotyping
 
 
@@ -52,9 +47,7 @@ def test_run(variant_sites_task, test_cohort_path, monkeypatch):
     assert result['log_stdout'] is False
 
     seen_input = result['program_options']['input_vcf']
-    expected_input_fn = 'Cohort1__2_Samples.variant_sites.vcf'
-    expected_input = test_cohort_path(expected_input_fn)
-    assert seen_input == expected_input
+    assert seen_input == variant_sites_task.input().fn
 
     assert not variant_sites_task.rename_temp_idx.was_called
     assert not variant_sites_task.rename_temp_bai.was_called

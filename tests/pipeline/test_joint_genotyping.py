@@ -24,13 +24,8 @@ def test_run(task, test_cohort_path, test_sample_path):
     assert result['program_name'] == 'gatk GenotypeGVCFs variant_sites'
 
     seen_inputs = result['program_options']['input_gvcfs']
-    expected_inputs = ['Sample1.g.vcf', 'Sample2.g.vcf']
-    expected_inputs = [
-        '-V ' + test_sample_path(expected_inputs[0]),
-        # FIXME: Ugly hack, this should be done better:
-        '-V ' + test_sample_path(expected_inputs[0]).replace('Sample1', 'Sample2'),
-    ]
-    assert seen_inputs == ' '.join(expected_inputs)
+    expected_inputs = '-V {} -V {}'.format(*[i[0].fn for i in task.input()])
+    assert seen_inputs == expected_inputs
 
     seen_output = result['program_options']['output_vcf']
     expected_output = re.compile(r'vcf-luigi-tmp')

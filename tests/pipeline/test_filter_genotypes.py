@@ -23,9 +23,7 @@ def test_run(task, test_cohort_path):
     assert result['program_name'] == 'gatk VariantFiltration genos'
 
     seen_input = result['program_options']['input_vcf']
-    expected_input_fn = 'Cohort1__2_Samples.variant_sites.filt.vcf'
-    expected_input = test_cohort_path(expected_input_fn)
-    assert seen_input == expected_input
+    assert seen_input == task.input().fn
 
     seen_output = result['program_options']['output_vcf']
     expected_output = re.compile(r'geno_filt.*luigi-tmp.*')

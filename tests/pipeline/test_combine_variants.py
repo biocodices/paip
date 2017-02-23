@@ -17,15 +17,11 @@ def test_run(task, test_cohort_path):
 
     assert result['program_name'] == 'gatk CombineVariants snps_indels'
 
-    seen_input_indels = result['program_options']['input_indels']
-    expected_input_indels = 'Cohort1__2_Samples.variant_sites.indels.filt.vcf'
-    expected_input_indels = test_cohort_path(expected_input_indels)
-    assert seen_input_indels == expected_input_indels
-
     seen_input_snps = result['program_options']['input_snps']
-    expected_input_snps = 'Cohort1__2_Samples.variant_sites.snps.filt.vcf'
-    expected_input_snps = test_cohort_path(expected_input_snps)
-    assert seen_input_snps == expected_input_snps
+    assert seen_input_snps == task.input()[0].fn
+
+    seen_input_indels = result['program_options']['input_indels']
+    assert seen_input_indels == task.input()[1].fn
 
     seen_output = result['program_options']['output_vcf']
     expected_output = re.compile(r'filt.*luigi-tmp.*')
