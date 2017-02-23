@@ -37,6 +37,5 @@ def test_run(task, test_cohort_path):
 
 
 def test_output(task, test_cohort_path):
-    fn = 'Cohort1__2_Samples.variant_sites.filt.geno_filt.vcf'
-    assert task.output().fn == test_cohort_path(fn)
+    assert task.output().fn.endswith('geno_filt.vcf')
 

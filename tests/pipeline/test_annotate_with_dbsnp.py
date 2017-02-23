@@ -27,8 +27,7 @@ def test_requires_variants_pipeline(variant_sites_task):
 
 
 def test_output(variant_sites_task, test_cohort_path):
-    expected = test_cohort_path('Cohort1__2_Samples.variant_sites.dbsnp.vcf')
-    assert variant_sites_task.output().fn == expected
+    assert variant_sites_task.output().fn.endswith('dbsnp.vcf')
 
 
 def test_run(variant_sites_task, test_cohort_path, monkeypatch):

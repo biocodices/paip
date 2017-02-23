@@ -32,7 +32,5 @@ def test_run(task, test_cohort_path):
 
 
 def test_output(task, test_cohort_path):
-    fn = 'Cohort1__2_Samples.variant_sites.snps.vcf'
-    expected_path = test_cohort_path(fn)
-    assert task.output().fn == expected_path
+    assert task.output().fn.endswith('snps.vcf')
 
