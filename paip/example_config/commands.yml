@@ -220,8 +220,14 @@ gatk VariantFiltration snps:
      -T VariantFiltration
      -R {reference_genome}
      -V {input_vcf}
-     --filterName snps_filter
-     --filterExpression "QD < 2.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"
+     --filterName QD
+     -filter "QD < 2.0"
+     --filterName MQ
+     -filter "MQ < 40.0"
+     --filterName MQRS
+     -filter "MQRankSum < -12.5"
+     --filterName RPRS
+     -filter "ReadPosRankSum < -8.0"
      -l DEBUG
      -o {output_vcf}'
 
@@ -230,13 +236,15 @@ gatk VariantFiltration indels:
      -T VariantFiltration
      -R {reference_genome}
      -V {input_vcf}
-     --filterName indels_filter
-     --filterExpression "QD < 2.0 || ReadPosRankSum < 20.0"
+     --filterName QD
+     -filter "QD < 2.0"
+     --filterName RPRS
+     -filter "ReadPosRankSum < 20.0"
      -l DEBUG
      -o {output_vcf}'
 
 gatk CombineVariants snps_indels:
-    # The :snps and :indels with -priority option seems to be necessary
+    # The :snps and :indels with -priority option are mandatory
     '{executable}
      -T CombineVariants
      -nt 8
@@ -249,15 +257,25 @@ gatk CombineVariants snps_indels:
      -o {output_vcf}'
 
 gatk VariantFiltration genos:
-    # TODO: Make the expression more complex to deal with cases
-    # where one of the two fields is not defined for a genotype
-    # (GQ or RGQ)
     '{executable}
      -T VariantFiltration
      -R {reference_genome}
      -V {input_vcf}
-     --genotypeFilterName geno_filter
-     --genotypeFilterExpression "GQ < 30.0 && RGQ < 30.0"
+     -G_filterName LowGQ
+     -G_filter "GQ < 30.0"
+     -G_filterName LowDP
+     -G_filter "DP < 50"
      -l DEBUG
      -o {output_vcf}'
+    # I originally included this RGQ filter for the all_sites pipeline:
+    #
+    #   -G_filterName LowRGQ
+    #   -G_filter "RGQ < 30.0"
+    #
+    # However, I found that no 0/0 sites with RGQ reached this step
+    # because the previous filter_snps/indels removes them (the 0/0
+    # sites are not tagged as either SNP nor INDEL).
+    #
+    # I'll leave them commented out until a solution for that issue
+    # is found.
 
