@@ -24,9 +24,27 @@ class BaseTask(luigi.Task):
 
         return self.REQUIRES(**self.param_kwargs)
 
+    def output(self):
+        """
+        Take the filename in self.OUTPUT and return it as a path to that
+        file in the sample's dir, and wrapped as a luigi.LocalTarget.
+
+        If self.OUTPUT has a list of filenames, return a list too.
+        """
+        if isinstance(self.OUTPUT, list):
+            return [luigi.LocalTarget(self.path(fn)) for fn in self.OUTPUT]
+
+        return luigi.LocalTarget(self.path(self.OUTPUT))
+
+    def path(self):
+        raise NotImplementedError
+
+    def paths(self, filenames):
+        return [self.path(filename) for filename in filenames]
+
     def log_path(self, log_name):
         """Generate the filepath for a log with the given *log_name*."""
-        return 'log.{}'.format(log_name)
+        return self.path('log.{}'.format(log_name))
 
     def run_program(self, program_name, program_options, **kwargs):
         """

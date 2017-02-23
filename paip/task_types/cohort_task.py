@@ -22,12 +22,12 @@ class CohortTask(BaseTask):
 
     def __init__(self, **kwargs):
         super(BaseTask, self).__init__(**kwargs)
-        self.dir = abspath(expanduser(self.basedir))
-        self.sample_list = self._find_samples(self.samples, self.dir)
+        self.basedir = abspath(expanduser(self.basedir))
+        self.sample_list = self._find_samples(self.samples, self.basedir)
 
         if not self.sample_list:
             raise EmptyCohortException('No samples found in: {}'
-                                       .format(self.dir))
+                                       .format(self.basedir))
 
         known_pipes = ['all_sites', 'variant_sites', 'target_sites']
         if self.pipeline_type not in known_pipes:
@@ -37,19 +37,19 @@ class CohortTask(BaseTask):
 
         self.cohort_name = self._define_cohort_name()
 
-    def cohort_path(self, filename):
+    def path(self, filename):
         """
         Generate a path to the given *filename* under the cohort's directory,
         using the cohort's name as a prefix and puting the pipeline_type
         in the name.
         """
-        return join(self.dir, '{}.{}.{}'.format(self.cohort_name,
-                                                self.pipeline_type,
-                                                filename))
+        return join(self.basedir, '{}.{}.{}'.format(self.cohort_name,
+                                                    self.pipeline_type,
+                                                    filename))
 
-    def log_path(self, log_name):
-        """Generate a cohort_path from *log_name*."""
-        return self.cohort_path('log.{}'.format(log_name))
+    def cohort_path(self, filename):
+        """Alias of self.path"""
+        return self.path(filename)
 
     @staticmethod
     def _find_samples(samples, basedir):
@@ -79,10 +79,10 @@ class CohortTask(BaseTask):
 
     def _define_cohort_name(self):
         """
-        Define the Cohort name from the self.dir and the number of
+        Define the Cohort name from the self.basedir and the number of
         self.sample_list.
         """
-        return '{}__{}_Samples'.format(basename(self.dir),
+        return '{}__{}_Samples'.format(basename(self.basedir),
                                        len(self.sample_list))
 
 

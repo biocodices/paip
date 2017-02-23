@@ -27,5 +27,5 @@ class CombineVariants(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        return luigi.LocalTarget(self.cohort_path('filtered.vcf'))
+        return luigi.LocalTarget(self.cohort_path('filt.vcf'))
 

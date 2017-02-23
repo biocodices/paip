@@ -23,20 +23,7 @@ class SampleTask(BaseTask):
         self.basedir = abspath(expanduser(self.basedir))
         self.dir = join(self.basedir, self.sample)
 
-    def output(self):
-        """
-        Take the filename in self.OUTPUT and return it as a path to that
-        file in the sample's dir, and wrapped as a luigi.LocalTarget.
-
-        If self.OUTPUT has a list of filenames, return a list too.
-        """
-        if isinstance(self.OUTPUT, list):
-            return [luigi.LocalTarget(self.sample_path(fn))
-                    for fn in self.OUTPUT]
-
-        return luigi.LocalTarget(self.sample_path(self.OUTPUT))
-
-    def sample_path(self, filename):
+    def path(self, filename):
         """
         Generate a path to the given *filename* under self.sample's
         directory, using self.sample as a prefix. Example:
@@ -46,18 +33,13 @@ class SampleTask(BaseTask):
         """
         return join(self.dir, '{0}.{1}'.format(self.sample, filename))
 
-    def sample_paths(self, templates):
-        return [self.sample_path(template) for template in templates]
+    def sample_path(self, filename):
+        """Alias of self.path"""
+        return self.path(filename)
 
-    def log_path(self, log_name):
-        """
-        Generate the filename for the logs with the passed name, adding
-        the dir and prefix of self.sample. Example:
-
-            > log_path('foo')  # => 'sample_X/sample_X.log.foo'
-
-        """
-        return self.sample_path('log.{}'.format(log_name))
+    def sample_paths(self, filenames):
+        """Alias of self.paths"""
+        return self.paths(filenames)
 
     def load_sample_data_from_yaml(self, yml_filename):
         """

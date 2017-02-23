@@ -26,6 +26,5 @@ class SelectIndels(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.indels.vcf')
-        return luigi.LocalTarget(fn)
+        return luigi.LocalTarget(self.cohort_path('indels.vcf'))
 

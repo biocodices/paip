@@ -10,7 +10,8 @@ class JointGenotyping(CohortTask):
     Generates a multisample VCF.
     """
     def requires(self):
-        return [MakeGVCF(sample=sample) for sample in self.sample_list]
+        return [MakeGVCF(sample=sample, basedir=self.basedir)
+                for sample in self.sample_list]
 
     def run(self):
         # MakeGVCF outputs both a GVCF and a BAM (in that order).

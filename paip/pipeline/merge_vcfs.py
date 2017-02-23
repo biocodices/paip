@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import CohortTask
 from paip.pipeline import CallTargets
 
@@ -9,8 +7,11 @@ class MergeVCFs(CohortTask):
     Take the single-sample VCF files from each sample in the target_sites
     pipeline and merge them into a multi-sample VCF.
     """
+    OUTPUT = 'vcf'
+
     def requires(self):
-        return [CallTargets(sample=sample) for sample in self.sample_list]
+        return [CallTargets(sample=sample, basedir=self.basedir)
+                for sample in self.sample_list]
 
     def run(self):
         # CallTargets outputs both a VCF and a BAM (in that order).
@@ -27,7 +28,4 @@ class MergeVCFs(CohortTask):
             self.run_program(program_name, program_options)
 
         self.rename_temp_idx()
-
-    def output(self):
-        return luigi.LocalTarget(self.cohort_path('vcf'))
 

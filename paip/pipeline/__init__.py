@@ -16,4 +16,5 @@ from .select_indels import SelectIndels
 from .filter_snps import FilterSNPs
 from .filter_indels import FilterIndels
 from .combine_variants import CombineVariants
+from .filter_genotypes import FilterGenotypes
 

@@ -4,7 +4,7 @@ from paip.task_types import CohortTask
 from paip.pipeline import CombineVariants
 
 
-class FilterSNPs(CohortTask):
+class FilterGenotypes(CohortTask):
     """
     Takes a VCF and applies filters to each genotype. Generates a new VCF.
     """
@@ -12,7 +12,7 @@ class FilterSNPs(CohortTask):
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk VariantFiltration snps'
+            program_name = 'gatk VariantFiltration genos'
             program_options = {
                 'input_vcf': self.input().fn,
                 'output_vcf': self.temp_vcf,
@@ -23,6 +23,6 @@ class FilterSNPs(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.geno_filtered.vcf')
+        fn = self.input().fn.replace('.vcf', '.geno_filt.vcf')
         return luigi.LocalTarget(fn)
 

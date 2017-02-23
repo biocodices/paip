@@ -37,8 +37,8 @@ def test_find_samples_fail(test_cohort_basedir):
 
 
 def test_init(cohort_task_all, test_cohort_basedir):
-    assert CohortTask(basedir='~', samples='ALL').dir == expanduser('~')
-    assert CohortTask(basedir='~/..', samples='ALL').dir == '/home'
+    assert CohortTask(basedir='~', samples='ALL').basedir == expanduser('~')
+    assert CohortTask(basedir='~/..', samples='ALL').basedir == '/home'
     assert cohort_task_all.sample_list == ['Sample1', 'Sample2', 'Sample3']
 
     # Test default value for pipe type

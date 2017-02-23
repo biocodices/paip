@@ -27,10 +27,6 @@ def fake_rename(src, dest):
     fake_rename.received_parameters.append({'src': src, 'dest': dest})
 
 
-def test_log_path(base_task):
-    assert base_task.log_path('foo') == 'log.foo'
-
-
 def test_run_program(base_task, monkeypatch):
     # run_program uses generate_command, but we test that method elsewhere
     # so we just mock it here:
@@ -49,10 +45,16 @@ def test_run_program(base_task, monkeypatch):
         arguments_received.update(**kwargs)
         return arguments_received
 
+    # task.path is implemented in child classes, so we mock it here:
+    def fake_path(filename):
+        return '/path/to/{}'.format(filename)
+
     monkeypatch.setattr(paip.task_types.base_task, 'generate_command',
                         fake_generate_command)
     monkeypatch.setattr(paip.task_types.base_task, 'run_command',
                         fake_run_command)
+    #  monkeypatch.setattr(paip.task_types.base_task, 'path', fake_path)
+    base_task.path = fake_path
 
     args_received = base_task.run_program(
         program_name='program',
@@ -64,7 +66,7 @@ def test_run_program(base_task, monkeypatch):
     assert args_received['command'] == 'program --foo bar'
 
     # Test the logfile was created from the class name of the Task
-    assert args_received['logfile'] == 'log.BaseTask'
+    assert args_received['logfile'] == '/path/to/log.BaseTask'
 
     # Test extra kwargs were passed to run_command
     assert args_received['extra_kwarg'] == 'foo'
