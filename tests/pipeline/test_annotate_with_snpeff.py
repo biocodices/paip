@@ -22,7 +22,11 @@ def test_run(task, test_cohort_path):
 
     assert result['program_name'] == 'snpeff annotate'
 
-    program_input = result['program_options']['input_vcf']
+    # Test the correct ending to snpeff summary is added:
+    program_options = result['program_options']
+    assert program_options['output_summary_csv'].endswith('snpEff.summary.csv')
+
+    program_input = program_options['input_vcf']
     assert program_input == task.input().fn
 
 

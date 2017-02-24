@@ -48,6 +48,7 @@ Options:
 import sys
 from docopt import docopt
 from os.path import expanduser, join, dirname
+from os import environ
 
 import luigi
 import logging
@@ -80,59 +81,6 @@ logger = logging.getLogger('paip')
 #
 
 
-#  class HardFiltering(luigi.Task):
-    #  base_dir = luigi.Parameter(default='.')
-    #  def requires(self):
-        #  return JointGenotyping(self.base_dir)
-    #  def run(self):
-        #  raw_vcf = self.requires().output().fn
-        #  VcfMunger().hard_filtering(raw_vcf, out_path=self.output().fn)
-    #  def output(self):
-        #  cohort = Cohort(self.base_dir)
-        #  return luigi.LocalTarget(cohort.file('filtered.vcf'))
-
-
-#  class GenotypeFiltering(luigi.Task):
-    #  base_dir = luigi.Parameter(default='.')
-    #  def requires(self):
-        #  return JointGenotyping(self.base_dir)
-    #  def run(self):
-        #  GATK().filter_genotypes(self.input().fn, out_path=self.outfile)
-    #  def output(self):
-        #  self.outfile = self.input().fn.replace('.vcf', '.geno.vcf')
-        #  return luigi.LocalTarget(self.outfile)
-
-
-#  class LimitRegions(luigi.Task):
-    #  base_dir = luigi.Parameter(default='.')
-    #  def requires(self):
-        #  return GenotypeFiltering(self.base_dir)
-    #  def run(self):
-        #  VcfMunger().limit_regions(self.input().fn, out_path=self.outfile)
-    #  def output(self):
-        #  self.outfile = self.input().fn.replace('.vcf', '.lim.vcf')
-        #  return luigi.LocalTarget(self.outfile)
-
-
-#  class SnpEffAnnotation(luigi.Task):
-    #  base_dir = luigi.Parameter(default='.')
-    #  def requires(self): return LimitRegions(self.base_dir)
-    #  def run(self):
-        #  VcfMunger().annotate_with_snpeff(self.input().fn, out_path=self.outfile)
-    #  def output(self):
-        #  self.outfile = self.input().fn.replace('.vcf', '.Eff.vcf')
-        #  return luigi.LocalTarget(self.outfile)
-
-
-#  class VEPAnnotation(luigi.Task):
-    #  base_dir = luigi.Parameter(default='.')
-    #  def requires(self): return SnpEffAnnotation(self.base_dir)
-    #  def run(self):
-        #  VcfMunger().annotate_with_VEP(self.input().fn, out_path=self.outfile)
-    #  def output(self):
-        #  self.outfile = self.input().fn.replace('.vcf', '.VEP.vcf')
-        #  return luigi.LocalTarget(self.outfile)
-
 def run_pipeline():
     arguments = docopt(__doc__, version=software_name)
     set_luigi_logging()
@@ -140,6 +88,7 @@ def run_pipeline():
     if arguments['--tasks']:
         for task in list_tasks():
             print(' * ' + task)
+
         sys.exit()
 
     logger.info('\n' + logo())
@@ -149,13 +98,13 @@ def run_pipeline():
     logger.info('Options in effect:')
     for k, v in arguments.items():
         if v:
-            logger.info(' {:<13} -> {:20} '.format(k, v))
+            logger.info(' {:<20} -> {:20} '.format(k, v))
 
     try:
         luigi.run()
     except luigi.task_register.TaskClassNotFoundException:
         available_tasks = '\n'.join(list_tasks())
-        logger.info('No task with named "{}". '
+        logger.info('No task found with name "{}". '
                     'Available tasks are:\n\n{}\n'
                     .format(arguments['TASK'], available_tasks))
 
@@ -164,17 +113,19 @@ def set_luigi_logging():
     config_file = join(dirname(dirname(__file__)), 'example_config',
                        'luigi_logging.conf')
 
-    # For luigi's interface see:
+    # Docs for luigi interface:
     # http://luigi.readthedocs.io/en/stable/api/luigi.interface.html
     luigi.interface.setup_interface_logging(
         conf_file=expanduser(config_file)
     )
     # ^ Here I replace luigi's default logger config with a custom
-    # file. The details of that file are not relevant anyway,
-    # because the actual log config will come from coloredlogs below:
+    # file. The details of that file are not relevant really,
+    # because the actual log config will come from coloredlogs below.
+    # But stepping over luigi's logger config like that is necessary
+    # because otherwise I get duplicated logging output.
     log_format = '[%(asctime)s] @%(hostname)s %(message)s'
     coloredlogs.DEFAULT_LOG_FORMAT = log_format
-    coloredlogs.install(level='INFO')
+    coloredlogs.install(level=environ.get('LOG_LEVEL') or 'INFO')
 
 
 def list_tasks():

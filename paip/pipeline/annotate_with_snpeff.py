@@ -15,6 +15,7 @@ class AnnotateWithSnpeff(CohortTask):
             program_name = 'snpeff annotate'
             program_options = {
                 'input_vcf': self.input().fn,
+                'output_summary_csv': self.cohort_path('snpEff.summary.csv'),
             }
 
             # Snpeff outputs the annotated VCF to STDOUT

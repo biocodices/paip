@@ -1,3 +1,21 @@
+#
+#
+#
+#
+#
+#
+#    Warning!
+#    This file was used by the old version of paip.
+#    It hasn't been deleted yet only because we still might need to check
+#    some parameters in it. But it's not used in the pipeline at all.
+#
+#
+#
+#
+#
+#
+#
+
 cores: &cores 8
 
 fastqc:
@@ -146,7 +164,7 @@ GATK:
         # genotypeFilterName: genotypeFilterExpression
         # Each filter will be applied as a different pair of parameters
         genotype:
-            LowGQ: 'isHomRef == 0 && GQ < 30.0' 
+            LowGQ: 'isHomRef == 0 && GQ < 30.0'
             LowRGQ: 'isHomRef == 1 && RGQ < 30.0'
             LowDP: 'DP < 50'
 
