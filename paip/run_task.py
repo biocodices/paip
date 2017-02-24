@@ -56,6 +56,7 @@ import coloredlogs
 
 from paip import software_name
 from paip.pipeline import *
+from paip.quality_control import *
 
 
 logger = logging.getLogger('paip')
@@ -81,7 +82,7 @@ logger = logging.getLogger('paip')
 #
 
 
-def run_pipeline():
+def run_task():
     arguments = docopt(__doc__, version=software_name)
     set_luigi_logging()
 
@@ -110,8 +111,8 @@ def run_pipeline():
 
 
 def set_luigi_logging():
-    config_file = join(dirname(dirname(__file__)), 'example_config',
-                       'luigi_logging.conf')
+    basedir = dirname(__file__)
+    config_file = join(basedir, 'example_config', 'luigi_logging.conf')
 
     # Docs for luigi interface:
     # http://luigi.readthedocs.io/en/stable/api/luigi.interface.html
@@ -131,7 +132,9 @@ def set_luigi_logging():
 def list_tasks():
     """List all luigi tasks available."""
     import paip
-    return [name for name, obj in paip.pipeline.__dict__.items()
+    items = (list(paip.pipeline.__dict__.items()) +
+             list(paip.quality_control.__dict__.items()))
+    return [name for name, obj in items
             if isinstance(obj, luigi.task_register.Register)]
 
 
@@ -149,4 +152,4 @@ def logo():
 """
 
 if __name__ == '__main__':
-    run_pipeline()
+    run_task()

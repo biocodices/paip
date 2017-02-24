@@ -25,7 +25,6 @@ def test_run(task, test_cohort_path):
     assert expected_output.search(program_output)
 
     assert task.rename_temp_idx.was_called
-    assert not task.rename_temp_bai.was_called
 
     assert os.rename.args_received[0]['src'] == program_output
     assert os.rename.args_received[0]['dest'] == task.output().fn

@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipeline import CallTargets, CallVariants
+from paip.pipeline import CallTargets, MakeGVCF
 
 
 class CallGenotypes(SampleTask):
@@ -8,5 +8,5 @@ class CallGenotypes(SampleTask):
     """
     def requires(self):
         yield CallTargets(self.sample)
-        yield CallVariants(self.sample)
+        yield MakeGVCF(self.sample)
 

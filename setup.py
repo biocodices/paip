@@ -27,7 +27,7 @@ setup(name=software_name,
       packages=find_packages(),
       entry_points={
           'console_scripts': [
-            'paip = paip.pipeline.variant_calling:run_pipeline'
+            'paip = paip.run_task:run_task'
           ]
       },
       zip_safe=False)

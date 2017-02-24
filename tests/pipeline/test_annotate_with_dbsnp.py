@@ -48,6 +48,3 @@ def test_run(variant_sites_task, test_cohort_path, monkeypatch):
     program_input = result['program_options']['input_vcf']
     assert program_input == variant_sites_task.input().fn
 
-    assert not variant_sites_task.rename_temp_idx.was_called
-    assert not variant_sites_task.rename_temp_bai.was_called
-
