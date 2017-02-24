@@ -36,5 +36,5 @@ def test_run(task):
 
 
 def test_output(task):
-    assert task.output().fn.endswith(task.sample + '.with_filters.vcf')
+    assert task.output().fn.endswith('.with_filters.vcf')
 

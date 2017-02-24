@@ -74,3 +74,15 @@ def test_cohort_path(cohort_task_all):
     expected_fn = 'Cohort1__3_Samples.variant_sites.foo'
     assert cohort_task_all.cohort_path('foo').endswith(expected_fn)
 
+
+def test_sample_path(cohort_task_all):
+    result = cohort_task_all.sample_path('foo', 'Sample1')
+    assert result.endswith('Sample1/Sample1.{}.foo'
+                           .format(cohort_task_all.pipeline_type))
+
+    # Test it uses self.sample if no sample is provided
+    cohort_task_all.sample = 'Sample2'
+    result = cohort_task_all.sample_path('foo')
+    assert result.endswith('Sample2/Sample2.{}.foo'
+                           .format(cohort_task_all.pipeline_type))
+

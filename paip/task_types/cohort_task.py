@@ -49,6 +49,19 @@ class CohortTask(BaseTask):
         """Alias of self.path"""
         return self.path(filename)
 
+    def sample_path(self, filename, sample=None):
+        """
+        Generate a path to the given *filename* under the given *sample*'s
+        directory and with the sample's name as prefix.
+
+        If no *sample* is passed, use the value of self.sample
+        """
+        if sample is None:
+            sample = self.sample
+
+        fn = '{0}/{0}.{1}.{2}'.format(sample, self.pipeline_type, filename)
+        return join(self.basedir, fn)
+
     @staticmethod
     def _find_samples(samples, basedir):
         """

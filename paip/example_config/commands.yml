@@ -333,7 +333,23 @@ gatk SelectVariants sample:
      -nt 1
      -R {reference_genome}
      -V {input_vcf}
-     -sn {sample}
+     --sample_name {sample}
      -l DEBUG
      -o {output_vcf}'
+
+
+gatk SelectVariants reportable:
+    "{executable}
+     -T SelectVariants
+     -nt 1
+     -R {reference_genome}
+     -V {input_vcf}
+     --excludeFiltered
+     -select 'vc.getGenotype(\"{sample}\").getGQ() > {min_GQ} && vc.getGenotype(\"{sample}\").getDP() > {min_DP}'
+     -l DEBUG
+     -o {output_vcf}"
+
+     # This step will remove any variants that didn't pass one or more tests
+     # and where the genotypes are under the GQ and DP pipeline-defined
+     # thresholds. It operates on the VCF of a single sample.
 
