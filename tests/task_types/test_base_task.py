@@ -5,8 +5,8 @@ import paip.task_types
 
 
 @pytest.fixture
-def base_task():
-    return paip.task_types.BaseTask()
+def base_task(test_cohort_basedir):
+    return paip.task_types.BaseTask(basedir=test_cohort_basedir)
 
 
 @pytest.fixture
@@ -25,6 +25,16 @@ def fake_rename(src, dest):
         fake_rename.received_parameters = []
 
     fake_rename.received_parameters.append({'src': src, 'dest': dest})
+
+
+def test_load_sample_data_from_yaml(base_task):
+    # By default, sequencing_data.yml is read
+    for key in ['Sample1', 'Sample2', 'Sample3']:
+        assert key in base_task.sequencing_data
+
+    # But the method can take a filename as argument
+    other_data = base_task.load_sample_data_from_yaml('other_seq_data.yml')
+    assert other_data['foo'] == 'bar'
 
 
 def test_run_program(base_task, monkeypatch):
@@ -109,8 +119,9 @@ def test_rename_temp_idx(base_task, monkeypatch):
     assert expected_parameters in fake_rename.received_parameters
 
 
-def test_requires(MockTask):
-    mock_task = MockTask(param='param-value')
+def test_requires(MockTask, test_cohort_basedir):
+    mock_task = MockTask(param='param-value',
+                         basedir=test_cohort_basedir)
 
     # As single element
     mock_task.REQUIRES = MockTask

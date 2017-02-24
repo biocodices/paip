@@ -20,13 +20,12 @@ def test_run(task, test_cohort_path):
     assert program_input == task.input().fn
 
     program_output = result['program_options']['output_vcf']
-    expected_output = 'vep.vcf-luigi-tmp'
-    assert expected_output in program_output
+    assert 'luigi-tmp' in program_output
 
     assert os.rename.args_received[0]['src'] == program_output
     assert os.rename.args_received[0]['dest'] == task.output().fn
 
 
 def test_output(task, test_cohort_path):
-    assert task.output().fn.endswith('.vep.vcf')
+    assert task.output().fn.endswith('.vep.tsv')
 

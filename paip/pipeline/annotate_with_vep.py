@@ -21,6 +21,6 @@ class AnnotateWithVEP(CohortTask):
             self.run_program(program_name, program_options)
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.vep.vcf')
+        fn = self.cohort_path('vep.tsv')
         return luigi.LocalTarget(fn)
 

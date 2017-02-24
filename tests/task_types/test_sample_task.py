@@ -31,9 +31,6 @@ def test_log_path(sample_task):
 
 
 def test_load_sample_data_from_yaml(sample_task):
-    seq_data_yaml = 'sequencing_data.yml'
-    sample_task.load_sample_data_from_yaml(seq_data_yaml)
-
     assert sample_task.sequencing_id == 'Seq1'
     assert sample_task.library_id == 'Lib1'
     assert sample_task.id_in_sequencing == 'Spl1'

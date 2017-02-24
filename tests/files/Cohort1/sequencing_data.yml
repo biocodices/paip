@@ -4,4 +4,18 @@ Sample1:
   id_in_sequencing: Spl1
   library_id: Lib1
   sequencing_id: Seq1
-  
+
+Sample2:
+  platform: Plat
+  platform_unit: PlatUnit
+  id_in_sequencing: Spl2
+  library_id: Lib1
+  sequencing_id: Seq1
+
+Sample3:
+  platform: Plat
+  platform_unit: PlatUnit
+  id_in_sequencing: Spl3
+  library_id: Lib1
+  sequencing_id: Seq1
+

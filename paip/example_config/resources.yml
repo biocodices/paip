@@ -20,4 +20,5 @@ ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
 panel_regions: *ENPv1_amplicons
 
 snpeff_datadir: snpeff_data
+vep_datadir: vep_data
 

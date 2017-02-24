@@ -1,5 +1,3 @@
-from os.path import expanduser
-
 import pytest
 
 from paip.task_types import CohortTask
@@ -37,8 +35,6 @@ def test_find_samples_fail(test_cohort_basedir):
 
 
 def test_init(cohort_task_all, test_cohort_basedir):
-    assert CohortTask(basedir='~', samples='ALL').basedir == expanduser('~')
-    assert CohortTask(basedir='~/..', samples='ALL').basedir == '/home'
     assert cohort_task_all.sample_list == ['Sample1', 'Sample2', 'Sample3']
 
     # Test default value for pipe type
@@ -57,8 +53,11 @@ def test_init(cohort_task_all, test_cohort_basedir):
                    pipeline_type='unknown')
 
     with pytest.raises(EmptyCohortException):
-        CohortTask(basedir=pytest.helpers.test_file('Cohort1/Sample1'),
-                   samples='ALL')
+        CohortTask(basedir=pytest.helpers.test_file('EmptyCohort'))
+
+    # Won't find a sequencing_data.yml here:
+    with pytest.raises(IOError):
+        CohortTask(basedir=pytest.helpers.test_file('Cohort1/Sample1'))
 
 
 def test_define_cohort_name(cohort_task_all, cohort_task_2):

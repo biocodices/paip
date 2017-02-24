@@ -1,4 +1,6 @@
 from os import rename
+from os.path import join, expanduser, abspath
+import yaml
 
 import luigi
 
@@ -13,6 +15,13 @@ class BaseTask(luigi.Task):
     Base class for SampleTask and CohortTask, provides shared logic to
     run commands and rename temporary output files.
     """
+    basedir = luigi.Parameter(default='.')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.basedir = abspath(expanduser(self.basedir))
+        self.sequencing_data = self.load_sample_data_from_yaml()
+
     def requires(self):
         """
         Take the class or classes in self.REQUIRES and initialize them
@@ -31,6 +40,9 @@ class BaseTask(luigi.Task):
 
         If self.OUTPUT has a list of filenames, return a list too.
         """
+        if not hasattr(self, 'OUTPUT'):
+            return
+
         if isinstance(self.OUTPUT, list):
             return [luigi.LocalTarget(self.path(fn)) for fn in self.OUTPUT]
 
@@ -101,4 +113,42 @@ class BaseTask(luigi.Task):
 
         raise ValueError('No output file found that matches "{}"'
                          .format(substring))
+
+    def load_sample_data_from_yaml(self, yml_filename='sequencing_data.yml'):
+        """
+        Given a filename of a YAML file, find it in the self.basedir,
+        read every key under self.sample and add it to self as a new
+        attribute. For instance, if the YAML file looks like this:
+
+            S1:
+                library_id: Lib1
+                sequencing_id: Seq1
+                id_in_sequencing: Spl1
+
+        This method will work this way:
+
+            > sample_task.sample == 'S1'  # => True
+            > sample_task.load_sequencing_data_from_yaml('data.yml')
+            > sample_task.library_id  # => 'Lib1'
+            > sample_task.sequencing_id  # => 'Seq1'
+            > sample_task.id_in_sequencing  # => 'Spl1'
+
+        """
+        fp = join(self.basedir, yml_filename)
+
+        try:
+            with open(fp) as f:
+                data = yaml.load(f)
+        except IOError:
+            msg = ("I couldn't find this YAML file:\n\n{}\n\n"
+                   'Make sure you are in the base directory of the Cohort\n'
+                   'and create that file with info about the samples in this\n'
+                   'sequencing. The sample IDs should be first level keys\n'
+                   'and each sample must have these keys:\n\nSampleX:  \n'
+                   '  library_id: ...\n  sequencing_id: ...\n  '
+                   'id_in_sequencing: ...\n  platform: ...\n  '
+                   'platform_unit: ...\n')
+            raise IOError(msg.format(fp))
+
+        return data
 

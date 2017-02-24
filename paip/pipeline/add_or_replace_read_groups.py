@@ -12,8 +12,6 @@ class AddOrReplaceReadGroups(SampleTask):
     OUTPUT = 'raw_alignment_with_read_groups.bam'
 
     def run(self):
-        self.load_sample_data_from_yaml('sequencing_data.yml')
-
         with self.output().temporary_path() as self.temp_bam:
             program_name = 'picard AddOrReplaceReadGroups'
             program_options = {

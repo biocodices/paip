@@ -60,8 +60,8 @@ def cohort_task_factory(test_cohort_task_params, monkeypatch):
     with test parameters and mock run_program, rename_temp_bai,
     rename_temp_idx, and os.rename.
     """
-    def factory(klass):
-        task = klass(**test_cohort_task_params)
+    def factory(klass, extra_params={}):
+        task = klass(**test_cohort_task_params, **extra_params)
 
         def mock_run_program(program_name, program_options, **kwargs):
             mock_run_program.args_received = {

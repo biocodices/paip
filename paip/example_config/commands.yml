@@ -295,3 +295,45 @@ snpeff annotate:
     # -canon: Only use canonical transcripts.
     # -interval ?
 
+vep annotate:
+    # Options are described here:
+    # http://www.ensembl.org/info/docs/tools/vep/script/vep_options.html
+
+    '{executable}
+     --offline
+     --dir {vep_datadir}
+     --dir_cache {vep_datadir}
+     --dir_plugins {vep_datadir}
+     --species homo_sapiens
+     --assembly GRCh37
+     --fasta {reference_genome_hg19}
+     --force_overwrite
+     --format vcf
+     --tab
+     --everything
+     --merged
+     --html
+     --verbose
+     -i {input_vcf}
+     -o {output_vcf}'
+
+     # {vep_datadir} is specified in ~/.paip/resources.yml
+     #
+     # The --merged option is important since the local
+     # database for VEP is the 'homo_sapiens_merged' one.
+     #
+     # About the --tab option, I'd rather put this output
+     # in a clean tab-delimited file than stuffing the INFO
+     # field of the VCF with VEP's huge annotation (which
+     # makes the VCF unreadable).
+
+gatk SelectVariants sample:
+    '{executable}
+     -T SelectVariants
+     -nt 1
+     -R {reference_genome}
+     -V {input_vcf}
+     -sn {sample}
+     -l DEBUG
+     -o {output_vcf}'
+
