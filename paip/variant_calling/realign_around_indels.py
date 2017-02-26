@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import SampleTask
-from paip.pipeline import AddOrReplaceReadGroups, CreateRealignmentIntervals
+from paip.variant_calling import AddOrReplaceReadGroups, CreateRealignmentIntervals
 
 
 class RealignAroundIndels(SampleTask):

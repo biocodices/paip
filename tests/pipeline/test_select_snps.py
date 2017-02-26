@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from paip.pipeline import SelectSNPs
+from paip.variant_calling import SelectSNPs
 
 
 @pytest.fixture

@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from paip.pipeline import AnnotateWithVEP
+from paip.variant_calling import AnnotateWithVEP
 
 
 @pytest.fixture

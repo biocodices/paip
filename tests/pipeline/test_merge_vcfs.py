@@ -1,6 +1,6 @@
 import pytest
 
-from paip.pipeline import MergeVCFs, CallTargets
+from paip.variant_calling import MergeVCFs, CallTargets
 
 
 @pytest.fixture

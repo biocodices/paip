@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import SampleTask
-from paip.pipeline import RealignAroundIndels, CreateRecalibrationTable
+from paip.variant_calling import RealignAroundIndels, CreateRecalibrationTable
 
 
 class RecalibrateAlignmentScores(SampleTask):

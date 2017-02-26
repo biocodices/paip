@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipeline import TrimAdapters
+from paip.variant_calling import TrimAdapters
 
 
 class AlignToReference(SampleTask):

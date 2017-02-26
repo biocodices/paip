@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipeline import CheckFastqs
+from paip.variant_calling import CheckFastqs
 
 
 class TrimAdapters(SampleTask):

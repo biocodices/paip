@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import MakeGVCF
+from paip.variant_calling import MakeGVCF
 
 
 class JointGenotyping(CohortTask):

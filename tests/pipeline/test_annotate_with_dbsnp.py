@@ -1,6 +1,6 @@
 import pytest
 
-from paip.pipeline import AnnotateWithDbSNP, MergeVCFs, JointGenotyping
+from paip.variant_calling import AnnotateWithDbSNP, MergeVCFs, JointGenotyping
 
 
 @pytest.fixture

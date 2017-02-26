@@ -1,20 +1,18 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import SelectIndels
+from paip.variant_calling import CombineVariants
 
 
-class FilterIndels(CohortTask):
+class FilterGenotypes(CohortTask):
     """
-    Takes a VCF of Indels and applies GATK's Indel-filters on them.
-
-    Generates a new VCF.
+    Takes a VCF and applies filters to each genotype. Generates a new VCF.
     """
-    REQUIRES = SelectIndels
+    REQUIRES = CombineVariants
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk VariantFiltration indels'
+            program_name = 'gatk VariantFiltration genos'
             program_options = {
                 'input_vcf': self.input().fn,
                 'output_vcf': self.temp_vcf,
@@ -25,7 +23,6 @@ class FilterIndels(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.filt.vcf')
+        fn = self.input().fn.replace('.vcf', '.geno_filt.vcf')
         return luigi.LocalTarget(fn)
-
 

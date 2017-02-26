@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipeline import CallTargets, MakeGVCF
+from paip.variant_calling import CallTargets, MakeGVCF
 
 
 class CallGenotypes(SampleTask):

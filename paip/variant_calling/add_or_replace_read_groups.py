@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipeline import AlignToReference
+from paip.variant_calling import AlignToReference
 
 
 class AddOrReplaceReadGroups(SampleTask):

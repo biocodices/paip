@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from paip.pipeline import FilterIndels
+from paip.variant_calling import FilterIndels
 
 
 @pytest.fixture

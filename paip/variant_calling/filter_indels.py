@@ -1,21 +1,20 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import AnnotateWithDbSNP
+from paip.variant_calling import SelectIndels
 
 
-class SelectSNPs(CohortTask):
+class FilterIndels(CohortTask):
     """
-    Take a cohort VCF and produce a new VCF keeping only the SNPs.
+    Takes a VCF of Indels and applies GATK's Indel-filters on them.
 
-    This step is needed to later apply SNP-specific filters to the
-    resulting VCF.
+    Generates a new VCF.
     """
-    REQUIRES = AnnotateWithDbSNP
+    REQUIRES = SelectIndels
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk SelectVariants snps'
+            program_name = 'gatk VariantFiltration indels'
             program_options = {
                 'input_vcf': self.input().fn,
                 'output_vcf': self.temp_vcf,
@@ -26,5 +25,7 @@ class SelectSNPs(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        return luigi.LocalTarget(self.cohort_path('snps.vcf'))
+        fn = self.input().fn.replace('.vcf', '.filt.vcf')
+        return luigi.LocalTarget(fn)
+
 

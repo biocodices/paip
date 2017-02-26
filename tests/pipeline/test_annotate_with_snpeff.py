@@ -1,6 +1,6 @@
 import pytest
 
-from paip.pipeline import AnnotateWithSnpeff
+from paip.variant_calling import AnnotateWithSnpeff
 
 
 @pytest.fixture

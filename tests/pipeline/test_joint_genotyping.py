@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from paip.pipeline import JointGenotyping, MakeGVCF
+from paip.variant_calling import JointGenotyping, MakeGVCF
 
 
 @pytest.fixture

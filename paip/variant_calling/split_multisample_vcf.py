@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import AnnotateWithSnpeff
+from paip.variant_calling import AnnotateWithSnpeff
 
 
 class SplitMultisampleVCF(CohortTask):

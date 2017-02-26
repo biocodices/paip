@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from paip.pipeline import CombineVariants
+from paip.variant_calling import CombineVariants
 
 
 @pytest.fixture

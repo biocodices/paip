@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from paip.pipeline import FilterSNPs
+from paip.variant_calling import FilterSNPs
 
 
 @pytest.fixture

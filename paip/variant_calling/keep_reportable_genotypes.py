@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import ExtractSample
+from paip.variant_calling import ExtractSample
 
 
 class KeepReportableGenotypes(CohortTask):

@@ -55,7 +55,7 @@ import logging
 import coloredlogs
 
 from paip import software_name
-from paip.pipeline import *
+from paip.variant_calling import *
 from paip.quality_control import *
 
 
@@ -132,7 +132,7 @@ def set_luigi_logging():
 def list_tasks():
     """List all luigi tasks available."""
     import paip
-    items = (list(paip.pipeline.__dict__.items()) +
+    items = (list(paip.variant_calling.__dict__.items()) +
              list(paip.quality_control.__dict__.items()))
     return [name for name, obj in items
             if isinstance(obj, luigi.task_register.Register)]

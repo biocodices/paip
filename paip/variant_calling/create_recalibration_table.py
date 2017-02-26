@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipeline import RealignAroundIndels
+from paip.variant_calling import RealignAroundIndels
 
 
 class CreateRecalibrationTable(SampleTask):

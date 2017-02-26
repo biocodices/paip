@@ -1,5 +1,5 @@
 from paip.task_types import CohortTask
-from paip.pipeline import CallTargets
+from paip.variant_calling import CallTargets
 
 
 class MergeVCFs(CohortTask):

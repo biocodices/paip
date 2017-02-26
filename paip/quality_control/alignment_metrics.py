@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask, CohortTask
-from paip.pipeline import RecalibrateAlignmentScores
+from paip.variant_calling import RecalibrateAlignmentScores
 
 
 class AlignmentMetrics(SampleTask):

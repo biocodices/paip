@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import FilterSNPs, FilterIndels
+from paip.variant_calling import FilterSNPs, FilterIndels
 
 
 class CombineVariants(CohortTask):

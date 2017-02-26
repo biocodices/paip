@@ -153,7 +153,7 @@ After putting the input `fastq` files in there, you're good to go!
 
 You can just call biocodices from the command line:
 
-`<path_to_biocodices>/paip/pipeline/variant_calling <base_directory_of_sequencing>`
+`<path_to_paip>/paip/run_task.py`
 
 The directory you pass as argument should have a `data` subfolder with the R1 and R2 `fastq`s for each sample.
 

@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from paip.pipeline import ExtractSample, AnnotateWithSnpeff
+from paip.variant_calling import ExtractSample, AnnotateWithSnpeff
 
 
 @pytest.fixture

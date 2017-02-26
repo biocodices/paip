@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from paip.pipeline import KeepSampleReportableGenotypes, ExtractSample
+from paip.variant_calling import KeepSampleReportableGenotypes, ExtractSample
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipeline import AddOrReplaceReadGroups
+from paip.variant_calling import AddOrReplaceReadGroups
 
 
 class CreateRealignmentIntervals(SampleTask):

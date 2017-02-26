@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import JointGenotyping, MergeVCFs
+from paip.variant_calling import JointGenotyping, MergeVCFs
 
 
 class AnnotateWithDbSNP(CohortTask):

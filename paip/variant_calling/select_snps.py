@@ -1,18 +1,21 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipeline import CombineVariants
+from paip.variant_calling import AnnotateWithDbSNP
 
 
-class FilterGenotypes(CohortTask):
+class SelectSNPs(CohortTask):
     """
-    Takes a VCF and applies filters to each genotype. Generates a new VCF.
+    Take a cohort VCF and produce a new VCF keeping only the SNPs.
+
+    This step is needed to later apply SNP-specific filters to the
+    resulting VCF.
     """
-    REQUIRES = CombineVariants
+    REQUIRES = AnnotateWithDbSNP
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk VariantFiltration genos'
+            program_name = 'gatk SelectVariants snps'
             program_options = {
                 'input_vcf': self.input().fn,
                 'output_vcf': self.temp_vcf,
@@ -23,6 +26,5 @@ class FilterGenotypes(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.geno_filt.vcf')
-        return luigi.LocalTarget(fn)
+        return luigi.LocalTarget(self.cohort_path('snps.vcf'))
 
