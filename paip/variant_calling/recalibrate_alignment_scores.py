@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import SampleTask
 from paip.variant_calling import RealignAroundIndels, CreateRecalibrationTable
 
@@ -10,23 +8,19 @@ class RecalibrateAlignmentScores(SampleTask):
     BaseRecalibrator. Runs a command to produce a new BAM recalibrated
     base scores.
     """
-    def requires(self):
-        return [RealignAroundIndels(sample=self.sample),
-                CreateRecalibrationTable(sample=self.sample)]
+    REQUIRES = [RealignAroundIndels, CreateRecalibrationTable]
+    OUTPUT = 'realignment_recalibrated.bam'
 
     def run(self):
         with self.output().temporary_path() as self.temp_bam:
+            program_name = 'gatk PrintReads'
             program_options = {
                 'input_bam': self.input()[0].fn,
                 'recalibration_table': self.input()[1].fn,
                 'output_bam': self.temp_bam,
             }
 
-            self.run_program('gatk PrintReads', program_options)
+            self.run_program(program_name, program_options)
 
         self.rename_temp_bai()
-
-    def output(self):
-        fn = self.sample_path('realignment_recalibrated.bam')
-        return luigi.LocalTarget(fn)
 

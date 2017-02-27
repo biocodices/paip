@@ -298,7 +298,6 @@ snpeff annotate:
     # I previously used hg19 as database (instead of GRCh37.75).
     # They should be the same.
     # -canon: Only use canonical transcripts.
-    # -interval ?
 
 vep annotate:
     # Options are described here:

@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.variant_calling import AnnotateWithSnpeff
+from paip.variant_calling import FilterGenotypes
 
 
 class SplitMultisampleVCF(CohortTask):
@@ -27,7 +27,7 @@ class ExtractSample(CohortTask):
     def requires(self):
         params = self.param_kwargs.copy()
         del(params['sample'])  # 'sample' parameter is used only in this Task
-        return AnnotateWithSnpeff(**params)
+        return FilterGenotypes(**params)
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:

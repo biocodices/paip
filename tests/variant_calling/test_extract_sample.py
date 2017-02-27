@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from paip.variant_calling import ExtractSample, AnnotateWithSnpeff
+from paip.variant_calling import ExtractSample, FilterGenotypes
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def task(cohort_task_factory):
 
 
 def test_requires(task, test_cohort_task_params):
-    expected_requires = AnnotateWithSnpeff(**test_cohort_task_params)
+    expected_requires = FilterGenotypes(**test_cohort_task_params)
     assert task.requires() == expected_requires
 
 

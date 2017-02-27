@@ -1,21 +1,27 @@
 import luigi
 
-from paip.task_types import CohortTask
-from paip.variant_calling import FilterGenotypes
+from paip.task_types import SampleTask
 
 
-class AnnotateWithSnpeff(CohortTask):
+class VariantCallingReady(luigi.ExternalTask, SampleTask):
+    """
+    Checks the complete variant calling is done.
+    """
+    OUTPUT = 'reportable.vcf'
+
+
+class AnnotateWithSnpeff(SampleTask):
     """
     Takes a VCF and adds SnpEff annotations. Generats a new VCF.
     """
-    REQUIRES = FilterGenotypes
+    REQUIRES = VariantCallingReady
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'snpeff annotate'
             program_options = {
                 'input_vcf': self.input().fn,
-                'output_summary_csv': self.cohort_path('snpEff.summary.csv'),
+                'output_summary_csv': self.sample_path('snpEff.summary.csv'),
             }
 
             # Snpeff outputs the annotated VCF to STDOUT
