@@ -16,22 +16,19 @@ def cohort_task_2(test_cohort_basedir):
     return CohortTask(basedir=test_cohort_basedir, samples='Sample1,Sample2')
 
 
-def test_find_samples_ALL(test_cohort_basedir):
-    found_samples = CohortTask._find_samples(samples='ALL',
-                                             basedir=test_cohort_basedir)
+def test_find_samples_ALL(cohort_task_all):
+    found_samples = cohort_task_all._find_samples(samples='ALL')
     assert found_samples == ['Sample1', 'Sample2', 'Sample3']
 
 
-def test_find_samples_some(test_cohort_basedir):
-    found_samples = CohortTask._find_samples(samples='Sample1,Sample2',
-                                             basedir=test_cohort_basedir)
+def test_find_samples_some(cohort_task_all):
+    found_samples = cohort_task_all._find_samples(samples='Sample1,Sample2')
     assert found_samples == ['Sample1', 'Sample2']
 
 
-def test_find_samples_fail(test_cohort_basedir):
+def test_find_samples_fail(cohort_task_all):
     with pytest.raises(ValueError):
-        CohortTask._find_samples(samples='Sample1,SampleNonExistent',
-                                 basedir=test_cohort_basedir)
+        cohort_task_all._find_samples(samples='Sample1,SampleNonExistent')
 
 
 def test_init(cohort_task_all, test_cohort_basedir):

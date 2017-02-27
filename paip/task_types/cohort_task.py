@@ -21,7 +21,7 @@ class CohortTask(BaseTask):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.sample_list = self._find_samples(self.samples, self.basedir)
+        self.sample_list = self._find_samples(self.samples)
 
         if not self.sample_list:
             raise EmptyCohortException('No samples found in: {}'
@@ -62,17 +62,18 @@ class CohortTask(BaseTask):
         fn = '{0}/{0}.{1}.{2}'.format(sample, self.pipeline_type, filename)
         return join(self.basedir, fn)
 
-    @staticmethod
-    def _find_samples(samples, basedir):
+    def _find_samples(self, samples):
         """
         Check for the *samples* in the basedir. 'ALL' will make it
-        find every subdir in the CWD and return those dir names as sample
+        find every subdir in the CWD (as long as it's also found in
+        self.sequencing_data) and return those dirnames as sample
         names, while a list of comma-separated sample names will trigger a
         check of the sample's existence as subdirs and return only those
         in a list.
         """
-        available_samples = [name for name in sorted(listdir(basedir))
-                             if isdir(join(basedir, name))]
+        available_samples = [name for name in sorted(listdir(self.basedir))
+                             if isdir(join(self.basedir, name)) and
+                             name in self.sequencing_data]
 
         if samples == 'ALL':
             return available_samples
@@ -83,7 +84,7 @@ class CohortTask(BaseTask):
             if sample not in available_samples:
                 raise ValueError("Sample '{}' not found in: {}. "
                                  'Available samples: {}'
-                                 .format(sample, basedir,
+                                 .format(sample, self.basedir,
                                          ', '.join(available_samples)))
 
         return chosen_samples
