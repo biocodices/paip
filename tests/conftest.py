@@ -56,12 +56,18 @@ def test_cohort_task_params(test_cohort_basedir):
 @pytest.fixture(scope='function')
 def mocks():
     def mock_run_program(program_name, program_options, **kwargs):
-        mock_run_program.args_received = {
+        args_received = {
             'program_name': program_name,
             'program_options': program_options,
             **kwargs,
         }
 
+        f = mock_run_program  # Alias for this method
+        if hasattr(f, 'args_received'):
+            # Store args in a list this was called more than once
+            f.args_received = [f.args_received, args_received]
+        else:
+            f.args_received = args_received
 
     def mock_os_rename(src, dest):
         if not hasattr(mock_os_rename, 'args_received'):
@@ -69,10 +75,8 @@ def mocks():
 
         mock_os_rename.args_received.append({'src': src, 'dest': dest})
 
-
     def mock_rename_idx():
         mock_rename_idx.was_called = True
-
 
     def mock_rename_bai():
         mock_rename_bai.was_called = True

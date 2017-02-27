@@ -1,3 +1,8 @@
+
+#
+# Variant Calling
+#
+
 fastq-mcf:
     '{executable}
      -u
@@ -352,4 +357,26 @@ gatk SelectVariants reportable:
      # This step will remove any variants that didn't pass one or more tests
      # and where the genotypes are under the GQ and DP pipeline-defined
      # thresholds. It operates on the VCF of a single sample.
+
+#
+# Quality Control
+#
+
+fastqc:
+  '{executable}
+   {forward_reads}
+   {reverse_reads}'
+
+
+picard CollectAlignmentSummaryMetrics:
+  '{executable}
+   CollectAlignmentSummaryMetrics
+   I={input_bam}
+   R={reference_genome}
+   O={output_txt}'
+
+
+multiqc:
+  '{executable}
+   {basedir}'
 

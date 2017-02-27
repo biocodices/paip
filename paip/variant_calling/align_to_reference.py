@@ -14,13 +14,15 @@ class AlignToReference(SampleTask):
     OUTPUT = 'raw_alignment.sam'
 
     def run(self):
+        program_name = 'bwa'
         program_options = {
             'forward_reads': self.input()[0].fn,
             'reverse_reads': self.input()[1].fn,
         }
 
         # BWA writes the aligned reads to STDOUT, so we capture that:
-        stdout, _ = self.run_program('bwa', program_options, log_stdout=False)
+        stdout, _ = self.run_program(program_name, program_options,
+                                     log_stdout=False)
 
         # And then we write it to the output file:
         with open(self.output().fn, 'wb') as f:
