@@ -1,9 +1,21 @@
-fastq-mcf: /home/juan/software/ea-utils.1.1.2-537/fastq-mcf
-bwa: /home/juan/software/bwa-0.7.15/bwa
-picard: java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
-gatk: java -jar /home/juan/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.jar
-snpsift: java -jar /home/juan/software/snpEff_4.3i/SnpSift.jar
-snpeff: java -jar /home/juan/software/snpEff_4.3i/snpEff.jar
-vep: /home/juan/software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
+#
+# Variant Calling
+# ---------------
+#
 
-# fastqc: /home/juan/software/FastQC/fastqc
+fastq-mcf: /home/juan/repos/paip/software/ea-utils.1.1.2-537/fastq-mcf
+bwa: /home/juan/repos/paip/software/bwa-0.7.15/bwa
+picard: java -jar /home/juan/repos/paip/software/picard-tools-2.9.0.jar
+gatk: java -jar /home/juan/repos/paip/software/GenomeAnalysisTK-3.7.jar
+snpeff: java -jar /home/juan/repos/paip/software/snpEff_4.3i/snpEff.jar
+snpsift: java -jar /home/juan/repos/paip/software/snpEff_4.3i/SnpSift.jar
+vep: /home/juan/repos/paip/software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl 
+
+#
+# Quality control
+# ---------------
+#
+
+fastqc: /home/juan/repos/paip/software/FastQC/fastqc
+multiqc: /home/juan/anaconda3/bin/multiqc
+

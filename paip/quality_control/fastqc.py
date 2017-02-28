@@ -8,8 +8,8 @@ class FastQC(SampleTask):
     Runs FastQC analysis on them, which produces HTML reports in the same dir.
     """
     REQUIRES = [CheckFastqs, TrimAdapters]
-    OUTPUT = ['R1_fastqc.html', 'R1.trimmed_fastqc.html',
-              'R2_fastqc.html', 'R2.trimmed_fastqc.html']
+    OUTPUT = ['R1_fastqc.html', 'R1.trimmed_reads_fastqc.html',
+              'R2_fastqc.html', 'R2.trimmed_reads_fastqc.html']
 
     def run(self):
         program_name = 'fastqc'

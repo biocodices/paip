@@ -1,4 +1,3 @@
-
 #
 # Variant Calling
 #
@@ -361,6 +360,12 @@ gatk SelectVariants reportable:
 # Quality Control
 #
 
+multiqc:
+  '{executable}
+   --force
+   {basedir}'
+
+
 fastqc:
   '{executable}
    {forward_reads}
@@ -375,7 +380,21 @@ picard CollectAlignmentSummaryMetrics:
    O={output_txt}'
 
 
-multiqc:
+picard CollectVariantCallingMetrics:
   '{executable}
-   {basedir}'
+   CollectVariantCallingMetrics
+   I={input_gvcf}
+   R={reference_genome}
+   DBSNP={dbsnp_GRCh37}
+   GVCF_INPUT=true
+   O={output_txt}'
+
+
+gatk VariantEval:
+  '{executable}
+   -T VariantEval
+   --eval {input_vcf}
+   -R {reference_genome}
+   -D {dbsnp_GRCh37}
+   -o {output_file}'
 

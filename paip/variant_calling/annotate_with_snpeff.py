@@ -1,17 +1,7 @@
 import luigi
 
 from paip.task_types import SampleTask, CohortTask
-
-
-class VariantCallingReady(luigi.ExternalTask, SampleTask):
-    """
-    Checks the complete variant calling is done.
-    """
-    pipeline_type = luigi.Parameter()
-
-    def output(self):
-        fp = self.sample_path('{}.reportable.vcf'.format(self.pipeline_type))
-        return luigi.LocalTarget(fp)
+from paip.variant_calling import VariantCallingReady
 
 
 class AnnotateWithSnpeff(SampleTask):
@@ -50,4 +40,7 @@ class AnnotateWithSnpeffCohort(CohortTask):
         for sample in self.sample_list:
             yield AnnotateWithSnpeff(sample=sample, basedir=self.basedir,
                                      pipeline_type=self.pipeline_type)
+
+    def output(self):
+        return [req.output() for req in self.requires()]
 

@@ -28,6 +28,7 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
             add_to_log('COMMAND', command, f)
 
     try:
+        logger.info('Running: ' + command)
         result = run(command, shell=True, check=True, stdout=PIPE, stderr=PIPE)
     except CalledProcessError as error:
         logger.error('This command failed (return code={}):\n{}'
