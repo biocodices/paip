@@ -1,5 +1,5 @@
 from paip.task_types import CohortTask
-from paip.variant_calling import AnnotateWithSnpeff
+from paip.variant_calling import AnnotateWithSnpeffCohort
 from paip.quality_control import (
     FastQC,
     AlignmentMetrics,
@@ -19,12 +19,13 @@ class MultiQC(CohortTask):
             FastQC,
             AlignmentMetrics,
             VariantCallingMetrics,
-            AnnotateWithSnpeff
         ]
 
-        return [task(sample=sample, basedir=self.basedir)
-                for sample in self.sample_list
-                for task in tasks]
+        sample_tasks = [task(sample=sample, basedir=self.basedir)
+                        for sample in self.sample_list
+                        for task in tasks]
+
+        return [AnnotateWithSnpeffCohort(**self.param_kwargs)] + sample_tasks
 
     def run(self):
         program_name = 'multiqc'
