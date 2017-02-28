@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from paip.quality_control import AlignmentMetrics
@@ -21,7 +19,4 @@ def test_run(task):
 
     program_output = result['program_options']['output_txt']
     assert 'alignment_metrics.txt-luigi-tmp' in program_output
-
-    assert os.rename.args_received[0]['src'] == program_output
-    assert os.rename.args_received[0]['dest'] == task.output().fn
 

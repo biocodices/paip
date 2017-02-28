@@ -5,7 +5,8 @@ from paip.variant_calling import AnnotateWithSnpeff
 
 @pytest.fixture
 def task(sample_task_factory):
-    return sample_task_factory(AnnotateWithSnpeff)
+    return sample_task_factory(AnnotateWithSnpeff,
+                               extra_params={'pipeline_type': 'variant_sites'})
 
 
 def test_run(task):

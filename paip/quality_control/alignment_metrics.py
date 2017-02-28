@@ -11,13 +11,11 @@ class AlignmentMetrics(SampleTask):
 
     def run(self):
         with self.output().temporary_path() as temp_output:
-
             program_name = 'picard CollectAlignmentSummaryMetrics'
             program_options = {
                 'input_bam': self.input().fn,
                 'output_txt': temp_output,
             }
-
             self.run_program(program_name, program_options)
 
 

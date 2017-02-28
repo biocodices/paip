@@ -1,6 +1,10 @@
 from paip.task_types import CohortTask
 from paip.variant_calling import AnnotateWithSnpeff
-from paip.quality_control import FastQC, AlignmentMetrics
+from paip.quality_control import (
+    FastQC,
+    AlignmentMetrics,
+    VariantCallingMetrics,
+)
 
 
 class MultiQC(CohortTask):
@@ -11,7 +15,13 @@ class MultiQC(CohortTask):
     OUTPUT = 'multiqc_report.html'
 
     def requires(self):
-        tasks = [FastQC, AlignmentMetrics, AnnotateWithSnpeff]
+        tasks = [
+            FastQC,
+            AlignmentMetrics,
+            VariantCallingMetrics,
+            AnnotateWithSnpeff
+        ]
+
         return [task(sample=sample, basedir=self.basedir)
                 for sample in self.sample_list
                 for task in tasks]
