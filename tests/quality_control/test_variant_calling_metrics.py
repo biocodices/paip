@@ -14,5 +14,5 @@ def test_run(task):
 
     assert result['program_name'] == 'picard CollectVariantCallingMetrics'
     assert result['program_options']['input_gvcf'] == task.input()[0].fn
-    assert result['program_options']['output_txt'] == task.sample
+    assert result['program_options']['output_txt'].endswith('QC')
 
