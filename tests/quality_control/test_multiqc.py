@@ -13,4 +13,5 @@ def test_run(task, test_cohort_path):
     result = task.run_program.args_received
     assert result['program_name'] == 'multiqc'
     assert result['program_options']['basedir'] == task.basedir
+    assert result['program_options']['report_filename'] == task.output().fn
 

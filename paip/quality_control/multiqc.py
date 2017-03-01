@@ -4,7 +4,7 @@ from paip.quality_control import (
     FastQC,
     AlignmentMetrics,
     VariantCallingMetrics,
-    VariantEval,
+    VariantEvalCohort,
 )
 
 
@@ -27,7 +27,7 @@ class MultiQC(CohortTask):
 
         cohort_tasks = [
             AnnotateWithSnpeffCohort,
-            VariantEval,
+            VariantEvalCohort,
         ]
         cohort_tasks = [task(**self.param_kwargs) for task in cohort_tasks]
 
@@ -37,6 +37,7 @@ class MultiQC(CohortTask):
         program_name = 'multiqc'
         program_options = {
             'basedir': self.basedir,
+            'report_filename': self.output().fn,
         }
         self.run_program(program_name, program_options)
 
