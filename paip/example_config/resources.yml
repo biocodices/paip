@@ -39,9 +39,10 @@ human_features: Homo_sapiens.GRCh37.87.gtf
 
 illumina_adapters: illumina_adapters.fasta
 
-ENPv1_variants: &ENPv1_variants ENPv1_variants.vcf
-panel_variants: *ENPv1_variants
-
 ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
 panel_regions: *ENPv1_amplicons
+
+# This file is used only in the "target_sites" pipeline
+ENPv1_variants: &ENPv1_variants ENPv1_variants.vcf
+panel_variants: *ENPv1_variants
 
