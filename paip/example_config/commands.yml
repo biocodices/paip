@@ -290,6 +290,7 @@ snpeff annotate:
     GRCh37.75
     -canon
     -nodownload
+    -csvStats {output_summary_csv}
     -datadir {snpeff_datadir}
     -v
     {input_vcf}'
