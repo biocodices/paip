@@ -1,16 +1,14 @@
 import luigi
 
-from paip.task_types import SampleTask, CohortTask
-from paip.variant_calling import VariantCallingReady
+from paip.task_types import SampleTask
+from paip.variant_calling import KeepReportableGenotypes
 
 
 class AnnotateWithSnpeff(SampleTask):
     """
     Takes a VCF and adds SnpEff annotations. Generats a new VCF.
     """
-    pipeline_type = luigi.Parameter()
-
-    REQUIRES = VariantCallingReady
+    REQUIRES = KeepReportableGenotypes
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
@@ -30,17 +28,4 @@ class AnnotateWithSnpeff(SampleTask):
     def output(self):
         fn = self.input().fn.replace('.vcf', '.eff.vcf')
         return luigi.LocalTarget(fn)
-
-
-class AnnotateWithSnpeffCohort(CohortTask):
-    """
-    Runs AnnotateWithSnpeff for all samples in a cohort.
-    """
-    def requires(self):
-        for sample in self.sample_list:
-            yield AnnotateWithSnpeff(sample=sample, basedir=self.basedir,
-                                     pipeline_type=self.pipeline_type)
-
-    def output(self):
-        return [req.output() for req in self.requires()]
 

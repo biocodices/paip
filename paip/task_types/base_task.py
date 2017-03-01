@@ -17,6 +17,14 @@ class BaseTask(luigi.Task):
     """
     basedir = luigi.Parameter(default='.')
 
+    # These parameters are used in different places. Not all tasks
+    # make use of all of them, but it seemed cleaner to add them once
+    # here instead of all over different tasks:
+    samples = luigi.Parameter(default='ALL')
+    pipeline_type = luigi.Parameter(default='variant_sites')
+    min_gq = luigi.IntParameter(default=30)
+    min_dp = luigi.IntParameter(default=30)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.basedir = abspath(expanduser(self.basedir))

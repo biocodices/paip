@@ -1,32 +1,18 @@
 import luigi
 
-from paip.task_types import CohortTask
+from paip.task_types import SampleTask
 from paip.variant_calling import FilterGenotypes
 
 
-class SplitMultisampleVCF(CohortTask):
-    """
-    Takes a multi-sample VCF and generates a new VCF for each sample in the
-    cohort. Applies ExtractSample to all samples of the cohort.
-    """
-    def requires(self):
-        for sample in self.sample_list:
-            yield ExtractSample(sample=sample, **self.param_kwargs)
-
-    def output(self):
-        return [require.output() for require in self.requires()]
-
-
-class ExtractSample(CohortTask):
+class ExtractSample(SampleTask):
     """
     Takes a multi-sample VCF and generates a new VCF of keeping the
-    genotypes of one *sample*.
+    genotypes of one sample.
     """
-    sample = luigi.Parameter()
-
     def requires(self):
         params = self.param_kwargs.copy()
-        del(params['sample'])  # 'sample' parameter is used only in this Task
+        # 'sample' parameter is not used by CohortTasks upstream:
+        del(params['sample'])
         return FilterGenotypes(**params)
 
     def run(self):

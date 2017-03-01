@@ -1,5 +1,5 @@
 from paip.variant_calling import RecalibrateAlignmentScores
-from paip.task_types import SampleTask, CohortTask
+from paip.task_types import SampleTask
 
 
 class FeatureCounts(SampleTask):
@@ -17,17 +17,4 @@ class FeatureCounts(SampleTask):
             'outfile': self.output().fn,
         }
         self.run_program(program_name, program_options)
-
-
-class FeatureCountsCohort(CohortTask):
-    """
-    Runs FeatureCounts for all sample in the cohort.
-    """
-    def requires(self):
-        for sample in self.sample_list:
-            yield FeatureCounts(sample=sample,
-                                basedir=self.basedir)
-
-    def output(self):
-        return [req.output() for req in self.requires()]
 

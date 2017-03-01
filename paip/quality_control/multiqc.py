@@ -1,13 +1,16 @@
 from paip.task_types import CohortTask
-from paip.variant_calling import AnnotateWithSnpeffCohort
+from paip.variant_calling import (
+    AnnotateWithSnpeff,
+    AnnotateWithVEP,
+)
 from paip.quality_control import (
     FastQC,
     AlignmentMetrics,
     VariantCallingMetrics,
-    VariantEvalCohort,
-    BcftoolsStatsCohort,
-    SamtoolsStatsCohort,
-    FeatureCountsCohort,
+    VariantEval,
+    BcftoolsStats,
+    SamtoolsStats,
+    FeatureCounts,
 )
 
 
@@ -19,23 +22,23 @@ class MultiQC(CohortTask):
     OUTPUT = 'multiqc_report.html'
 
     def requires(self):
-        tasks = [
+        cohort_tasks = [AnnotateWithVEP]
+        cohort_tasks = [task(**self.param_kwargs) for task in cohort_tasks]
+
+        sample_tasks = [
             FastQC,
             AlignmentMetrics,
             VariantCallingMetrics,
+            AnnotateWithSnpeff,
+            VariantEval,
+            BcftoolsStats,
+            SamtoolsStats,
+            FeatureCounts,
         ]
-        sample_tasks = [task(sample=sample, basedir=self.basedir)
-                        for sample in self.sample_list
-                        for task in tasks]
 
-        cohort_tasks = [
-            AnnotateWithSnpeffCohort,
-            VariantEvalCohort,
-            BcftoolsStatsCohort,
-            SamtoolsStatsCohort,
-            FeatureCountsCohort,
-        ]
-        cohort_tasks = [task(**self.param_kwargs) for task in cohort_tasks]
+        sample_tasks = [task(sample=sample, **self.param_kwargs)
+                        for sample in self.sample_list
+                        for task in sample_tasks]
 
         return cohort_tasks + sample_tasks
 

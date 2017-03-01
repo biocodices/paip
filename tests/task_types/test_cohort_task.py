@@ -8,7 +8,9 @@ from paip.task_types.cohort_task import EmptyCohortException
 def cohort_task_all(test_cohort_basedir):
     return CohortTask(basedir=test_cohort_basedir,
                       samples='ALL',
-                      pipeline_type='variant_sites')
+                      pipeline_type='variant_sites',
+                      min_dp=30,
+                      min_gq=30)
 
 
 @pytest.fixture
@@ -42,6 +44,8 @@ def test_init(cohort_task_all, test_cohort_basedir):
         'basedir': test_cohort_basedir,
         'samples': 'ALL',
         'pipeline_type': 'variant_sites',
+        'min_dp': 30,
+        'min_gq': 30
     }
 
     # Test it breaks on bad pipeline_type

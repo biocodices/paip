@@ -1,6 +1,13 @@
-#
-# Variant Calling
-#
+
+
+
+#########################################
+#                                       #
+# Variant Calling Pipeline              #
+#                                       #
+#########################################
+
+
 
 fastq-mcf:
     '{executable}
@@ -265,10 +272,10 @@ gatk VariantFiltration genos:
      -T VariantFiltration
      -R {reference_genome}
      -V {input_vcf}
-     -G_filterName lowGQ
-     -G_filter "GQ < 30.0"
-     -G_filterName lowDP
-     -G_filter "DP < 50"
+     -G_filterName LowGQ
+     -G_filter "GQ < 30"
+     -G_filterName LowDP
+     -G_filter "DP < 30"
      -l DEBUG
      -o {output_vcf}'
 
@@ -289,8 +296,8 @@ snpeff annotate:
     ann
     GRCh37.75
     -canon
-    -nodownload
     -csvStats {output_summary_csv}
+    -nodownload
     -datadir {snpeff_datadir}
     -v
     {input_vcf}'
@@ -298,6 +305,9 @@ snpeff annotate:
     # I previously used hg19 as database (instead of GRCh37.75).
     # They should be the same.
     # -canon: Only use canonical transcripts.
+    # -csvStats: this option creates an extra CSV with stats,
+    # which can be later used by multiqc
+    # -interval ?
 
 vep annotate:
     # Options are described here:
@@ -353,13 +363,15 @@ gatk SelectVariants reportable:
      -l DEBUG
      -o {output_vcf}"
 
-     # This step will remove any variants that didn't pass one or more tests
-     # and where the genotypes are under the GQ and DP pipeline-defined
-     # thresholds. It operates on the VCF of a single sample.
 
-#
-# Quality Control
-#
+
+#########################################
+#                                       #
+# Quality Control and Metrics Pipeline  #
+#                                       #
+#########################################
+
+
 
 multiqc:
   '{executable}
@@ -421,4 +433,5 @@ featureCounts:
    -o {outfile}
    -T 1
    {input_bam}'
+
 

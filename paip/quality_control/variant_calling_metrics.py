@@ -1,4 +1,4 @@
-from paip.task_types import SampleTask, CohortTask
+from paip.task_types import SampleTask
 from paip.variant_calling import MakeGVCF
 
 
@@ -18,13 +18,4 @@ class VariantCallingMetrics(SampleTask):
             # ^ The file extension of both output files will be added by Picard
         }
         self.run_program(program_name, program_options)
-
-
-class VariantCallingMetricsCohort(CohortTask):
-    """
-    Runs VariantCallingMetrics Task for all samples in a cohort.
-    """
-    def requires(self):
-        for sample in self.sample_list:
-            yield VariantCallingMetrics(sample=sample, basedir=self.basedir)
 

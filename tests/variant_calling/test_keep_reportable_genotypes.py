@@ -2,13 +2,13 @@ import os
 
 import pytest
 
-from paip.variant_calling import KeepSampleReportableGenotypes, ExtractSample
+from paip.variant_calling import KeepReportableGenotypes, ExtractSample
 
 
 @pytest.fixture
 def task(cohort_task_factory):
     extra_params = {'sample': 'Sample1', 'min_dp': 30, 'min_gq': 30}
-    return cohort_task_factory(KeepSampleReportableGenotypes,
+    return cohort_task_factory(KeepReportableGenotypes,
                                extra_params=extra_params)
 
 

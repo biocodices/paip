@@ -1,8 +1,6 @@
 from os import listdir
 from os.path import isdir, basename, join
 
-import luigi
-
 from paip.task_types import BaseTask
 
 
@@ -16,9 +14,6 @@ class CohortTask(BaseTask):
     For simplicity's sake, the code will assume the task is run from the
     parent dir of all samples subdirectories.
     """
-    samples = luigi.Parameter(default='ALL')
-    pipeline_type = luigi.Parameter(default='variant_sites')
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.sample_list = self._find_samples(self.samples)

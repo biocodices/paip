@@ -57,6 +57,7 @@ import coloredlogs
 from paip import software_name
 from paip.variant_calling import *
 from paip.quality_control import *
+from paip.variant_calling_task import VariantCalling
 
 
 logger = logging.getLogger('paip')

@@ -1,4 +1,4 @@
-from paip.task_types import SampleTask, CohortTask
+from paip.task_types import SampleTask
 from paip.variant_calling import RecalibrateAlignmentScores
 
 
@@ -17,13 +17,4 @@ class AlignmentMetrics(SampleTask):
                 'output_txt': temp_output,
             }
             self.run_program(program_name, program_options)
-
-
-class AlignmentMetricsCohort(CohortTask):
-    """
-    Runs AlignmentMetrics Task for all samples in a cohort.
-    """
-    def requires(self):
-        for sample in self.sample_list:
-            yield AlignmentMetrics(sample=sample, basedir=self.basedir)
 
