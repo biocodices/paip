@@ -1,6 +1,15 @@
 base_dir: /home/juan/paip_resources
 
-illumina_adapters: illumina_adapters.fasta
+snpeff_datadir: snpeff_data
+vep_datadir: vep_data
+
+##################################################################
+#                                                                #
+# Resources that are part of the GATK Bundle:                    #
+#                                                                #
+# ftp://ftp.broadinstitute.org/bundle/b37/                       #
+#                                                                #
+##################################################################
 
 reference_genome_hg19: &reference_genome_default human_g1k_v37.fasta
 reference_genome: *reference_genome_default
@@ -8,19 +17,31 @@ reference_genome: *reference_genome_default
 reference_genome_hg19_dict: &reference_genome_default_dict human_g1k_v37.dict
 reference_genome_dict: *reference_genome_default_dict
 
+dbsnp_GRCh37: dbsnp_138.b37.vcf
 indels_1000G: 1000G_phase1.indels.b37.vcf
 indels_mills: Mills_and_1000G_gold_standard.indels.b37.vcf
 
-dbsnp_GRCh37: dbsnp_138.b37.vcf
+##################################################################
+#                                                                #
+# Resources that are found in Ensembl's ftp:                     #
+#                                                                #
+# ftp://ftp.ensembl.org/pub/grch37/release-87/gtf/homo_sapiens/  #
+#                                                                #
+##################################################################
 
 human_features: Homo_sapiens.GRCh37.87.gtf
+
+##################################################################
+#                                                                #
+# Panel specific resources:                                      #
+#                                                                #
+##################################################################
+
+illumina_adapters: illumina_adapters.fasta
 
 ENPv1_variants: &ENPv1_variants ENPv1_variants.vcf
 panel_variants: *ENPv1_variants
 
 ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
 panel_regions: *ENPv1_amplicons
-
-snpeff_datadir: snpeff_data
-vep_datadir: vep_data
 

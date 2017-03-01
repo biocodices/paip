@@ -16,6 +16,7 @@ config_files = [
     '~/.paip/resources.yml',
     '~/.paip/commands.yml',
     '~/.paip/executables.yml',
+    '~/.multiqc_config.yaml',
 ]
 
 package_dir = dirname(dirname(abspath(__file__)))

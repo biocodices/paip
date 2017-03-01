@@ -83,6 +83,16 @@ java -jar /path/to/picard.jar \
     OUTPUT=human_g1k_v37.dict
 ```
 
+Prepare the SnpEff installation downloading the Homo Sapiens GRCh37 database, and the VEP installation for the same assembly:
+
+```bash
+# In both cases, choose the path to your resources dir
+
+/path/to/snpeff download GRCh37.75 -v -datadir ~/paip_resources/snpeff_data
+
+/path/to/VEP/INSTALL.pl -d ~/paip_resources/vep_data -c ~/paip_resources/vep_data -s homo_sapiends_merged -y GRCh37
+```
+
 Finally, create a fasta file with the adapters to trim from your reads. I got the sequences from [Illumina's TruSeq documentation](http://support.illumina.com/content/dam/illumina-support/documents/documentation/chemistry_documentation/experiment-design/illumina-adapter-sequences_1000000002694-01.pdf). Make sure you create a valid fasta file ('>ID' in one line, sequence in the next one, repeat). The IDs don't really matter, the sequences will be read.
 
 # Settings before running `paip`
@@ -133,8 +143,6 @@ gatk: gatk java -jar /home/juan/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.j
 snpsift: java -jar /home/juan/software/snpEff_4.3i/SnpSift.jar
 snpeff: java -jar /home/juan/software/snpEff_4.3i/snpEff.jar
 vep: /home/juan/software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
-
-
 ```
 
 # Recipes
