@@ -5,6 +5,9 @@ from paip.quality_control import (
     AlignmentMetrics,
     VariantCallingMetrics,
     VariantEvalCohort,
+    BcftoolsStatsCohort,
+    SamtoolsStatsCohort,
+    FeatureCountsCohort,
 )
 
 
@@ -28,6 +31,9 @@ class MultiQC(CohortTask):
         cohort_tasks = [
             AnnotateWithSnpeffCohort,
             VariantEvalCohort,
+            BcftoolsStatsCohort,
+            SamtoolsStatsCohort,
+            FeatureCountsCohort,
         ]
         cohort_tasks = [task(**self.param_kwargs) for task in cohort_tasks]
 

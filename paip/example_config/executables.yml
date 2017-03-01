@@ -18,4 +18,7 @@ vep: /home/juan/repos/paip/software/ensembl-tools-release-87/scripts/variant_eff
 
 fastqc: /home/juan/repos/paip/software/FastQC/fastqc
 multiqc: /home/juan/anaconda3/bin/multiqc
+bcftools: /home/juan/software/bcftools-1.3.1/bcftools
+samtools: /home/juan/software/samtools-1.3.1/samtools
+featureCounts: /home/juan/software/subread-1.5.1-source/bin/featureCounts
 

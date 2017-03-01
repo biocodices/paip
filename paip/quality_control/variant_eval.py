@@ -6,7 +6,8 @@ from paip.task_types import SampleTask, CohortTask
 
 class VariantEval(SampleTask):
     """
-    Takes a VCF and creates a stats file of its variants using GATK's VariantEval.
+    Takes a VCF and creates a stats file of its variants using GATK's
+    VariantEval.
     """
     REQUIRES = VariantCallingReady
     OUTPUT = 'eval.grp'

@@ -1,0 +1,11 @@
+fn_clean_exts:
+    - 'eval.grp'
+    - 'R1'
+    - 'R2'
+    # - 'trimmed_reads'
+    - 'realignment_recalibrated'
+    - 'variant_sites'
+    - 'target_sites'
+    - 'all_sites'
+    - 'samtools_stats'
+

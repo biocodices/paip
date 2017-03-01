@@ -265,9 +265,9 @@ gatk VariantFiltration genos:
      -T VariantFiltration
      -R {reference_genome}
      -V {input_vcf}
-     -G_filterName LowGQ
+     -G_filterName lowGQ
      -G_filter "GQ < 30.0"
-     -G_filterName LowDP
+     -G_filterName lowDP
      -G_filter "DP < 50"
      -l DEBUG
      -o {output_vcf}'
@@ -362,6 +362,7 @@ gatk SelectVariants reportable:
 
 multiqc:
   '{executable}
+   --filename {report_filename}
    --force
    {basedir}'
 
@@ -397,4 +398,26 @@ gatk VariantEval:
    -R {reference_genome}
    -D {dbsnp_GRCh37}
    -o {output_file}'
+
+
+bcftools stats:
+  '{executable}
+   stats
+   {input_vcf}'
+   # Output goes to STDOUT
+
+
+samtools stats:
+  '{executable}
+   stats
+   {input_bam}'
+   # Output goes to STDOUT
+
+
+featureCounts:
+  '{executable}
+   -a {human_features}
+   -o {outfile}
+   -T 1
+   {input_bam}'
 
