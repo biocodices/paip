@@ -6,39 +6,32 @@ sudo apt-get install openjdk-8-jdk
 ```
 
 ## Python and some libraries
-We're using Python 3.5 and some libraries you need to install for `biocodices` to work:
-```
+We're using Python 3.5 and some libraries you need to install for `paip` to work:
+```bash
 # Ptyhon ternary for triangle plots
 conda config --add channels conda-forge
 
 conda install python=3.5
+
+# cd to paip directory and run:
 pip install -r requirements.txt
+python setup.py install  # This will make the paip command available
 
-mkdir ~/.luigi
-
-# Start Luigi server for the pipeline
-luigid --pidfile ~/.luigi/pidfile --state-path ~/.luigi/statefile --logdir ~/.luigi/log
+# Now you should be able to run paip
+paip --help
 ```
 
-## Software and resources
+## Software
 
-Get these programs and install them:
+Grab the software in `paip/software` and install it in your system (the instructions
+vary for each program, check their READMEs). These are the programs that will
+be used during the pipeline.
 
-<!-- * [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/download.html) -->
-* [ea-utils](https://code.google.com/archive/p/ea-utils/downloads)
-* [GATk suite](https://www.broadinstitute.org/gatk/download/)
-* [Picard Tools](https://github.com/broadinstitute/picard/releases/tag/2.3.0)
-<!-- * [Samtools](https://sourceforge.net/projects/samtools/files/) -->
-<!-- * [Vcftools](http://vcftools.sourceforge.net/downloads.html) -->
-<!-- * [bcftools, tabix, htslib](http://www.htslib.org/download/) -->
-<!-- * [Bedtools](https://github.com/arq5x/bedtools2/releases) -->
-* [Variant Effect Predictor](http://www.ensembl.org/info/docs/tools/vep/script/vep_download.html)
-    - Install with the INSTALL.pl script and download the cache for homo
-      sapiens GRCh37.
-* [SnpEff](http://snpeff.sourceforge.net/)
+SnpEff and VEP need some special steps to prepare local annotation databases.
+I will use `~/paip_resources` as the resources folder throught this guide,
+but you can choose any other path:
 
 ```bash
-# Here I use ~/paip_resources as the location of the pipeline resources
 mkdir -p ~/paip_resources/snpeff_data
 mkdir -p ~/paip_resources/vep_data
 
@@ -55,9 +48,16 @@ java -jar /path/to/snpeff.jar \
     -y GRCh37
 ```
 
-You also need to download some resources from the web:
+## Resources
 
-Browse GATK bundle ftp servers to get the reference genome. For the GRCh37 version, I ran this command: `wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/2.8/b37/human_g1k_v37.fasta.gz`. **Warning**: the decompressed file will weight ~3Gb.
+You also need to download some resources from the web. Browse GATK bundle ftp
+servers to get the reference genome. For the GRCh37 version, I ran this command:
+
+```bash
+wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/2.8/b37/human_g1k_v37.fasta.gz
+```
+
+**Warning**: the decompressed file will weigh ~3Gb.
 
 Also from GATK servers, get files for known indels:
 
@@ -65,15 +65,21 @@ Also from GATK servers, get files for known indels:
     - Mills and 1000 Genomes Gold Standard (VCF)
     - dbSNP variants in GRCh37 (VCF)
 
-```
+```bash
 wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/2.8/b37/1000G_phase1.indels.b37.vcf.gz
 wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/2.8/b37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz
 wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/2.8/b37/dbsnp_138.b37.vcf.gz
 ```
 
-Unzip all the GATK bundle files with a `gunzip <filename>` command.
+Grab also the *Homo sapiens* GTF file from Ensembl:
 
-Prepare the reference genome fasta for BWA and GATK use, as detailed [here](http://gatkforums.broadinstitute.org/gatk/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference). You need the software installed in the first step for this:
+```bash
+wget ftp://ftp.ensembl.org/pub/grch37/release-87/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gtf.gz
+```
+
+Unzip all the `.gz` files with a `gunzip <filename>` command.
+
+Prepare the reference genome fasta for BWA and GATK use, as detailed [here](http://gatkforums.broadinstitute.org/gatk/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference). You need the software installed in the previous step for this:
 ```bash
 /path/to/bwa index -a bwtsw human_g1k_v37.fasta
 /path/to/samtools faidx human_g1k_v37.fasta
@@ -83,7 +89,8 @@ java -jar /path/to/picard.jar \
     OUTPUT=human_g1k_v37.dict
 ```
 
-Prepare the SnpEff installation downloading the Homo Sapiens GRCh37 database, and the VEP installation for the same assembly:
+Prepare the SnpEff installation downloading the Homo Sapiens GRCh37 database,
+and the VEP installation for the same assembly:
 
 ```bash
 # In both cases, choose the path to your resources dir
