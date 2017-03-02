@@ -6,13 +6,12 @@ sudo apt-get install openjdk-8-jdk
 ```
 
 ## Python and some libraries
-We're using Python 3.5 and some libraries you need to install for `paip` to work:
+You need a working Python 3.5 or greater installation.
+[Anaconda](https://www.continuum.io/downloads) is an easy way to get it.
+
+Then you can install `paip`:
+
 ```bash
-# Ptyhon ternary for triangle plots
-conda config --add channels conda-forge
-
-conda install python=3.5
-
 # cd to paip directory and run:
 pip install -r requirements.txt
 python setup.py install  # This will make the paip command available
