@@ -61,9 +61,9 @@ Browse GATK bundle ftp servers to get the reference genome. For the GRCh37 versi
 
 Also from GATK servers, get files for known indels:
 
-    - 1000 Genomes indels
-    - Mills and 1000 Genomes Gold Standard
-    - All known variants in GRCh37
+    - 1000 Genomes indels (VCF)
+    - Mills and 1000 Genomes Gold Standard (VCF)
+    - dbSNP variants in GRCh37 (VCF)
 
 ```
 wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/2.8/b37/1000G_phase1.indels.b37.vcf.gz
@@ -93,94 +93,137 @@ Prepare the SnpEff installation downloading the Homo Sapiens GRCh37 database, an
 /path/to/VEP/INSTALL.pl -d ~/paip_resources/vep_data -c ~/paip_resources/vep_data -s homo_sapiends_merged -y GRCh37
 ```
 
-Finally, create a fasta file with the adapters to trim from your reads. I got the sequences from [Illumina's TruSeq documentation](http://support.illumina.com/content/dam/illumina-support/documents/documentation/chemistry_documentation/experiment-design/illumina-adapter-sequences_1000000002694-01.pdf). Make sure you create a valid fasta file ('>ID' in one line, sequence in the next one, repeat). The IDs don't really matter, the sequences will be read.
+Finally, create a fasta file with the adapters to trim from your reads. I got the sequences from [Illumina's TruSeq documentation](http://support.illumina.com/content/dam/illumina-support/documents/documentation/chemistry_documentation/experiment-design/illumina-adapter-sequences_1000000002694-01.pdf). Make sure you create a valid fasta file ('>ID' in one line, sequence in the next one, repeat)
 
 # Settings before running `paip`
 
 `paip` will search for its config files in a `~/.paip` directory,
-so create it with `mkdir -p ~/.paip`. You will also need an organized
-resource folder, so I recommend creating a `~/paip/resources` directory:
-`mkdir -p ~/biocodices/resources`. Put the resources you downloaded from the
+so create it with `mkdir -p ~/.paip`. You will also need a
+directory for the resources. I recommend locating it at `~/paip_resources`:
+`mkdir -p ~/paip_resources`. Put the resources you downloaded from the
 web in there.
 
-Create a `~/.biocodices/resources.yml` file where you will specify the base
-directory you just created. In the yml add the filenames of the resources.
-Mine looks like this:
+Create a `~/.paip/resources.yml` with the path to the resources directory and 
+the filenames of the resources. Use a comple filepath, no tilde `~`. I recommend
+using the example YAML at `example_config/resources.yml` as a guide.
 
-```yaml
-base_dir: /home/juan/paip_resources
+Create also the file `~/.paip/executables.yml` with paths to every executable
+needed in the pipeline. Avoid tildes (`~`) again. You can use `example_config/executables.yml`
+as a guide.
 
-illumina_adapters: illumina_adapters.fasta
-
-reference_genome_hg19: &reference_genome_default human_g1k_v37.fasta
-reference_genome: *reference_genome_default
-
-reference_genome_hg19_dict: &reference_genome_default_dict human_g1k_v37.dict
-reference_genome_dict: *reference_genome_default_dict
-
-indels_1000G: 1000G_phase1.indels.b37.vcf
-indels_mills: Mills_and_1000G_gold_standard.indels.b37.vcf
-
-dbsnp_GRCh37: dbsnp_138.b37.vcf
-
-ENPv1_variants: &ENPv1_variants ENPv1_variants.vcf
-panel_variants: *ENPv1_variants
-
-ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
-panel_regions: *ENPv1_amplicons
-
-snpeff_datadir: snpeff_data
-vep_datadir: vep_data
-```
-
-Create the settings file `~/.paip/executables.yml` with paths to every executable from the software you downloaded earlier. Avoid tildes (`~`), write whole paths. This is my file, for instance:
-
-```yaml
-fastq-mcf: /home/juan/software/ea-utils.1.1.2-537/fastq-mcf
-bwa: /home/juan/software/bwa-0.7.15/bwa
-picard: picard java -jar /home/juan/software/picard-tools-2.2.4/picard.jar
-gatk: gatk java -jar /home/juan/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.jar
-snpsift: java -jar /home/juan/software/snpEff_4.3i/SnpSift.jar
-snpeff: java -jar /home/juan/software/snpEff_4.3i/snpEff.jar
-vep: /home/juan/software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
-```
+Finally, you can copy the `example_config/commands.yml` file to your `~/.paip`
+folder. The exact commands run in each step are specified there, and you might
+want to tune them for your needs.
 
 # Recipes
 
 ## Feed `paip` with the input `fastq` files
 
-Create a directory for a given sequencer run and create a `data` subdirectory
-in it. Put the forward and reverse `fastq` files from all samples in `data`.
-`biocodices` expects them to be named following this pattern:
-`<sample_ID>.R1.fastq` for the forward reads, and `<sample_ID>.R2.fastq` for
-the reverse reads of the same sample.
+Create a directory for a given sequencer run with a subdirectory
+for each sample, where the `fastq` files will be put, and a `sequencing_data.yml`
+file with data about the samples. It will look like this:
 
-After putting the input `fastq` files in there, you're good to go!
+```
+Sequencing1
+|
+|—— sequencing_data.yml
+|
+|—— Sample1
+|   |—— Sample1.R1.fastq
+|   |—— Sample1.R2.fastq
+|
+|—— Sample2
+|   |—— Sample2.R1.fastq
+|   |—— Sample2.R2.fastq
+|
+...
+```
+
+The filenames for forward and reverse reads are expected to have this format:
+`<sample_ID>.R1.fastq` and `<sample_ID>.R2.fastq`. It's important that the
+sample IDs in the filenames are found in the `sequencing_data.yml` file, whose
+structure will be like this:
+
+```
+Sample1:
+  library_id: Lib1
+  sequencing_id: Seq1
+  id_in_sequencing: Sample1
+  platform: Illumina
+  platform_unit: IlluminaPU
+
+Sample2:
+  library_id: Lib1
+  sequencing_id: Seq1
+  id_in_sequencing: Sample2
+  platform: Illumina
+  platform_unit: IlluminaPU
+```
+
+Only samples that are found in `sequencing_data.yml` will be seen by
+the pipeline.
 
 ## Variant calling
 
-You can just call biocodices from the command line:
+To run any tasks you need a `luigi` server running. I use this simple setting:
 
-`<path_to_paip>/paip/run_task.py`
+```bash
+mkdir -p ~/.luigi
 
-The directory you pass as argument should have a `data` subfolder with the R1 and R2 `fastq`s for each sample.
-
-Otherwise, you can instantiate the `Sequencing` class and call variants for each of its samples. Each Sample object will take care of creating its own results directory
-(named after the sample ID under the sequencing results directory). 
-
-```python
-# Instatiate a Sequencing object with the root dir of a sequencer run.
-# The directory should have a 'data' subdir with the fastq files.
-sequencing = Sequencing('~/MyProject/NGS0001')
-samples = sequencing.samples()  # => A list of sample objects
-sample = samples[0]
-sample.reads_filenames()  # => The forward and reverse reads files
-
-for sample in sequencing.samples():
-    sample.call_variants()
+luigid --pidfile ~/.luigi/pidfile --state-path ~/.luigi/statefile --logdir ~/.luigi/log
 ```
 
-The process will take some times (i.e. 5 mins per sample, YMMV) and each step
-of the process will be logged to a different log file under the sample's result
-directory. To check where that is, you can ask: `sample.results_dir`, but in
-general results and logs will be stored in `<sequencing_dir>/results/<sample_dir>/`.
+You can run it in background mode with `--background`. Once the server is running,
+you can call `paip` from the command line:
+
+```bash
+paip VariantCalling --basedir /path/to/Sequencing1
+```
+
+The tree of dependencies will be built and start running. `luigi` provides a
+nice web interface at `http://localhost:8082`.
+
+There are three `--pipeline-type` options for the variant calling:
+`variant_sites` (default), `target_sites`, `all_sites`. The `target_sites`
+option needs a VCF resource file with the exact sites that will be
+variant called, to be found under the key `panel_variants` in the resources
+YAML.
+
+The variant calling can also be run for a subset of the samples by specifying
+something like `--samples Sample1,Sample4,Sample10` in the command line.
+
+Finally, `luigi` options will also work. You can run with `--workers 2` to have
+to simultaneous processes running the pipeline, but keep an eye on the RAM,
+specially during the `AlignToReference` task.
+
+## Quality Control
+
+After the variant calling is done, you can optionally run a quality control
+over its results:
+
+```bash
+paip QualityControl --basedir /path/to/Sequencing1
+```
+
+The result of the QC will be an HTML report generated by `multiqc`.
+
+## Running tasks separately
+
+Any task can be run separately. Some of them are sample tasks, like
+`AlignToReference`, so they need a `--sample` parameter:
+
+```bash
+paip AlignToReference --sample Sample1 --basedir /path/to/Sequencing1
+```
+
+`luigi` will take care of the tasks dependencies.
+
+Other tasks are cohort tasks, so they can take a `--samples` parameter (skip
+it to run on all present samples):
+
+```
+paip JointGenotyping --samples Sample1,Sample2
+```
+
+You can use `paip -h` to get a list of the available parameters.
+
