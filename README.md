@@ -152,24 +152,28 @@ contents will be something like this:
 
 ```
 Sample1:
-  library_id: Lib1
-  sequencing_id: Seq1
-  id_in_sequencing: Sample1
-  platform: Illumina
-  platform_unit: IlluminaPU
+  library_id: LIB1
+  platform: ILLUMINA
+  flowcell_id: 000000000-D0UCC
+  lane_number: 1
+  sample_barcode: Sample1
 
 Sample2:
-  library_id: Lib1
-  sequencing_id: Seq1
-  id_in_sequencing: Sample2
-  platform: Illumina
-  platform_unit: IlluminaPU
+  library_id: LIB1
+  platform: ILLUMINA
+  flowcell_id: 000000-ABCDE
+  lane_number: 1
+  sample_barcode: Sample1
 ```
 
 Most of these data will be used to give a name to the read groups. I recommend
-keeping the `id_in_sequencing` the same as the sample ID,
-because the read groups and the VCF headers will use the former, while the filenames
-will use the latter, so different sample names might lead to confusion.
+keeping the `sample_barcode` the same as the sample ID, because the read groups
+and the VCF headers will use the former, while the filenames will use the
+latter, so different sample names might lead to confusion.
+
+The data about `flowcell_id` and `lane_number` is usually found in the
+read IDs of the `fastq` files. Their format is
+`@<instrument>:<run number>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read>:<is filtered>:<control number>:<sample number>` --you can find more info about this [here](http://support.illumina.com/content/dam/illumina-support/help/BaseSpaceHelp_v2/Content/Vault/Informatics/Sequencing_Analysis/BS/swSEQ_mBS_FASTQFiles.htm).
 
 Only the samples that have an entry in `sequencing_data.yml` will be considered
 during the pipeline; any other directories will be ignored.

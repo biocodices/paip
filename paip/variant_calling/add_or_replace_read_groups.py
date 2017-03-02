@@ -16,11 +16,11 @@ class AddOrReplaceReadGroups(SampleTask):
             program_name = 'picard AddOrReplaceReadGroups'
             program_options = {
                 'input_sam': self.input().fn,
-                'sample_id': self.id_in_sequencing,
                 'library_id': self.library_id,
-                'sequencing_id': self.sequencing_id,
-                'platform_unit': self.platform_unit,
                 'platform': self.platform,
+                'flowcell_id': self.flowcell_id,
+                'lane_number': self.lane_number,
+                'sample_barcode': self.sample_barcode,
                 'output_bam': self.temp_bam,
             }
 

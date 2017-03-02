@@ -35,11 +35,11 @@ picard AddOrReplaceReadGroups:
     '{executable}
      AddOrReplaceReadGroups
      I={input_sam}
-     ID={sequencing_id}.{library_id}.{platform_unit}.{sample_id}
-     SM={sample_id}
-     LB={library_id}
-     PL={platform}
-     PU={platform_unit}
+     RGID={flowcell_id}.{lane_number}.{sample_barcode}
+     RGSM={sample_id}
+     RGLB={library_id}
+     RGPL={platform}
+     RGPU={flowcell_id}.{lane_number}.{sample_barcode}
      O={output_bam}
      SO=coordinate
      CREATE_INDEX=True

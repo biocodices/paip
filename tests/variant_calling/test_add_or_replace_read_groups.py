@@ -17,20 +17,20 @@ def test_run(task):
     program_input = result['program_options']['input_sam']
     assert program_input == task.input().fn
 
-    program_input = result['program_options']['sample_id']
-    assert program_input == 'Spl1'
+    program_input = result['program_options']['sample_barcode']
+    assert program_input == 'Sample-Barcode'
 
     program_input = result['program_options']['library_id']
-    assert program_input == 'Lib1'
+    assert program_input == 'Library-ID'
 
-    program_output = result['program_options']['sequencing_id']
-    assert program_output == 'Seq1'
+    program_output = result['program_options']['flowcell_id']
+    assert program_output == 'Flowcell-ID'
 
-    program_output = result['program_options']['platform_unit']
-    assert program_output == 'PlatUnit'
+    program_output = result['program_options']['lane_number']
+    assert program_output == 'Lane-Number'
 
     program_output = result['program_options']['platform']
-    assert program_output == 'Plat'
+    assert program_output == 'Platform'
 
     program_output = result['program_options']['output_bam']
     assert task.output().fn + '-luigi-tmp' in program_output
