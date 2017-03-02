@@ -26,22 +26,28 @@ Options:
     --basedir BASEDIR       Base directory for the run
                             (default=current directory).
 
-                            Use for Cohort tasks.
-
-    --samples SAMPLES       Samples to include in the Cohort
-                            (defaults to ALL samples found in
-                            the --basedir). Pass a list of
-                            comma-separated names like
-                            S1,S2,S3 to limit the Cohort to
+    --samples SAMPLES       Samples to include in the Cohort.
+                            Pass a list of comma-separated names
+                            like S1,S2,S3 to limit the Cohort to
                             those samples.
+                            (default=ALL)
 
                             Use for Cohort tasks.
 
     --pipeline-type TYPE    Pipeline type: 'variant_sites',
                             'target_sites' or 'all_sites'.
+                            (default=variant_sites)
+
+    --min-gq                Minimum Genotype Quality (GQ) to
+                            use during genotype filtering.
+                            (default=30)
+
+    --min-dp                Minimum read depth to use during
+                            genotype filtering.
+                            (default=30)
 
     --workers WORKERS       Number of parallel tasks to run.
-                            Defaults to 1.
+                            (default=1)
 
 """
 

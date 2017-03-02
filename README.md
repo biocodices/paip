@@ -123,11 +123,11 @@ want to tune them for your needs.
 
 # Recipes
 
-## Feed `paip` with the input `fastq` files
+## Feed `paip` with the `fastq` files
 
 Create a directory for a given sequencer run with a subdirectory
-for each sample, where the `fastq` files will be put, and a `sequencing_data.yml`
-file with data about the samples. It will look like this:
+for each sample. Put the sample `fastq` files in their sample directory, and
+a `sequencing_data.yml` file in the base directory. It will look like this:
 
 ```
 Sequencing1
@@ -148,7 +148,7 @@ Sequencing1
 The filenames for forward and reverse reads are expected to have this format:
 `<sample_ID>.R1.fastq` and `<sample_ID>.R2.fastq`. It's important that the
 sample IDs in the filenames are found in the `sequencing_data.yml` file, whose
-structure will be like this:
+contents will be something like this:
 
 ```
 Sample1:
@@ -166,18 +166,22 @@ Sample2:
   platform_unit: IlluminaPU
 ```
 
-I recommend keeping the `id_in_sequencing` the same as the sample ID,
-because the read groups and the VCF will use the former, while the filenames
+Most of these data will be used to give a name to the read groups. I recommend
+keeping the `id_in_sequencing` the same as the sample ID,
+because the read groups and the VCF headers will use the former, while the filenames
 will use the latter, so different sample names might lead to confusion.
 
-Only samples that are found in `sequencing_data.yml` will be seen by
-the pipeline.
+Only the samples that have an entry in `sequencing_data.yml` will be considered
+during the pipeline; any other directories will be ignored.
 
 ## Variant calling
 
 To run any tasks you need a `luigi` server running. I use this simple setting:
 
 ```bash
+pip install luigi
+# ^ Should already be installed from the pip install -r requirements.txt
+
 mkdir -p ~/.luigi
 
 luigid --pidfile ~/.luigi/pidfile --state-path ~/.luigi/statefile --logdir ~/.luigi/log
@@ -190,11 +194,12 @@ you can call `paip` from the command line:
 paip VariantCalling --basedir /path/to/Sequencing1
 ```
 
-The tree of dependencies will be built and start running. `luigi` provides a
-nice web interface at `http://localhost:8082`.
+The tree of dependencies will be built and the pipeline will start running.
+You can track its progress from the command line STDOUT or using `luigi`'s'
+web interface at `http://localhost:8082`.
 
 There are three `--pipeline-type` options for the variant calling:
-`variant_sites` (default), `target_sites`, `all_sites`. The `target_sites`
+`variant_sites` (default), `target_sites`, and `all_sites`. The `target_sites`
 option needs a VCF resource file with the exact sites that will be
 variant called, to be found under the key `panel_variants` in the resources
 YAML.
@@ -202,11 +207,7 @@ YAML.
 The variant calling can also be run for a subset of the samples by specifying
 something like `--samples Sample1,Sample4,Sample10` in the command line.
 
-Finally, `luigi` options will also work. You can run with `--workers 2` to have
-to simultaneous processes running the pipeline, but keep an eye on the RAM,
-specially during the `AlignToReference` task.
-
-## Quality Control
+## Quality control
 
 After the variant calling is done, you can optionally run a quality control
 over its results:
