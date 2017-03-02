@@ -160,6 +160,10 @@ Sample2:
   platform_unit: IlluminaPU
 ```
 
+I recommend keeping the `id_in_sequencing` the same as the sample ID,
+because the read groups and the VCF will use the former, while the filenames
+will use the latter, so different sample names might lead to confusion.
+
 Only samples that are found in `sequencing_data.yml` will be seen by
 the pipeline.
 
