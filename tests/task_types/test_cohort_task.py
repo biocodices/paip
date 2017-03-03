@@ -1,6 +1,7 @@
 import pytest
+import luigi
 
-from paip.task_types import CohortTask
+from paip.task_types import CohortTask, SampleTask
 from paip.task_types.cohort_task import EmptyCohortException
 
 
@@ -87,3 +88,20 @@ def test_sample_path(cohort_task_all):
     assert result.endswith('Sample2/Sample2.{}.foo'
                            .format(cohort_task_all.pipeline_type))
 
+
+def test_sample_requires(cohort_task_params):
+    class MockSampleTask(SampleTask):
+        pass
+
+    class MockCohortTask(CohortTask, luigi.WrapperTask):
+        SAMPLE_REQUIRES = MockSampleTask
+
+    cohort_task = MockCohortTask(**cohort_task_params)
+    assert list(cohort_task.sample_requires()) == [
+        MockSampleTask(sample='Sample1', **cohort_task_params),
+        MockSampleTask(sample='Sample2', **cohort_task_params),
+    ]
+
+    # Check that sample requires is correctly assigned as requires()
+    # when SAMPLE_REQUIRES variable is present:
+    assert list(cohort_task.sample_requires()) == list(cohort_task.requires())

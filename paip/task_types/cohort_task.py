@@ -30,6 +30,27 @@ class CohortTask(BaseTask):
 
         self.cohort_name = self._define_cohort_name()
 
+    def requires(self):
+        if hasattr(self, 'SAMPLE_REQUIRES'):
+            return list(self.sample_requires())
+        else:
+            return super().requires()
+
+    def sample_requires(self):
+        # This is a handy way of setting the required dependencies for
+        # Cohort tasks that are only a wrapper around a SampleTask, which
+        # should run for all the samples in the cohort. It lets us define
+        # a CohortTask with just a class constant 'SAMPLE_REQUIRES'.
+        # Use in classes that also inherit from luigi.WrapperTask. This
+        # behavior is already packed in the helpers.create_cohort_task()
+        #
+        # TODO: There might be a way to implement this with the descriptor
+        # protocol directly in create_cohort_task()
+        sample_task_class = self.SAMPLE_REQUIRES
+
+        for sample in self.sample_list:
+            yield sample_task_class(sample=sample, **self.param_kwargs)
+
     def path(self, filename):
         """
         Generate a path to the given *filename* under the cohort's directory,

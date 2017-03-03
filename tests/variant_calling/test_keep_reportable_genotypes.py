@@ -12,8 +12,8 @@ def task(cohort_task_factory):
                                extra_params=extra_params)
 
 
-def test_requires(task, test_cohort_task_params):
-    expected_requires = ExtractSample(**test_cohort_task_params,
+def test_requires(task, cohort_task_params):
+    expected_requires = ExtractSample(**cohort_task_params,
                                       sample=task.sample)
     assert task.requires() == expected_requires
 

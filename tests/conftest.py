@@ -41,13 +41,13 @@ def test_sample_path(test_cohort_basedir):
 
 
 @pytest.fixture
-def test_sample_task_params(test_cohort_basedir):
+def sample_taks_params(test_cohort_basedir):
     return {'basedir': test_cohort_basedir,
             'sample': 'Sample1'}
 
 
 @pytest.fixture
-def test_cohort_task_params(test_cohort_basedir):
+def cohort_task_params(test_cohort_basedir):
     return {'basedir': test_cohort_basedir,
             'samples': 'Sample1,Sample2',
             'pipeline_type': 'variant_sites'}
@@ -110,20 +110,20 @@ def task_factory(mocks, monkeypatch):
 
 
 @pytest.fixture(scope='function')
-def sample_task_factory(task_factory, test_sample_task_params):
+def sample_task_factory(task_factory, sample_taks_params):
 
     def factory(klass, extra_params={}):
-        task = task_factory(klass, test_sample_task_params, extra_params)
+        task = task_factory(klass, sample_taks_params, extra_params)
         return task
 
     return factory
 
 
 @pytest.fixture(scope='function')
-def cohort_task_factory(task_factory, test_cohort_task_params):
+def cohort_task_factory(task_factory, cohort_task_params):
 
     def factory(klass, extra_params={}):
-        task = task_factory(klass, test_cohort_task_params, extra_params)
+        task = task_factory(klass, cohort_task_params, extra_params)
         return task
 
     return factory

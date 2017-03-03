@@ -4,9 +4,9 @@ from paip.variant_calling import MergeVCFs, CallTargets
 
 
 @pytest.fixture
-def task(test_cohort_task_params):
-    test_cohort_task_params['pipeline_type'] = 'target_sites'
-    return MergeVCFs(**test_cohort_task_params)
+def task(cohort_task_params):
+    cohort_task_params['pipeline_type'] = 'target_sites'
+    return MergeVCFs(**cohort_task_params)
 
 
 def test_requires(task):

@@ -11,8 +11,8 @@ def task(cohort_task_factory):
                                extra_params={'sample': 'Sample1'})
 
 
-def test_requires(task, test_cohort_task_params):
-    expected_requires = FilterGenotypes(**test_cohort_task_params)
+def test_requires(task, cohort_task_params):
+    expected_requires = FilterGenotypes(**cohort_task_params)
     assert task.requires() == expected_requires
 
 

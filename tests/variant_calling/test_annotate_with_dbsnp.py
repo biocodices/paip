@@ -9,9 +9,9 @@ def variant_sites_task(cohort_task_factory):
 
 
 @pytest.fixture
-def target_sites_task(test_cohort_task_params):
-    test_cohort_task_params['pipeline_type'] = 'target_sites'
-    return AnnotateWithDbSNP(**test_cohort_task_params)
+def target_sites_task(cohort_task_params):
+    cohort_task_params['pipeline_type'] = 'target_sites'
+    return AnnotateWithDbSNP(**cohort_task_params)
 
 
 def test_requires_targets_pipeline(target_sites_task):
