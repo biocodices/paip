@@ -1,5 +1,6 @@
 from paip.task_types import SampleTask
 from paip.variant_calling import TrimAdapters
+from paip.helpers.create_cohort_task import create_cohort_task
 
 
 class AlignToReference(SampleTask):
@@ -27,4 +28,7 @@ class AlignToReference(SampleTask):
         # And then we write it to the output file:
         with open(self.output().fn, 'wb') as f:
             f.write(stdout)
+
+
+AlignToReferenceCohort = create_cohort_task(AlignToReference)
 

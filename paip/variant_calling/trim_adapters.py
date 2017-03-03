@@ -1,5 +1,6 @@
 from paip.task_types import SampleTask
 from paip.variant_calling import CheckFastqs
+from paip.helpers.create_cohort_task import create_cohort_task
 
 
 class TrimAdapters(SampleTask):
@@ -22,4 +23,7 @@ class TrimAdapters(SampleTask):
         self.run_program(program_name, program_options)
 
     OUTPUT = ['R1.trimmed_reads.fastq', 'R2.trimmed_reads.fastq']
+
+
+TrimAdaptersCohort = create_cohort_task(TrimAdapters)
 

@@ -1,6 +1,6 @@
 from .check_fastqs import CheckFastqs
-from .trim_adapters import TrimAdapters
-from .align_to_reference import AlignToReference
+from .trim_adapters import TrimAdapters, TrimAdaptersCohort
+from .align_to_reference import AlignToReference, AlignToReferenceCohort
 from .add_or_replace_read_groups import AddOrReplaceReadGroups
 from .create_realignment_intervals import CreateRealignmentIntervals
 from .realign_around_indels import RealignAroundIndels
@@ -21,4 +21,3 @@ from .annotate_with_vep import AnnotateWithVEP
 from .extract_sample import ExtractSample
 from .keep_reportable_genotypes import KeepReportableGenotypes
 from .annotate_with_snpeff import AnnotateWithSnpeff
-
