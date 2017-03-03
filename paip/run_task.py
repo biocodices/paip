@@ -46,6 +46,10 @@ Options:
                             genotype filtering.
                             (default=30)
 
+    --trim-software NAME    Name of the software to use in the
+                            reads trimming step. Options:
+                            'cutadapt' (default), 'fastq-mcf'.
+
     --workers WORKERS       Number of parallel tasks to run.
                             (default=1)
 

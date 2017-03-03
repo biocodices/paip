@@ -38,6 +38,8 @@ human_features: Homo_sapiens.GRCh37.87.gtf
 ##################################################################
 
 illumina_adapters: illumina_adapters.fasta
+illumina_adapters_fwd: illumina_adapters_fwd.fasta
+illumina_adapters_rev: illumina_adapters_rev.fasta
 
 ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
 panel_regions: *ENPv1_amplicons

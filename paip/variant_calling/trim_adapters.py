@@ -12,7 +12,8 @@ class TrimAdapters(SampleTask):
     REQUIRES = CheckFastqs
 
     def run(self):
-        program_name = 'fastq-mcf'
+        program_name = self.trim_software
+
         program_options = {
             'forward_reads': self.input()[0].fn,
             'reverse_reads': self.input()[1].fn,
@@ -22,7 +23,7 @@ class TrimAdapters(SampleTask):
 
         self.run_program(program_name, program_options)
 
-    OUTPUT = ['R1.trimmed_reads.fastq', 'R2.trimmed_reads.fastq']
+    OUTPUT = ['R1.trimmed.fastq', 'R2.trimmed.fastq']
 
 
 TrimAdaptersCohort = create_cohort_task(TrimAdapters)

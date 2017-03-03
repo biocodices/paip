@@ -12,7 +12,7 @@ def test_run(task):
     task.run()
     result = task.run_program.args_received
 
-    assert result['program_name'] == 'fastq-mcf'
+    assert result['program_name'] == 'cutadapt'
 
     program_input = result['program_options']['forward_reads']
     assert program_input == task.input()[0].fn

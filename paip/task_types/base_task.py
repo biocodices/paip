@@ -25,6 +25,9 @@ class BaseTask(luigi.Task):
     min_gq = luigi.IntParameter(default=30)
     min_dp = luigi.IntParameter(default=30)
 
+    # This parameter gives you extra flexibility for the trimming step
+    trim_software = luigi.Parameter(default='cutadapt')
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.basedir = abspath(expanduser(self.basedir))

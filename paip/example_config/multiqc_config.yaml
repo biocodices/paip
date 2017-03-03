@@ -1,2 +1,12 @@
 fn_clean_exts:
-    - ''
+    - '.realigned_recalibrated'
+    - '.eval.grp'
+    - '.samtools_stats'
+    - '.bcftools_stats'
+    - '.realignment_recalibrated.bam'
+    - '.reportable'
+    - '.snpEff.summary'
+    - '.target_sites'
+    - '.variant_sites'
+    - '.all_sites'
+

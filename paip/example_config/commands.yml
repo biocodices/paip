@@ -9,7 +9,7 @@
 
 
 
-fastq-mcf:
+fastq-mcf:  # Non default, run with --trim-software fastq-mcf to use it
     '{executable}
      -u
      -q 20
@@ -21,6 +21,20 @@ fastq-mcf:
      {illumina_adapters}
      {forward_reads}
      {reverse_reads}'
+
+cutadapt:  # Default for TrimAdapters
+  '{executable}
+   --error-rate=0.1
+   --overlap=15
+   -q 20,20
+   --max-n=10
+   --minimum-length=50
+   -b file:{illumina_adapters_fwd}
+   -B file:{illumina_adapters_rev}
+   --output={forward_output}
+   --paired-output={reverse_output}
+   {forward_reads}
+   {reverse_reads}'
 
 bwa:
     # output goes to STDOUT
@@ -36,7 +50,7 @@ picard AddOrReplaceReadGroups:
      AddOrReplaceReadGroups
      I={input_sam}
      RGID={flowcell_id}.{lane_number}.{sample_barcode}
-     RGSM={sample_id}
+     RGSM={sample_barcode}
      RGLB={library_id}
      RGPL={platform}
      RGPU={flowcell_id}.{lane_number}.{sample_barcode}

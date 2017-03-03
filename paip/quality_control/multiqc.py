@@ -1,5 +1,6 @@
 from paip.task_types import CohortTask
 from paip.variant_calling import (
+    TrimAdapters,
     AnnotateWithSnpeff,
     AnnotateWithVEP,
 )
@@ -27,6 +28,7 @@ class MultiQC(CohortTask):
 
         sample_tasks = [
             FastQC,
+            TrimAdapters,
             AlignmentMetrics,
             VariantCallingMetrics,
             AnnotateWithSnpeff,

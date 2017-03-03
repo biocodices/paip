@@ -43,10 +43,13 @@ def test_init(cohort_task_all, test_cohort_basedir):
     # Test init kwargs are stored
     assert cohort_task_all.param_kwargs == {
         'basedir': test_cohort_basedir,
+
+        # Also tests defaults:
         'samples': 'ALL',
         'pipeline_type': 'variant_sites',
         'min_dp': 30,
-        'min_gq': 30
+        'min_gq': 30,
+        'trim_software': 'cutadapt',
     }
 
     # Test it breaks on bad pipeline_type
