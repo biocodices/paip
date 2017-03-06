@@ -1,5 +1,6 @@
 from paip.task_types import SampleTask
 from paip.variant_calling import CheckFastqs, TrimAdapters
+from paip.helpers.create_cohort_task import create_cohort_task
 
 
 class FastQC(SampleTask):
@@ -8,8 +9,8 @@ class FastQC(SampleTask):
     Runs FastQC analysis on them, which produces HTML reports in the same dir.
     """
     REQUIRES = [CheckFastqs, TrimAdapters]
-    OUTPUT = ['R1_fastqc.html', 'R1.trimmed_reads_fastqc.html',
-              'R2_fastqc.html', 'R2.trimmed_reads_fastqc.html']
+    OUTPUT = ['R1_fastqc.html', 'R1.trimmed_fastqc.html',
+              'R2_fastqc.html', 'R2.trimmed_fastqc.html']
 
     def run(self):
         program_name = 'fastqc'
@@ -28,5 +29,8 @@ class FastQC(SampleTask):
             'forward_reads': trimmed_fastqs[0].fn,
             'reverse_reads': trimmed_fastqs[1].fn,
         }
-        self.run_program(program_name, program_options)
+        self.run_program(program_name, program_options, log_append=True)
+
+
+FastQCCohort = create_cohort_task(FastQC)
 

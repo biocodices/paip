@@ -1,5 +1,6 @@
-from paip.variant_calling import RealignAroundIndels
+from paip.variant_calling import RecalibrateAlignmentScores
 from paip.task_types import SampleTask
+from paip.helpers.create_cohort_task import create_cohort_task
 
 
 class FeatureCounts(SampleTask):
@@ -7,7 +8,7 @@ class FeatureCounts(SampleTask):
     Takes a BAM and creates a summary file of its annotated features from
     a human features GTF file.
     """
-    REQUIRES = RealignAroundIndels
+    REQUIRES = RecalibrateAlignmentScores
     OUTPUT = 'feature_counts'
 
     def run(self):
@@ -17,4 +18,6 @@ class FeatureCounts(SampleTask):
             'outfile': self.output().fn,
         }
         self.run_program(program_name, program_options)
+
+FeatureCountsCohort = create_cohort_task(FeatureCounts)
 
