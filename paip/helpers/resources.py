@@ -19,18 +19,18 @@ def available_resources():
 def path_to_resource(label):
     """
     Assuming you defined 'base_dir' and the *label* in the resources.yml file,
-    this methos will join them and return the path, like:
+    this method will join them and return the path, like:
 
-        > Resource.path_to('reference_genome')
+        > path_to_resource('reference_genome')
             # => /home/jdoe/resources/human_genome.fasta
 
-        > Resource.path_to('illumina_adapters')
+        > path_to_resource('illumina_adapters')
             # => /home/jdoe/resources/illumina_adps.fasta
 
     You can query a deep key from the YAML by separating nested keys with a ':',
     for instance:
 
-        > Resource.path_to('indels:1000G')
+        > path_to_resource('indels:1000G')
     """
     resources = Config.resources()
     base_dir = resources['base_dir']

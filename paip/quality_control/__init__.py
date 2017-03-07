@@ -5,4 +5,5 @@ from .bcftools_stats import BcftoolsStats
 from .samtools_stats import SamtoolsStats
 from .feature_counts import FeatureCounts, FeatureCountsCohort
 from .fastqc import FastQC, FastQCCohort
+from .panel_metrics import PanelMetrics
 from .multiqc import MultiQC

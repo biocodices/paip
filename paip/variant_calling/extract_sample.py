@@ -28,5 +28,6 @@ class ExtractSample(SampleTask):
         self.rename_temp_idx()
 
     def output(self):
-        return luigi.LocalTarget(self.sample_path('with_filters.vcf'))
+        fp = self.sample_pipeline_path('with_filters.vcf')
+        return luigi.LocalTarget(fp)
 

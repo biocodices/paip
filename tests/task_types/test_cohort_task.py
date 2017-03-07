@@ -58,11 +58,11 @@ def test_init(cohort_task_all, test_cohort_basedir):
                    pipeline_type='unknown')
 
     with pytest.raises(EmptyCohortException):
-        CohortTask(basedir=pytest.helpers.test_file('EmptyCohort'))
+        CohortTask(basedir=pytest.helpers.file('EmptyCohort'))
 
     # Won't find a sequencing_data.yml here:
     with pytest.raises(IOError):
-        CohortTask(basedir=pytest.helpers.test_file('Cohort1/Sample1'))
+        CohortTask(basedir=pytest.helpers.file('Cohort1/Sample1'))
 
 
 def test_define_cohort_name(cohort_task_all, cohort_task_2):

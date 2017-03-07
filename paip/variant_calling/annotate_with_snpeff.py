@@ -15,7 +15,7 @@ class AnnotateWithSnpeff(SampleTask):
             program_name = 'snpeff annotate'
             program_options = {
                 'input_vcf': self.input().fn,
-                'output_summary_csv': self.sample_path('snpEff.summary.csv'),
+                'output_summary_csv': self.sample_pipeline_path('snpEff.summary.csv'),
             }
 
             # Snpeff outputs the annotated VCF to STDOUT

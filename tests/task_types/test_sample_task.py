@@ -18,6 +18,12 @@ def test_sample_path(sample_task):
     assert path.endswith('Sample1/Sample1.foo.txt')
 
 
+def test_sample_pipeline_path(sample_task):
+    path = sample_task.sample_pipeline_path('foo.txt')
+    assert isabs(path)
+    assert path.endswith('Sample1/Sample1.variant_sites.foo.txt')
+
+
 def test_sample_paths(sample_task):
     paths = sample_task.sample_paths(['foo.txt', 'bar.txt'])
     expected_paths = ['Sample1/Sample1.foo.txt', 'Sample1/Sample1.bar.txt']

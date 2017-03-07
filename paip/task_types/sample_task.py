@@ -25,6 +25,21 @@ class SampleTask(BaseTask):
             setattr(self, key, sequencing_data[key])
 
     def path(self, filename):
+        return join(self.dir, '{}.{}'.format(self.sample, filename))
+
+    def sample_pipeline_path(self, filename):
+        """
+        Generate a path to the given filename under the sample's directory
+        and include the pipeline type in the filename. Example:
+
+            > sample_path('foo.txt')  # => SampleX/SampleX.foo.txt
+
+        """
+        return join(self.dir, '{}.{}.{}'.format(self.sample,
+                                                self.pipeline_type,
+                                                filename))
+
+    def sample_path(self, filename):
         """
         Generate a path to the given *filename* under self.sample's
         directory, using self.sample as a prefix. Example:
@@ -32,10 +47,6 @@ class SampleTask(BaseTask):
             > sample_path('foo.txt')  # => SampleX/SampleX.foo.txt
 
         """
-        return join(self.dir, '{0}.{1}'.format(self.sample, filename))
-
-    def sample_path(self, filename):
-        """Alias of self.path"""
         return self.path(filename)
 
     def sample_paths(self, filenames):

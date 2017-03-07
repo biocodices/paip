@@ -28,5 +28,6 @@ class KeepReportableGenotypes(SampleTask):
         self.rename_temp_idx()
 
     def output(self):
-        return luigi.LocalTarget(self.sample_path('reportable.vcf'))
+        fp = self.sample_pipeline_path('reportable.vcf')
+        return luigi.LocalTarget(fp)
 

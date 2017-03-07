@@ -313,7 +313,6 @@ snpeff annotate:
     -csvStats {output_summary_csv}
     -nodownload
     -datadir {snpeff_datadir}
-    -v
     {input_vcf}'
 
     # I previously used hg19 as database (instead of GRCh37.75).

@@ -42,5 +42,5 @@ def test_run(task):
 
 
 def test_output(task):
-    assert task.output().fn.endswith('.reportable.vcf')
+    assert task.output().fn.endswith('variant_sites.reportable.vcf')
 

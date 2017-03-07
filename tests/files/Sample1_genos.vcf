@@ -1,0 +1,17 @@
+##fileformat=VCFv4.2
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=FT,Number=.,Type=String,Description="Genotype-level filter">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##contig=<ID=1,length=249250621,assembly=b37>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	Sample1
+1	1000	rs1	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:100,0:100:99
+1	2000	rs2	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:100,0:200:99
+1	3000	rs3	G	C	.	PASS	.	GT:AD:DP:GQ	0/1:100,100:200:99
+1	4000	rs4	G	C	.	PASS	.	GT:AD:DP:GQ	0/1:100,100:200:99
+1	5000	rs5	G	C	.	PASS	.	GT:AD:DP:GQ	1/1:0,100:100:99
+1	6000	rs6	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:100,0:100:99
+1	7000	rs7	G	C	.	PASS	.	GT:AD:DP:GQ	0/1:100,100:200:99
+1	8000	rs8	G	C	.	PASS	.	GT:AD:DP:GQ	1/1:0,100:100:99

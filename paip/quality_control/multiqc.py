@@ -6,7 +6,7 @@ from paip.variant_calling import (
 )
 from paip.quality_control import (
     FastQC,
-    AlignmentMetrics,
+    #  AlignmentMetrics,
     VariantCallingMetrics,
     VariantEval,
     BcftoolsStats,
@@ -29,7 +29,7 @@ class MultiQC(CohortTask):
         sample_tasks = [
             FastQC,
             TrimAdapters,
-            AlignmentMetrics,
+            #  AlignmentMetrics,  # SamtoolsStats replaces this
             VariantCallingMetrics,
             AnnotateWithSnpeff,
             VariantEval,
