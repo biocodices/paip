@@ -27,6 +27,8 @@ class PanelMetrics(SampleTask):
                 sample_name=self.sample,
                 sample_vcf=input_vcf.fn,
                 panel_vcf=path_to_resource('panel_variants'),
+                min_gq=self.min_gq,
+                min_dp=self.min_dp,
             )
 
             json_metrics = pmg.json_metrics_for_multiqc(

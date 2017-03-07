@@ -6,12 +6,16 @@
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
 ##contig=<ID=1,length=249250621,assembly=b37>
+##contig=<ID=X,length=249250621,assembly=b37>
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	Sample1
-1	1000	rs1	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:100,0:100:99
-1	2000	rs2	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:100,0:200:99
+1	1000	rs1	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:100,0:100:10
+1	2000	rs2	G	C	.	PASS	.	GT:AD:DP:GQ	0|0:10,0:10:99
 1	3000	rs3	G	C	.	PASS	.	GT:AD:DP:GQ	0/1:100,100:200:99
-1	4000	rs4	G	C	.	PASS	.	GT:AD:DP:GQ	0/1:100,100:200:99
+1	4000	rs4	G	C	.	PASS	.	GT:AD:DP:GQ	0|1:100,100:200:99
 1	5000	rs5	G	C	.	PASS	.	GT:AD:DP:GQ	1/1:0,100:100:99
-1	6000	rs6	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:100,0:100:99
-1	7000	rs7	G	C	.	PASS	.	GT:AD:DP:GQ	0/1:100,100:200:99
-1	8000	rs8	G	C	.	PASS	.	GT:AD:DP:GQ	1/1:0,100:100:99
+1	6000	rs6	G	C	.	PASS	.	GT:AD:DP:GQ	1|1:100,0:100:99
+1	7000	rs7	G	C	.	filt	.	GT:AD:DP:GQ	./.:100,100:200:99
+1	8000	rs100	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:0,100:100:99
+1	9000	rs101	G	C	.	PASS	.	GT:AD:DP:GQ	0/0:0,100:100:99
+X	1000	rsX1	G	C	.	PASS	.	GT:AD:DP:GQ	0:0,100:100:99
+X	2000	rsX2	G	C	.	PASS	.	GT:AD:DP:GQ	1:0,100:100:99

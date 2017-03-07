@@ -305,9 +305,9 @@ gatk VariantFiltration genos:
      -R {reference_genome}
      -V {input_vcf}
      -G_filterName LowGQ
-     -G_filter "GQ < 30"
+     -G_filter "GQ < {min_gq}"
      -G_filterName LowDP
-     -G_filter "DP < 30"
+     -G_filter "DP < {min_dp}"
      -l INFO
      -o {output_vcf}'
 

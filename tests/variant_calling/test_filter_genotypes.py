@@ -25,6 +25,12 @@ def test_run(task, test_cohort_path):
     program_input = result['program_options']['input_vcf']
     assert program_input == task.input().fn
 
+    program_input = result['program_options']['min_gq']
+    assert program_input == task.min_gq
+
+    program_input = result['program_options']['min_dp']
+    assert program_input == task.min_dp
+
     program_output = result['program_options']['output_vcf']
     expected_output = re.compile(r'geno_filt.*luigi-tmp.*')
     assert expected_output.search(program_output)

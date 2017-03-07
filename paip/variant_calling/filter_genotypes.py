@@ -16,6 +16,8 @@ class FilterGenotypes(CohortTask):
             program_options = {
                 'input_vcf': self.input().fn,
                 'output_vcf': self.temp_vcf,
+                'min_gq': self.min_gq,
+                'min_dp': self.min_dp,
             }
 
             self.run_program(program_name, program_options)

@@ -10,22 +10,18 @@ def pmg():
         sample_vcf=pytest.helpers.file('Sample1_genos.vcf'),
         sample_name='Sample1',
         panel_vcf=pytest.helpers.file('panel_variants.vcf'),
+        min_gq=30,
+        min_dp=30,
     )
 
 
-# Note:
-# These tests use the vcfs Sample1_genos.vcf and panel_variants.vcf.
-# The premise is that there are 8 genotypes in the Sample1 VCF,
-# but only 5 of them are panel variants, the other 3 are extra panel.
-# Additionally, 2 panel variants are not seen in the Sample1 VCF.
-
-
 def test_init(pmg):
-    assert len(pmg.panel) == 7
-    assert len(pmg.genos) == 8
-    assert pmg.panel_ids == ['rs1', 'rs2', 'rs3', 'rs4', 'rs5', 'rs9', 'rs10']
-    assert pmg.panel_size == 7
-    assert len(pmg.panel_genos) == 5
+    assert len(pmg.panel) == 10
+    assert pmg.panel_size == 10
+    assert pmg.panel_ids == ['rs1', 'rs2', 'rs3', 'rs4', 'rs5', 'rs6', 'rs7',
+                             'rs99', 'rsX1', 'rsX2']
+    assert len(pmg.genos) == 11  # 9 from the panel, 2 extra panel
+    assert len(pmg.panel_genos) == 9
     assert 'GT' in pmg.genos
     assert 'DP' in pmg.genos
     assert 'GQ' in pmg.genos
@@ -35,44 +31,49 @@ def test_init(pmg):
 
 def test_count_total_genos(pmg):
     pmg.count_total_genos()
-    assert pmg.metrics['total_genos'] == 8
+    assert pmg.metrics['Total genos'] == 11
 
 
 def test_count_seen_variants(pmg):
     pmg.count_seen_variants()
-    assert pmg.metrics['panel_genotypes_seen'] == 5
-    assert pmg.metrics['extra_panel_genotypes_seen'] == 3
-    assert pmg.metrics['panel_genotypes_seen_%'] == 71.0  # 5/7
+    assert pmg.metrics['Panel genos'] == 9
+    assert pmg.metrics['Extra-panel genos'] == 2
+    assert pmg.metrics['% Panel seen'] == 90.0  # 9/10
 
     # Now keep only the in-panel genotypes and test it doesn't break
     # trying to count the extra-panel genotypes (which are 0)
     pmg.genos = pmg.genos[pmg.genos['in_panel']].reset_index(drop=True)
     pmg.count_seen_variants()
-    assert pmg.metrics['extra_panel_genotypes_seen'] == 0
+    assert pmg.metrics['Extra-panel genos'] == 0
 
 
 def test_count_missing_variants(pmg):
     pmg.count_missing_variants()
-    assert pmg.metrics['panel_genotypes_missing'] == 2
-    assert pmg.metrics['panel_missing_%'] == 29.0  # 2/7
+    assert pmg.metrics['Panel variants missing'] == 1
+    assert pmg.metrics['% Panel missing'] == 10.0  # 1/10
 
 
 def test_count_genotypes(pmg):
     pmg.count_genotypes()
-    assert pmg.metrics['panel_homRef_count'] == 2
-    assert pmg.metrics['panel_het_count'] == 2
-    assert pmg.metrics['panel_homAlt_count'] == 1
-    assert pmg.metrics['panel_homRef_%'] == 40.0
-    assert pmg.metrics['panel_het_%'] == 40.0
-    assert pmg.metrics['panel_homAlt_%'] == 20.0
+    assert pmg.metrics['Panel 0/0'] == 3
+    assert pmg.metrics['Panel 0/1'] == 2
+    assert pmg.metrics['Panel 1/1'] == 3
+    assert pmg.metrics['Panel ./.'] == 1
 
 
 def test_compute_GQ_DP_stats(pmg):
     pmg.compute_GQ_DP_stats()
-    assert pmg.metrics['DP_mean'] == 160
-    assert pmg.metrics['DP_median'] == 200
-    assert pmg.metrics['GQ_mean'] == 99
-    assert pmg.metrics['GQ_median'] == 99
+    assert pmg.metrics['DP mean'] == 123
+    assert pmg.metrics['GQ mean'] == 89
+
+
+def test_count_badqual_genotypes(pmg):
+    pmg.count_badqual_genotypes()
+    assert pmg.metrics['Panel non-reportable'] == 3
+    assert pmg.metrics['Panel non-reportable %'] == 33.0  # 3/10
+    assert pmg.metrics['Panel LowDP'] == 1
+    assert pmg.metrics['Panel LowGQ'] == 1
+    assert pmg.metrics['Panel non-PASS'] == 1
 
 
 def test_belongs_to_panel(pmg):
@@ -97,6 +98,9 @@ def test_compute_metrics(pmg, monkeypatch):
     def mock_count_genotypes():
         mock_count_genotypes.was_called = True
 
+    def mock_count_badqual_genotypes():
+        mock_count_badqual_genotypes.was_called = True
+
     def mock_compute_GQ_DP_stats():
         mock_compute_GQ_DP_stats.was_called = True
 
@@ -105,6 +109,7 @@ def test_compute_metrics(pmg, monkeypatch):
         'count_seen_variants': mock_count_seen_variants,
         'count_missing_variants': mock_count_missing_variants,
         'count_genotypes': mock_count_genotypes,
+        'count_badqual_genotypes': mock_count_badqual_genotypes,
         'compute_GQ_DP_stats': mock_compute_GQ_DP_stats,
     }
 

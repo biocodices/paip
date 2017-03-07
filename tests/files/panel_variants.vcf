@@ -5,6 +5,8 @@
 1	3000	rs3	G	C	.	PASS	.
 1	4000	rs4	G	C	.	PASS	.
 1	5000	rs5	G	C	.	PASS	.
-1	9000	rs9	G	C	.	PASS	.
-1	10000	rs10	G	C	.	PASS	.
-
+1	9000	rs6	G	C	.	PASS	.
+1	10000	rs7	G	C	.	PASS	.
+1	99000	rs99	G	C	.	PASS	.
+X	1000	rsX1	G	C	.	PASS	.
+X	2000	rsX2	G	C	.	PASS	.
