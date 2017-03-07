@@ -67,7 +67,7 @@ gatk RealignerTargetCreator:
      -known {indels_1000G}
      -known {indels_mills}
      -L {panel_regions}
-     -l DEBUG
+     -l INFO
      -o {outfile}'
 
 gatk IndelRealigner:
@@ -76,7 +76,7 @@ gatk IndelRealigner:
      -I {input_bam}
      -R {reference_genome}
      -targetIntervals {targets_file}
-     -l DEBUG
+     -l INFO
      -o {output_bam}'
 
 gatk BaseRecalibrator:
@@ -88,7 +88,7 @@ gatk BaseRecalibrator:
      -L {panel_regions}
      -knownSites {indels_1000G}
      -knownSites {indels_mills}
-     -l DEBUG
+     -l INFO
      -o {outfile}'
 
 gatk PrintReads:
@@ -98,7 +98,7 @@ gatk PrintReads:
      -I {input_bam}
      -BQSR {recalibration_table}
      -R {reference_genome}
-     -l DEBUG
+     -l INFO
      -o {output_bam}'
 
 # gatk HaplotypeCaller variant_sites for_exomes:
@@ -118,7 +118,7 @@ gatk PrintReads:
      # -R {reference_genome}
      # -D {dbsnp_GRCh37}
      # -nct 8
-     # -l DEBUG
+     # -l INFO
      # -o {output_vcf}'
 
 gatk HaplotypeCaller:
@@ -141,7 +141,7 @@ gatk HaplotypeCaller:
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -o {output_gvcf}
-     -l DEBUG
+     -l INFO
      -bamout {output_bam}'
 
     # The -nt and -nct options can't be used when asking for a -bamout
@@ -164,7 +164,7 @@ gatk HaplotypeCaller target_sites:
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -o {output_vcf}
-     -l DEBUG
+     -l INFO
      -bamout {output_bam}'
 
 gatk GenotypeGVCFs all_sites:
@@ -178,7 +178,7 @@ gatk GenotypeGVCFs all_sites:
      -D {dbsnp_GRCh37}
      -nt 1
      {input_gvcfs}
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 gatk GenotypeGVCFs variant_sites:
@@ -195,8 +195,26 @@ gatk GenotypeGVCFs variant_sites:
      -D {dbsnp_GRCh37}
      -nt 8
      {input_gvcfs}
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
+
+bcftools reset_filters:
+
+    # This step belongs to the "target_sites" pipeline.
+    #
+    # It's necessary because GATK's HaplotypeCaller will mark every
+    # 0/0 genotype as "LowQual", even though they have good depth and
+    # quality.
+    #
+    # This user seems to have had the same issue, but no satisfactory answer
+    # was given: http://gatkforums.broadinstitute.org/gatk/discussion/6615/many-lowqual-flags-in-output-vcf-when-using-haplotypecaller-with-alleles-arg
+
+    '{executable}
+     annotate
+     --remove FILTER,QUAL
+     --output-type v
+     --output {output_vcf}
+     {input_vcf}'
 
 gatk CombineVariants:
     # The {input_vcfs} will be filled in the corresponding
@@ -206,7 +224,7 @@ gatk CombineVariants:
      -nt 8
      -R {reference_genome}
      {input_vcfs}
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 snpsift dbSNP:
@@ -227,7 +245,7 @@ gatk SelectVariants snps:
      -nt 8
      -R {reference_genome}
      -V {input_vcf}
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 gatk SelectVariants indels:
@@ -237,7 +255,7 @@ gatk SelectVariants indels:
      -nt 8
      -R {reference_genome}
      -V {input_vcf}
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 gatk VariantFiltration snps:
@@ -253,7 +271,7 @@ gatk VariantFiltration snps:
      -filter "MQRankSum < -12.5"
      --filterName RPRS
      -filter "ReadPosRankSum < -8.0"
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 gatk VariantFiltration indels:
@@ -265,7 +283,7 @@ gatk VariantFiltration indels:
      -filter "QD < 2.0"
      --filterName RPRS
      -filter "ReadPosRankSum < 20.0"
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 gatk CombineVariants snps_indels:
@@ -278,7 +296,7 @@ gatk CombineVariants snps_indels:
      -V:indels {input_indels}
      -genotypeMergeOptions PRIORITIZE
      -priority snps,indels
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 gatk VariantFiltration genos:
@@ -290,7 +308,7 @@ gatk VariantFiltration genos:
      -G_filter "GQ < 30"
      -G_filterName LowDP
      -G_filter "DP < 30"
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
     # I originally included this RGQ filter for the all_sites pipeline:
@@ -361,7 +379,7 @@ gatk SelectVariants sample:
      -R {reference_genome}
      -V {input_vcf}
      --sample_name {sample}
-     -l DEBUG
+     -l INFO
      -o {output_vcf}'
 
 
@@ -373,7 +391,7 @@ gatk SelectVariants reportable:
      -V {input_vcf}
      --excludeFiltered
      -select 'vc.getGenotype(\"{sample}\").getGQ() > {min_GQ} && vc.getGenotype(\"{sample}\").getDP() > {min_DP}'
-     -l DEBUG
+     -l INFO
      -o {output_vcf}"
 
 

@@ -1,5 +1,5 @@
 from paip.task_types import CohortTask
-from paip.variant_calling import CallTargets
+from paip.variant_calling import ResetFilters
 
 
 class MergeVCFs(CohortTask):
@@ -10,13 +10,13 @@ class MergeVCFs(CohortTask):
     OUTPUT = 'vcf'
 
     def requires(self):
-        return [CallTargets(sample=sample, basedir=self.basedir)
+        return [ResetFilters(sample=sample, **self.param_kwargs)
                 for sample in self.sample_list]
 
     def run(self):
         # CallTargets outputs both a VCF and a BAM (in that order).
         # We use the VCFs here:
-        input_vcfs = ['-V {}'.format(inputs[0].fn) for inputs in self.input()]
+        input_vcfs = ['-V {}'.format(input_.fn) for input_ in self.input()]
 
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk CombineVariants'

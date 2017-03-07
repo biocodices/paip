@@ -1,6 +1,6 @@
 import pytest
 
-from paip.variant_calling import MergeVCFs, CallTargets
+from paip.variant_calling import MergeVCFs, ResetFilters
 
 
 @pytest.fixture
@@ -11,8 +11,8 @@ def task(cohort_task_params):
 
 def test_requires(task):
     expected_dependencies = [
-        CallTargets(sample='Sample1', basedir=task.basedir),
-        CallTargets(sample='Sample2', basedir=task.basedir)
+        ResetFilters(sample='Sample1', **task.param_kwargs),
+        ResetFilters(sample='Sample2', **task.param_kwargs)
     ]
     assert task.requires() == expected_dependencies
 

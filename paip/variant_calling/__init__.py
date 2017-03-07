@@ -8,6 +8,7 @@ from .create_recalibration_table import CreateRecalibrationTable
 from .recalibrate_alignment_scores import RecalibrateAlignmentScores
 from .make_gvcf import MakeGVCF
 from .call_targets import CallTargets
+from .reset_filters import ResetFilters, ResetFiltersCohort
 from .joint_genotyping import JointGenotyping
 from .merge_vcfs import MergeVCFs
 from .annotate_with_dbsnp import AnnotateWithDbSNP
