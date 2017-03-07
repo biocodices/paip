@@ -12,6 +12,7 @@ from paip.quality_control import (
     BcftoolsStats,
     SamtoolsStats,
     FeatureCounts,
+    PanelMetrics,
 )
 
 
@@ -36,6 +37,7 @@ class MultiQC(CohortTask):
             BcftoolsStats,
             SamtoolsStats,
             FeatureCounts,
+            PanelMetrics,
         ]
 
         sample_tasks = [task(sample=sample, **self.param_kwargs)

@@ -1,4 +1,4 @@
-import yaml
+from collections import OrderedDict
 import json
 
 from vcf_to_dataframe import vcf_to_dataframe
@@ -20,6 +20,7 @@ class PanelMetricsGenerator:
         Pass a VCF with the sample genotypes and a VCF of the Panel variants.
         Metrics will be stored in self.metrics.
         """
+        self.sample = sample_name
         self.panel = vcf_to_dataframe(panel_vcf)
         self.panel_ids = list(self.panel['id'])
         self.panel_size = len(self.panel_ids)
@@ -27,7 +28,7 @@ class PanelMetricsGenerator:
                                       keep_format_data=True)
         self.genos['in_panel'] = self.genos['id'].apply(self.belongs_to_panel)
         self.panel_genos = self.genos[self.genos['in_panel']]
-        self.metrics = {'sample': sample_name}
+        self.metrics = {}
 
     def compute_metrics(self):
         """
@@ -37,15 +38,23 @@ class PanelMetricsGenerator:
         self.count_seen_variants()
         self.count_missing_variants()
         self.count_genotypes()
-        self.compute_averages()
+        self.compute_GQ_DP_stats()
 
         return self.metrics
 
-    def metrics_as_json(self):
-        return json.dumps(self.metrics, sort_keys=True, indent=4)
+    def json_metrics_for_multiqc(self, module_name):
+        """
+        Return the metrics JSON-formatted for MultiQC. Specify a *module_name*
+        for MultiQC to identify this data. Tries to compute metrics if no
+        data has been generated yet.
+        """
+        if not self.metrics:
+            self.compute_metrics()
 
-    def metrics_as_yaml(self):
-        return yaml.dump(self.metrics, default_flow_style=False)
+        sorted_metrics = OrderedDict(sorted(self.metrics.items()))
+
+        metrics = {'id': module_name, 'data': {self.sample: sorted_metrics}}
+        return json.dumps(metrics, sort_keys=True, indent=4)
 
     def count_total_genos(self):
         self.metrics['total_genos'] = len(self.genos['id'])
@@ -77,18 +86,21 @@ class PanelMetricsGenerator:
         # FIXME: This doesn't take into account the hemicygotes and the 0|0
 
         # (We need to convert to int because numpy numbers aren't serializable)
-        self.metrics['panel_homref_count'] = homref = int(counts.get('0/0') or 0)
+        self.metrics['panel_homRef_count'] = homref = int(counts.get('0/0') or 0)
         self.metrics['panel_het_count'] = het = int(counts.get('0/1') or 0)
-        self.metrics['panel_homalt_count'] = homalt = int(counts.get('1/1') or 0)
+        self.metrics['panel_homAlt_count'] = homalt = int(counts.get('1/1') or 0)
 
-        self.metrics['panel_homref_%'] = self.percentage(homref, total)
+        self.metrics['panel_homRef_%'] = self.percentage(homref, total)
         self.metrics['panel_het_%'] = self.percentage(het, total)
-        self.metrics['panel_homalt_%'] = self.percentage(homalt, total)
+        self.metrics['panel_homAlt_%'] = self.percentage(homalt, total)
 
-    def compute_averages(self):
-        """Compute some averages."""
-        self.metrics['avg_DP'] = int(self.panel_genos['DP'].mean())
-        self.metrics['avg_GQ'] = int(self.panel_genos['GQ'].mean())
+    def compute_GQ_DP_stats(self):
+        """Compute some stats on GQ and DP."""
+        self.metrics['DP_mean'] = int(self.panel_genos['DP'].mean())
+        self.metrics['GQ_mean'] = int(self.panel_genos['GQ'].mean())
+
+        self.metrics['DP_median'] = int(self.panel_genos['DP'].median())
+        self.metrics['GQ_median'] = int(self.panel_genos['GQ'].median())
 
     def belongs_to_panel(self, rsid):
         """Check if an rs ID belongs to the panel."""

@@ -1,3 +1,4 @@
+import json
 import pytest
 
 from paip.metrics_generation import PanelMetricsGenerator
@@ -29,7 +30,7 @@ def test_init(pmg):
     assert 'DP' in pmg.genos
     assert 'GQ' in pmg.genos
     assert 'in_panel' in pmg.genos
-    assert pmg.metrics == {'sample': 'Sample1'}
+    assert pmg.metrics == {}
 
 
 def test_count_total_genos(pmg):
@@ -58,18 +59,20 @@ def test_count_missing_variants(pmg):
 
 def test_count_genotypes(pmg):
     pmg.count_genotypes()
-    assert pmg.metrics['panel_homref_count'] == 2
+    assert pmg.metrics['panel_homRef_count'] == 2
     assert pmg.metrics['panel_het_count'] == 2
-    assert pmg.metrics['panel_homalt_count'] == 1
-    assert pmg.metrics['panel_homref_%'] == 40.0
+    assert pmg.metrics['panel_homAlt_count'] == 1
+    assert pmg.metrics['panel_homRef_%'] == 40.0
     assert pmg.metrics['panel_het_%'] == 40.0
-    assert pmg.metrics['panel_homalt_%'] == 20.0
+    assert pmg.metrics['panel_homAlt_%'] == 20.0
 
 
-def test_compute_averages(pmg):
-    pmg.compute_averages()
-    assert pmg.metrics['avg_DP'] == 160
-    assert pmg.metrics['avg_GQ'] == 99
+def test_compute_GQ_DP_stats(pmg):
+    pmg.compute_GQ_DP_stats()
+    assert pmg.metrics['DP_mean'] == 160
+    assert pmg.metrics['DP_median'] == 200
+    assert pmg.metrics['GQ_mean'] == 99
+    assert pmg.metrics['GQ_median'] == 99
 
 
 def test_belongs_to_panel(pmg):
@@ -94,15 +97,15 @@ def test_compute_metrics(pmg, monkeypatch):
     def mock_count_genotypes():
         mock_count_genotypes.was_called = True
 
-    def mock_compute_averages():
-        mock_compute_averages.was_called = True
+    def mock_compute_GQ_DP_stats():
+        mock_compute_GQ_DP_stats.was_called = True
 
     mock_methods = {
         'count_total_genos': mock_count_total_genos,
         'count_seen_variants': mock_count_seen_variants,
         'count_missing_variants': mock_count_missing_variants,
         'count_genotypes': mock_count_genotypes,
-        'compute_averages': mock_compute_averages,
+        'compute_GQ_DP_stats': mock_compute_GQ_DP_stats,
     }
 
     for method_name, mock_method in mock_methods.items():
@@ -115,14 +118,14 @@ def test_compute_metrics(pmg, monkeypatch):
         assert mock_method.was_called
 
 
-def test_metrics_as_json(pmg):
-    pmg.compute_metrics()
-    result = pmg.metrics_as_json()
-    assert '"avg_DP": 160' in result
+def test_json_metrics_for_multiqc(pmg):
+    json_metrics = pmg.json_metrics_for_multiqc(module_name='module_foo')
 
+    # Check that metrics have been generated
+    assert pmg.metrics
 
-def test_metrics_as_yaml(pmg):
-    pmg.compute_metrics()
-    result = pmg.metrics_as_yaml()
-    assert 'avg_DP: 160' in result
+    # Check the JSON result
+    metrics = json.loads(json_metrics)
+    assert metrics['data']['Sample1'] == pmg.metrics
+    assert metrics['id'] == 'module_foo'
 

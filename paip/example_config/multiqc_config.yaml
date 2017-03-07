@@ -9,4 +9,24 @@ fn_clean_exts:
     - '.target_sites'
     - '.variant_sites'
     - '.all_sites'
+    - '.panel_metrics_mqc.yml'
+
+custom_data:
+    reportable_variants:
+        id: 'reportable_variants'
+        sp:
+            fn: '*.reportable_variants_mqc.json'
+        file_format: 'json'
+        section_name: 'Reportable Variants'
+        description: 'Some stats about seen vs. missing panel variants after all filters have been applied (i.e. the *reportable* variants).'
+        plot_type: 'table'
+
+    unfiltered_variants:
+        id: 'unfiltered_variants'
+        sp:
+            fn: '*.unfiltered_variants_mqc.json'
+        file_format: 'json'
+        section_name: 'Unfiltered Variants'
+        description: 'Some stats about seen vs. missing panel variants before filters have been applied.'
+        plot_type: 'table'
 

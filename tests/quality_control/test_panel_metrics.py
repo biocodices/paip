@@ -9,6 +9,7 @@ def task(sample_task_factory):
 
 
 def test_output(task):
-    out = task.output()
-    assert out.fn.endswith('panel_metrics_mqc.yml')
+    outs = task.output()
+    assert outs[0].fn.endswith('variant_sites.unfiltered_variants_mqc.json')
+    assert outs[1].fn.endswith('variant_sites.reportable_variants_mqc.json')
 
