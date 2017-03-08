@@ -428,7 +428,7 @@ picard CollectAlignmentSummaryMetrics:
 picard CollectVariantCallingMetrics:
   '{executable}
    CollectVariantCallingMetrics
-   I={input_gvcf}
+   I={input_vcf}
    R={reference_genome}
    DBSNP={dbsnp_GRCh37}
    GVCF_INPUT=true
