@@ -1,6 +1,3 @@
-import os
-import re
-
 import pytest
 
 from paip.pipelines.variant_calling import SelectIndels
@@ -13,25 +10,14 @@ def task(cohort_task_factory):
 
 def test_run(task, test_cohort_path):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'gatk SelectVariants indels'
-
-    program_input = result['program_options']['input_vcf']
-    assert program_input == task.input().fn
-
-    program_output = result['program_options']['output_vcf']
-    expected_output = re.compile(r'indels.*luigi-tmp.*')
-    assert expected_output.search(program_output)
-
-    assert task.rename_temp_idx.was_called
-
-    assert os.rename.args_received[0]['src'] == program_output
-    assert os.rename.args_received[0]['dest'] == task.output().fn
+    assert program_name == 'gatk SelectVariants indels'
+    assert program_options['input_vcf'] == task.input().fn
+    assert 'indels.vcf-luigi-tmp' in program_options['output_vcf']
+    assert task.rename_temp_idx.call_count == 1
 
 
-def test_output(task, test_cohort_path):
-    fn = 'Cohort1__2_Samples.variant_sites.indels.vcf'
-    expected_path = test_cohort_path(fn)
-    assert task.output().fn == expected_path
+def test_output(task):
+    assert task.output().fn.endswith('indels.vcf')
 

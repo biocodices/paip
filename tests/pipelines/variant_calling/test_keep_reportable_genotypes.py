@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from paip.pipelines.variant_calling import KeepReportableGenotypes, ExtractSample
@@ -20,25 +18,16 @@ def test_requires(task, cohort_task_params):
 
 def test_run(task):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'gatk SelectVariants reportable'
-
-    program_input = result['program_options']['input_vcf']
+    assert program_name == 'gatk SelectVariants reportable'
+    program_input = program_options['input_vcf']
     assert program_input == task.input().fn
-
-    program_output = result['program_options']['output_vcf']
-    expected_output = 'reportable.vcf-luigi-tmp'
-    assert expected_output in program_output
-
-    assert result['program_options']['min_GQ'] == 30
-    assert result['program_options']['min_DP'] == 30
-    assert result['program_options']['sample'] == task.sample
-
-    assert task.rename_temp_idx.was_called
-
-    assert os.rename.args_received[0]['src'] == program_output
-    assert os.rename.args_received[0]['dest'] == task.output().fn
+    assert 'reportable.vcf-luigi-tmp' in program_options['output_vcf']
+    assert program_options['min_GQ'] == 30
+    assert program_options['min_DP'] == 30
+    assert program_options['sample'] == task.sample
+    assert task.rename_temp_idx.call_count == 1
 
 
 def test_output(task):

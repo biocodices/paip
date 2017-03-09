@@ -10,9 +10,9 @@ def task(sample_task_factory):
 
 def test_run(task):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'bcftools reset_filters'
-    assert result['program_options']['input_vcf'] == task.input()[0].fn
-    assert result['program_options']['output_vcf'] == task.output().fn
+    assert program_name == 'bcftools reset_filters'
+    assert program_options['input_vcf'] == task.input()[0].fn
+    assert program_options['output_vcf'] == task.output().fn
 

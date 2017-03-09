@@ -10,12 +10,11 @@ def task(sample_task_factory):
 
 def test_run(task):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'gatk IndelRealigner'
-    assert result['program_options']['input_bam'] == task.input()[0].fn
-    assert result['program_options']['targets_file'] == task.input()[1].fn
-    expected_out = 'realignment.bam-luigi-tmp'
-    assert expected_out in result['program_options']['output_bam']
-    assert task.rename_temp_bai.was_called
+    assert program_name == 'gatk IndelRealigner'
+    assert program_options['input_bam'] == task.input()[0].fn
+    assert program_options['targets_file'] == task.input()[1].fn
+    assert 'realignment.bam-luigi-tmp' in program_options['output_bam']
+    assert task.rename_temp_bai.call_count == 1
 

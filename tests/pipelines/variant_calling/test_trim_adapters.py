@@ -10,19 +10,11 @@ def task(sample_task_factory):
 
 def test_run(task):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'cutadapt'
-
-    program_input = result['program_options']['forward_reads']
-    assert program_input == task.input()[0].fn
-
-    program_input = result['program_options']['reverse_reads']
-    assert program_input == task.input()[1].fn
-
-    program_output = result['program_options']['forward_output']
-    assert program_output == task.output()[0].fn
-
-    program_output = result['program_options']['reverse_output']
-    assert program_output == task.output()[1].fn
+    assert program_name == 'cutadapt'
+    assert program_options['forward_reads'] == task.input()[0].fn
+    assert program_options['reverse_reads'] == task.input()[1].fn
+    assert program_options['forward_output'] == task.output()[0].fn
+    assert program_options['reverse_output'] == task.output()[1].fn
 

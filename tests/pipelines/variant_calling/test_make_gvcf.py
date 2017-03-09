@@ -10,13 +10,12 @@ def task(sample_task_factory):
 
 def test_run(task):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'gatk HaplotypeCaller'
-    assert result['program_options']['input_bam'] == task.input().fn
-    assert 'g.vcf-luigi-tmp' in result['program_options']['output_gvcf']
-    expected_out = '.hc_realignment.bam-luigi-tmp'
-    assert expected_out in result['program_options']['output_bam']
-    assert task.rename_temp_bai.was_called
-    assert task.rename_temp_idx.was_called
+    assert program_name == 'gatk HaplotypeCaller'
+    assert program_options['input_bam'] == task.input().fn
+    assert 'g.vcf-luigi-tmp' in program_options['output_gvcf']
+    assert '.hc_realignment.bam-luigi-tmp' in program_options['output_bam']
+    assert task.rename_temp_bai.call_count == 1
+    assert task.rename_temp_idx.call_count == 1
 

@@ -1,6 +1,3 @@
-import os
-import re
-
 import pytest
 
 from paip.pipelines.variant_calling import JointGenotyping, MakeGVCF
@@ -19,22 +16,13 @@ def test_requires(task):
 
 def test_run(task, test_cohort_path, test_sample_path):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'gatk GenotypeGVCFs variant_sites'
-
-    program_inputs = result['program_options']['input_gvcfs']
-    expected_inputs = '-V {} -V {}'.format(*[i[0].fn for i in task.input()])
-    assert program_inputs == expected_inputs
-
-    program_output = result['program_options']['output_vcf']
-    expected_output = re.compile(r'vcf-luigi-tmp')
-    assert expected_output.search(program_output)
-
-    assert task.rename_temp_idx.was_called
-
-    assert os.rename.args_received[0]['src'] == program_output
-    assert os.rename.args_received[0]['dest'] == task.output().fn
+    assert program_name == 'gatk GenotypeGVCFs variant_sites'
+    expected_inputs = ['-V {}'.format(input_[0].fn) for input_ in task.input()]
+    assert program_options['input_gvcfs'] == ' '.join(expected_inputs)
+    assert 'vcf-luigi-tmp' in program_options['output_vcf']
+    assert task.rename_temp_idx.call_count == 1
 
 
 def test_output(task, test_cohort_path):

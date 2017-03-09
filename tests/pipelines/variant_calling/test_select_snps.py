@@ -1,6 +1,3 @@
-import os
-import re
-
 import pytest
 
 from paip.pipelines.variant_calling import SelectSNPs
@@ -13,21 +10,12 @@ def task(cohort_task_factory):
 
 def test_run(task, test_cohort_path):
     task.run()
-    result = task.run_program.args_received
+    (program_name, program_options), _ = task.run_program.call_args
 
-    assert result['program_name'] == 'gatk SelectVariants snps'
-
-    program_input = result['program_options']['input_vcf']
-    assert program_input == task.input().fn
-
-    program_output = result['program_options']['output_vcf']
-    expected_output = re.compile(r'snps.*luigi-tmp.*')
-    assert expected_output.search(program_output)
-
-    assert task.rename_temp_idx.was_called
-
-    assert os.rename.args_received[0]['src'] == program_output
-    assert os.rename.args_received[0]['dest'] == task.output().fn
+    assert program_name == 'gatk SelectVariants snps'
+    assert program_options['input_vcf'] == task.input().fn
+    assert 'snps.vcf-luigi-tmp' in program_options['output_vcf']
+    assert task.rename_temp_idx.call_count == 1
 
 
 def test_output(task, test_cohort_path):
