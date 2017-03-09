@@ -13,12 +13,9 @@ def test_run(task, test_cohort_path):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'vep annotate'
-
-    program_input = program_options['input_vcf']
-    assert program_input == task.input().fn
-
-    program_output = program_options['output_vcf']
-    assert 'luigi-tmp' in program_output
+    assert program_options['input_vcf'] == task.input().fn
+    assert program_options['output_stats_html'].endswith('_summary.html')
+    assert 'luigi-tmp' in program_options['output_vcf']
 
 
 def test_output(task, test_cohort_path):

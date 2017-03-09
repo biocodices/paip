@@ -357,7 +357,7 @@ vep annotate:
      --tab
      --everything
      --merged
-     --html
+     --stats_file {output_stats_html}
      --verbose
      -i {input_vcf}
      -o {output_vcf}'

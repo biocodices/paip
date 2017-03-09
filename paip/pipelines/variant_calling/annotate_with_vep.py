@@ -17,6 +17,8 @@ class AnnotateWithVEP(CohortTask):
             program_options = {
                 'input_vcf': self.input().fn,
                 'output_vcf': self.temp_vcf,
+                'output_stats_html': self.output().fn.replace('.tsv',
+                                                              '_summary.html')
             }
             self.run_program(program_name, program_options)
 
