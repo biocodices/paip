@@ -22,14 +22,20 @@ class AnnotateVariants(SampleTask):
     # They can be either annotation or cache keyword arguments.
     # If some argument is frequently used, you can extract it as a separate
     # parameter, as we already did with 'cache' and 'http_proxy' above.
-    extra_kwargs = luigi.Parameter(default='{}')
+    annotation_kwargs = luigi.Parameter(default='{}')
 
-    REQUIRES = KeepReportableGenotypes
     OUTPUT = ['annotated_rs_variants.json',
               'annotated_genes.json']
 
+    def requires(self):
+        params = self.param_kwargs.copy()
+        del(params['cache'])
+        del(params['http_proxy'])
+        del(params['annotation_kwargs'])
+        return KeepReportableGenotypes(**params)
+
     def run(self):
-        extra_kwargs = json.loads(self.extra_kwargs)
+        extra_kwargs = json.loads(self.annotation_kwargs)
 
         pipe = AnnotationPipeline(
             cache=self.cache,
@@ -39,11 +45,11 @@ class AnnotateVariants(SampleTask):
 
         pipe.run_from_vcf(self.input().fn)
 
+        rs_variants_json = pipe.rs_variants.to_json(orient='split')
         with open(self.output()[0].fn, 'w') as f:
-            f.write(pipe.rs_variants.to_json(orient='split'))
+            f.write(rs_variants_json)
 
+        genes_json = pipe.gene_annotations.to_json(orient='split')
         with open(self.output()[1].fn, 'w') as f:
-            f.write(pipe.gene_annotations.to_json(orient='split'))
-
-
+            f.write(genes_json)
 

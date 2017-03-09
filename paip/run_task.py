@@ -53,6 +53,22 @@ Options:
     --workers WORKERS       Number of parallel tasks to run.
                             (default=1)
 
+    --cache CACHE           Name of a cache for AnnotateVariants.
+                            Options: 'mysq', 'postgres',
+                            'redis', 'dict'.
+                            (default='mysql')
+
+    --http-proxy PROXY      HTTP proxy to use for AnnotateVariants.
+                            Typically, you would set a Tor instance
+                            and use the default value.
+                            (default='socks5://localhost:9050')
+
+    --annotation-kwargs JSON   Extra keyword arguments for
+                               AnnotateVariants, which will be
+                            passed to anotamela's AnnotationPipeline.
+                            Pass them as a JSON dictionary.
+                            (default='{}')
+
 """
 
 import sys
@@ -69,7 +85,7 @@ from paip.pipelines.variant_calling import *
 from paip.pipelines.quality_control import *
 from paip.pipelines.variant_calling_task import VariantCalling
 from paip.pipelines.quality_control_task import QualityControl
-# from paip.pipelines.annotate_variants_task import AnnotateVariants
+from paip.pipelines.annotate_variants import AnnotateVariants
 
 
 logger = logging.getLogger('paip')

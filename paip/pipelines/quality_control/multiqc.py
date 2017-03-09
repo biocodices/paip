@@ -7,8 +7,8 @@ from paip.pipelines.variant_calling import (
 from paip.pipelines.quality_control import (
     FastQC,
     #  AlignmentMetrics,
-    VariantCallingMetrics,
-    VariantEval,
+    #  VariantCallingMetrics,
+    #  VariantEval,
     BcftoolsStats,
     SamtoolsStats,
     FeatureCounts,
@@ -31,9 +31,9 @@ class MultiQC(CohortTask):
             FastQC,
             TrimAdapters,
             #  AlignmentMetrics,  # SamtoolsStats replaces this
-            VariantCallingMetrics,
+            #  VariantCallingMetrics,  # MultiQC doesn't use this
             AnnotateWithSnpeff,
-            VariantEval,
+            #  VariantEval,  # The count of SNPs seems to be wrong, misleading!
             BcftoolsStats,
             SamtoolsStats,
             FeatureCounts,
