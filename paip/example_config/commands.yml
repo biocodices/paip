@@ -465,3 +465,9 @@ featureCounts:
    {input_bam}'
 
 
+samtools bedcov:
+  '{executable}
+   bedcov
+   {panel_regions}
+   {input_bam}'
+
