@@ -11,6 +11,9 @@
 
 Usage:
     paip TASK [options]
+    paip VariantCalling --basedir BASEDIR --pipeline-type TYPE [options]
+    paip QualityControl --basedir BASEDIR --pipeline-type TYPE [options]
+    paip ResetPipeline [--basedir BASEDIR] [--dry-run BOOL]
     paip --tasks
     paip (-h | --help)
 
@@ -68,6 +71,11 @@ Options:
                             passed to anotamela's AnnotationPipeline.
                             Pass them as a JSON dictionary.
                             (default='{}')
+
+    --dry-run BOOL          Argument for ResetPipeline, if set
+                            as 1, it will not delete any files,
+                            if set as 0, it will.
+                            (default=1)
 
 """
 
@@ -161,8 +169,9 @@ def set_luigi_logging():
 def list_tasks():
     """List all luigi tasks available."""
     import paip
-    items = (list(paip.variant_calling.__dict__.items()) +
-             list(paip.quality_control.__dict__.items()))
+    items = (list(paip.pipelines.variant_calling.__dict__.items()) +
+             list(paip.pipelines.quality_control.__dict__.items()) +
+             list(paip.pipelines.__dict__.items()))
     return [name for name, obj in items
             if isinstance(obj, luigi.task_register.Register)]
 

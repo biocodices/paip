@@ -9,9 +9,9 @@ class ResetPipeline(luigi.Task):
     """
 
     basedir = luigi.Parameter(default='.')
-    dry_run = luigi.Parameter(default=1)
+    dry_run = luigi.IntParameter(default=1)
 
     def run(self):
         reseter = PipelineReseter(self.basedir)
-        reseter.reset_pipeline(dry_run=bool(self.dry_run))
+        reseter.reset_pipeline(dry_run=bool(int(self.dry_run)))
 

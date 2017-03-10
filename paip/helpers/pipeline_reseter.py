@@ -31,19 +31,24 @@ class PipelineReseter:
             removable_files.extend([join(root, f) for f in files
                                     if not self.KEEP.search(f)])
 
-        return removable_files
+        return sorted(removable_files)
 
     def reset_pipeline(self, dry_run=True):
         """
         Remove all cohort files in self.basedir except for the YAML
         files and the samples R1.fastq(.gz) and R2.fastq(.gz) files.
         """
+        if dry_run:
+            logger.warning('Running in dry mode, no changes will be made.')
+
         for file_ in self.removable_files:
             if dry_run:
                 logger.info('I would delete: {}'.format(file_))
-
             else:
                 os.remove(file_)
                 # ^ Please keep this as 'os.remove', and not as 'remove',
                 # so that it can be mocked in the tests.
 
+        if dry_run:
+            logger.warning('Dry-run. I would have deleted {} files in {}'
+                           .format(len(self.removable_files), self.basedir))
