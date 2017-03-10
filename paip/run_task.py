@@ -11,11 +11,15 @@
 
 Usage:
     paip TASK [options]
-    paip VariantCalling --basedir BASEDIR --pipeline-type TYPE [options]
-    paip QualityControl --basedir BASEDIR --pipeline-type TYPE [options]
-    paip ResetPipeline [--basedir BASEDIR] [--dry-run BOOL]
     paip --tasks
     paip (-h | --help)
+
+Examples:
+    paip VariantCalling --basedir . --pipeline-type all_sites --min-dp 100
+    paip VariantCalling --basedir Seq1 --pipeline-type target_sites --min-gq 30
+    paip VariantCalling --pipeline-type target_sites --trim-software fastq-mcf
+    paip QualityControl --basedir . --pipeline-type target_sites
+    paip ResetPipeline [--basedir BASEDIR] [--dry-run BOOL]
 
 Options:
     --tasks                 List available tasks to run.

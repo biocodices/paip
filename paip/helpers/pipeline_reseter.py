@@ -41,6 +41,7 @@ class PipelineReseter:
         if dry_run:
             logger.warning('Running in dry mode, no changes will be made.')
 
+        del_count = 0
         for file_ in self.removable_files:
             if dry_run:
                 logger.info('I would delete: {}'.format(file_))
@@ -48,7 +49,11 @@ class PipelineReseter:
                 os.remove(file_)
                 # ^ Please keep this as 'os.remove', and not as 'remove',
                 # so that it can be mocked in the tests.
+                del_count += 1
 
         if dry_run:
             logger.warning('Dry-run. I would have deleted {} files in {}'
                            .format(len(self.removable_files), self.basedir))
+        else:
+            logger.warning('Deleted {} files.'.format(del_count))
+
