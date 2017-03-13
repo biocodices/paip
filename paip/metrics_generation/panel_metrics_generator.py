@@ -24,8 +24,8 @@ class PanelMetricsGenerator:
         self.min_gq = min_gq
         self.min_dp = min_dp
         self.panel = vcf_to_dataframe(panel_vcf)
+        self.panel_size = len(self.panel)
         self.panel_ids = list(self.panel['id'])
-        self.panel_size = len(self.panel_ids)
         self.genos = vcf_to_dataframe(sample_vcf, keep_samples=sample_name,
                                       keep_format_data=True)
         self.genos['in_panel'] = self.genos['id'].apply(self.belongs_to_panel)
@@ -61,6 +61,9 @@ class PanelMetricsGenerator:
         metrics = {'id': module_name, 'data': {self.sample: sorted_metrics}}
         return json.dumps(metrics, sort_keys=True, indent=4)
 
+    def json_non_numerical_data(self):
+        return json.dumps(self.non_numerical_data, sort_keys=True, indent=4)
+
     def count_total_genos(self):
         self.metrics['Total genos'] = len(self.genos['id'])
 
@@ -75,16 +78,26 @@ class PanelMetricsGenerator:
     def count_missing_variants(self):
         """Count panel variants that are not seen in the sample VCF."""
         seen_ids_str = ' '.join(self.genos['id'])
-        seen_rsids = [rsid for rsid in self.panel_ids if rsid in seen_ids_str]
-        missing_rsids = [rsid for rsid in self.panel_ids
-                         if rsid not in seen_ids_str]
 
-        self.metrics['Panel variants missing'] = len(missing_rsids)
-        self.metrics['% Panel missing'] = self.percentage(len(missing_rsids),
+        seen_ids = []
+        missing_ids = []
+
+        for vcf_id in self.panel['id']:
+            seen = False
+
+            # We have to check the possibly many IDs in a single VCF ID field:
+            for id_ in vcf_id.split(';'):
+                if id_ in seen_ids_str:
+                    seen = True
+
+            seen_ids.append(vcf_id) if seen else missing_ids.append(vcf_id)
+
+        self.metrics['Panel variants missing'] = len(missing_ids)
+        self.metrics['% Panel missing'] = self.percentage(len(missing_ids),
                                                           self.panel_size)
 
-        self.non_numerical_data['Panel missing IDs'] = missing_rsids
-        self.non_numerical_data['Panel seen IDs'] = seen_rsids
+        self.non_numerical_data['Panel missing IDs'] = sorted(missing_ids)
+        self.non_numerical_data['Panel seen IDs'] = sorted(seen_ids)
 
     def count_genotypes(self):
         """Counts per seen genotype type among the panel variants."""
@@ -131,16 +144,18 @@ class PanelMetricsGenerator:
         self.metrics['DP mean'] = int(self.panel_genos['DP'].mean())
         self.metrics['GQ mean'] = int(self.panel_genos['GQ'].mean())
 
-    def belongs_to_panel(self, rsid):
+    def belongs_to_panel(self, id_):
         """Check if an rs ID belongs to the panel."""
-        rsids = rsid.split(';') if ';' in rsid else [rsid]
-        # ^ Deal with multiple concatenated IDs in the VCF, like "rs123;rs234"
+        ids = id_.split(';')
+        # ^ Deal with multiple concatenated IDs in the VCF, like "rs123;rs234".
 
-        for rsid in rsids:
-            if rsid in self.panel_ids:
-                return True
+        # It's important that we join the panel IDs and check against
+        # against that big string, because some panel IDs might include
+        # two or more IDs. E.g. if the panel has "rs123;rs234", a
+        # simple `in self.panel_ids` check of 'rs123' would fail.
+        panel_concatenated_ids = ';'.join(self.panel_ids)
 
-        return False
+        return any(id_ in panel_concatenated_ids for id_ in ids)
 
     @staticmethod
     def percentage(n, total):

@@ -18,8 +18,8 @@ def pmg():
 def test_init(pmg):
     assert len(pmg.panel) == 10
     assert pmg.panel_size == 10
-    assert pmg.panel_ids == ['rs1', 'rs2', 'rs3', 'rs4', 'rs5', 'rs6', 'rs7',
-                             'rs99', 'rsX1', 'rsX2']
+    assert pmg.panel_ids == ['rs1;rs1_altname', 'rs2', 'rs3', 'rs4', 'rs5',
+                             'rs6', 'rs7', 'rs99', 'rsX1', 'rsX2']
     assert len(pmg.genos) == 11  # 9 from the panel, 2 extra panel
     assert len(pmg.panel_genos) == 9
     assert 'GT' in pmg.genos
@@ -53,8 +53,8 @@ def test_count_missing_variants(pmg):
     assert pmg.metrics['% Panel missing'] == 10.0  # 1/10
 
     assert pmg.non_numerical_data['Panel missing IDs'] == ['rs99']
-    panel_ids = ['rs1', 'rs2', 'rs3', 'rs4', 'rs5', 'rs6', 'rs7', 'rsX1',
-                 'rsX2']
+    panel_ids = ['rs1;rs1_altname', 'rs2', 'rs3', 'rs4', 'rs5', 'rs6', 'rs7',
+                 'rsX1', 'rsX2']
     assert pmg.non_numerical_data['Panel seen IDs'] == panel_ids
 
 
@@ -83,6 +83,7 @@ def test_count_badqual_genotypes(pmg):
 
 def test_belongs_to_panel(pmg):
     assert pmg.belongs_to_panel('rs1')
+    assert pmg.belongs_to_panel('rs1_altname')
     assert not pmg.belongs_to_panel('rs8')
 
 
@@ -138,4 +139,10 @@ def test_json_metrics_for_multiqc(pmg):
     metrics = json.loads(json_metrics)
     assert metrics['data']['Sample1'] == pmg.metrics
     assert metrics['id'] == 'module_foo'
+
+
+def test_json_non_numerical_data(pmg):
+    pmg.non_numerical_data = {'foo': ['bar', 'baz'], 'spam': 'eggs'}
+    data = pmg.json_non_numerical_data()
+    assert json.loads(data)['spam'] == 'eggs'
 

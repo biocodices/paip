@@ -38,7 +38,7 @@ class PanelMetrics(SampleTask):
             with open(output_jsons[0].fn, 'w') as f:
                 f.write(json_metrics)
 
-            json_data = pmg.non_numerical_data
+            json_data = pmg.json_non_numerical_data()
             with open(output_jsons[1].fn, 'w') as f:
                 f.write(json_data)
 
