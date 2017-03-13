@@ -32,7 +32,7 @@ class PanelMetricsGenerator:
         self.panel_genos = self.genos[self.genos['in_panel']]
 
         self.metrics = {}
-        self.non_numerical_data = {}
+        self.non_numerical_data = {'sample': sample_name}
 
     def compute_metrics(self):
         """
