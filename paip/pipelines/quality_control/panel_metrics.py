@@ -16,12 +16,12 @@ class PanelMetrics(SampleTask):
     REQUIRES = [ExtractSample, KeepReportableGenotypes]
 
     def run(self):
-        settings = {
-            ('unfiltered_variants', self.input()[0], self.output()[0]),
-            ('reportable_variants', self.input()[1], self.output()[1]),
-        }
+        settings = [
+            ('unfiltered_variants', self.input()[0], self.output()[:2]),
+            ('reportable_variants', self.input()[1], self.output()[2:]),
+        ]
 
-        for module_name, input_vcf, output_json in settings:
+        for module_name, input_vcf, output_jsons in settings:
 
             pmg = PanelMetricsGenerator(
                 sample_name=self.sample,
@@ -35,12 +35,20 @@ class PanelMetrics(SampleTask):
                 module_name=module_name
             )
 
-            with open(output_json.fn, 'w') as f:
+            with open(output_jsons[0].fn, 'w') as f:
                 f.write(json_metrics)
 
+            json_data = pmg.non_numerical_data
+            with open(output_jsons[1].fn, 'w') as f:
+                f.write(json_data)
+
     def output(self):
+        # The _mqc files contain numerical info that will be charted by MultiQC
+        # The _data files have non-numerical info.
         outputs = ['unfiltered_variants_mqc.json',
-                   'reportable_variants_mqc.json']
+                   'unfiltered_variants_data.json',
+                   'reportable_variants_mqc.json',
+                   'reportable_variants_data.json']
 
         return [luigi.LocalTarget(self.sample_pipeline_path(fn))
                 for fn in outputs]

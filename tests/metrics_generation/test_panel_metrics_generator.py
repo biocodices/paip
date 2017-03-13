@@ -52,6 +52,11 @@ def test_count_missing_variants(pmg):
     assert pmg.metrics['Panel variants missing'] == 1
     assert pmg.metrics['% Panel missing'] == 10.0  # 1/10
 
+    assert pmg.non_numerical_data['Panel missing IDs'] == ['rs99']
+    panel_ids = ['rs1', 'rs2', 'rs3', 'rs4', 'rs5', 'rs6', 'rs7', 'rsX1',
+                 'rsX2']
+    assert pmg.non_numerical_data['Panel seen IDs'] == panel_ids
+
 
 def test_count_genotypes(pmg):
     pmg.count_genotypes()

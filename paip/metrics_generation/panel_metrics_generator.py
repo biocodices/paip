@@ -30,7 +30,9 @@ class PanelMetricsGenerator:
                                       keep_format_data=True)
         self.genos['in_panel'] = self.genos['id'].apply(self.belongs_to_panel)
         self.panel_genos = self.genos[self.genos['in_panel']]
+
         self.metrics = {}
+        self.non_numerical_data = {}
 
     def compute_metrics(self):
         """
@@ -72,12 +74,17 @@ class PanelMetricsGenerator:
 
     def count_missing_variants(self):
         """Count panel variants that are not seen in the sample VCF."""
-        seen_ids = ' '.join(self.genos['id'])
-        missing_variants = [rsid for rsid in self.panel_ids
-                            if rsid not in seen_ids]
-        self.metrics['Panel variants missing'] = len(missing_variants)
-        self.metrics['% Panel missing'] = self.percentage(len(missing_variants),
+        seen_ids_str = ' '.join(self.genos['id'])
+        seen_rsids = [rsid for rsid in self.panel_ids if rsid in seen_ids_str]
+        missing_rsids = [rsid for rsid in self.panel_ids
+                         if rsid not in seen_ids_str]
+
+        self.metrics['Panel variants missing'] = len(missing_rsids)
+        self.metrics['% Panel missing'] = self.percentage(len(missing_rsids),
                                                           self.panel_size)
+
+        self.non_numerical_data['Panel missing IDs'] = missing_rsids
+        self.non_numerical_data['Panel seen IDs'] = seen_rsids
 
     def count_genotypes(self):
         """Counts per seen genotype type among the panel variants."""
