@@ -390,7 +390,7 @@ gatk SelectVariants reportable:
      -R {reference_genome}
      -V {input_vcf}
      --excludeFiltered
-     -select 'vc.getGenotype(\"{sample}\").getGQ() > {min_GQ} && vc.getGenotype(\"{sample}\").getDP() > {min_DP}'
+     -select 'vc.getGenotype(\"{sample}\").getGQ() >= {min_GQ} && vc.getGenotype(\"{sample}\").getDP() >= {min_DP}'
      -l INFO
      -o {output_vcf}"
 
