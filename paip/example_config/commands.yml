@@ -464,10 +464,14 @@ featureCounts:
    -T 1
    {input_bam}'
 
-
-samtools bedcov:
+samtools depth:
   '{executable}
-   bedcov
-   {panel_regions}
+   depth
+   -a
+   -Q 40
+   -b {panel_regions}
    {input_bam}'
+
+   # The -Q 40 makes samtools count the bases with a mapping quality > 40,
+   # which is the MQ threshold that GATK uses in other part of the pipeline.
 
