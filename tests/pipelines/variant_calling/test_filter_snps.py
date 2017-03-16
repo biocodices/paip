@@ -8,7 +8,7 @@ def task(cohort_task_factory):
     return cohort_task_factory(FilterSNPs)
 
 
-def test_run(task, test_cohort_path):
+def test_run(task, mock_rename):
     task.run()
 
     assert task.run_program.call_count == 1
@@ -18,9 +18,9 @@ def test_run(task, test_cohort_path):
     assert program_options['input_vcf'] == task.input().fn
     assert 'snps.filt.vcf-luigi-tmp' in program_options['output_vcf']
 
-    assert task.rename_temp_idx.call_count == 1
+    assert mock_rename.call_count == 2
 
 
-def test_output(task, test_cohort_path):
+def test_output(task):
     assert task.output().fn.endswith('snps.filt.vcf')
 

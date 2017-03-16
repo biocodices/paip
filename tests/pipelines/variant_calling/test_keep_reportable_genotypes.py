@@ -16,7 +16,7 @@ def test_requires(task, cohort_task_params):
     assert task.requires() == expected_requires
 
 
-def test_run(task):
+def test_run(task, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
@@ -27,7 +27,7 @@ def test_run(task):
     assert program_options['min_GQ'] == 30
     assert program_options['min_DP'] == 30
     assert program_options['sample'] == task.sample
-    assert task.rename_temp_idx.call_count == 1
+    assert mock_rename.call_count == 2
 
 
 def test_output(task):

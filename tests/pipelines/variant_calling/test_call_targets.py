@@ -8,7 +8,7 @@ def task(sample_task_factory):
     return sample_task_factory(CallTargets)
 
 
-def test_run(task):
+def test_run(task, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
@@ -17,7 +17,5 @@ def test_run(task):
     assert '.vcf-luigi-tmp' in program_options['output_vcf']
     expected_out = '.hc_target_sites_realignment.bam-luigi-tmp'
     assert expected_out in program_options['output_bam']
-
-    assert task.rename_temp_bai.call_count == 1
-    assert task.rename_temp_idx.call_count == 1
+    assert mock_rename.call_count == 4
 

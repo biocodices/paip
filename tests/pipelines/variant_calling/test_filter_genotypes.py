@@ -13,7 +13,7 @@ def test_requires(task):
     assert task.requires() == expected_dependencies
 
 
-def test_run(task, test_cohort_path):
+def test_run(task, test_cohort_path, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
@@ -22,7 +22,7 @@ def test_run(task, test_cohort_path):
     assert program_options['min_gq'] == task.min_gq
     assert program_options['min_dp'] == task.min_dp
     assert 'geno_filt.vcf-luigi-tmp' in program_options['output_vcf']
-    assert task.rename_temp_idx.call_count == 1
+    assert mock_rename.call_count == 2
 
 
 def test_output(task, test_cohort_path):

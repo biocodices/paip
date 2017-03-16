@@ -8,7 +8,7 @@ def task(sample_task_factory):
     return sample_task_factory(AddOrReplaceReadGroups)
 
 
-def test_run(task):
+def test_run(task, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
@@ -20,5 +20,5 @@ def test_run(task):
     assert program_options['lane_number'] == 'Lane-Number'
     assert program_options['platform'] == 'Platform'
     assert task.output().fn + '-luigi-tmp' in program_options['output_bam']
-    assert task.rename_temp_bai.was_called
+    assert mock_rename.call_count == 2
 

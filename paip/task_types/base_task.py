@@ -1,4 +1,4 @@
-from os import rename
+import os
 from os.path import join, expanduser, abspath
 import yaml
 
@@ -95,7 +95,9 @@ class BaseTask(luigi.Task):
         output_vcf = self._find_output('.vcf').fn
         intended_filename = output_vcf + suffix
         temp_filename = self.temp_vcf + suffix
-        rename(temp_filename, intended_filename)
+        os.rename(temp_filename, intended_filename)
+        # ^ Leave this as os.rename, don't import rename directly,
+        # so it can be mocked in the tests:
 
     def rename_temp_bai(self):
         """
@@ -107,7 +109,9 @@ class BaseTask(luigi.Task):
         output_bam = self._find_output('.bam').fn
         intended_filename = output_bam + suffix
         temp_filename = self.temp_bam + suffix
-        rename(temp_filename, intended_filename)
+        os.rename(temp_filename, intended_filename)
+        # ^ Leave this as os.rename, don't import rename directly,
+        # so it can be mocked in the tests:
 
     def _find_output(self, substring):
         """

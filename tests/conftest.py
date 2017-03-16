@@ -66,13 +66,17 @@ def task_factory(monkeypatch):
 
         monkeypatch.setattr(task, 'run_program',
                             MagicMock(return_value=('stdout', 'stderr')))
-        monkeypatch.setattr(task, 'rename_temp_idx', MagicMock())
-        monkeypatch.setattr(task, 'rename_temp_bai', MagicMock())
-        monkeypatch.setattr(os, 'rename', MagicMock())
 
         return task
 
     return factory
+
+
+@pytest.fixture(scope='function', autouse=True)
+def mock_rename(monkeypatch):
+    mock_rename = MagicMock()
+    monkeypatch.setattr(os, 'rename', mock_rename)
+    return mock_rename
 
 
 @pytest.fixture(scope='function')

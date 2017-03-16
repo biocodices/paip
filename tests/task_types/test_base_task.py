@@ -18,15 +18,6 @@ def MockTask():
     return MockClass
 
 
-def fake_rename(src, dest):
-    # Fake function used to test the parameters that the
-    # actual rename function will receive.
-    if not hasattr(fake_rename, 'received_parameters'):
-        fake_rename.received_parameters = []
-
-    fake_rename.received_parameters.append({'src': src, 'dest': dest})
-
-
 def test_load_sample_data_from_yaml(base_task):
     # By default, sequencing_data.yml is read
     for key in ['Sample1', 'Sample2', 'Sample3']:
@@ -97,26 +88,18 @@ def test_find_output(base_task):
         base_task._find_output('nonexistent')
 
 
-def test_rename_temp_bai(base_task, monkeypatch):
-    monkeypatch.setattr(paip.task_types.base_task, 'rename', fake_rename)
-
+def test_rename_temp_bai(base_task, mock_rename):
     base_task.output = lambda: luigi.LocalTarget('out.bam')
     base_task.temp_bam = 'temp.bam'
     base_task.rename_temp_bai()
-
-    expected_parameters = {'src': 'temp.bam.bai', 'dest': 'out.bam.bai'}
-    assert expected_parameters in fake_rename.received_parameters
+    assert mock_rename.call_args[0] == ('temp.bam.bai', 'out.bam.bai')
 
 
-def test_rename_temp_idx(base_task, monkeypatch):
-    monkeypatch.setattr(paip.task_types.base_task, 'rename', fake_rename)
-
-    base_task.output = lambda: luigi.LocalTarget('out.bam')
-    base_task.temp_bam = 'temp.bam'
-    base_task.rename_temp_bai()
-
-    expected_parameters = {'src': 'temp.bam.bai', 'dest': 'out.bam.bai'}
-    assert expected_parameters in fake_rename.received_parameters
+def test_rename_temp_idx(base_task, mock_rename):
+    base_task.output = lambda: luigi.LocalTarget('out.vcf')
+    base_task.temp_vcf = 'temp.vcf'
+    base_task.rename_temp_idx()
+    assert mock_rename.call_args[0] == ('temp.vcf.idx', 'out.vcf.idx')
 
 
 def test_requires(MockTask, test_cohort_basedir):

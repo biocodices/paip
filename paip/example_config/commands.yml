@@ -475,3 +475,13 @@ samtools depth:
    # The -Q 40 makes samtools count the bases with a mapping quality > 40,
    # which is the MQ threshold that GATK uses in other part of the pipeline.
 
+gatk DiagnoseTargets:
+  '{executable}
+   -T DiagnoseTargets
+   -I {input_bam}
+   --minimum_mapping_quality 40
+   --minimum_coverage 30
+   -R {reference_genome}
+   -L {panel_regions}
+   -o {output_vcf}'
+
