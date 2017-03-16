@@ -15,7 +15,6 @@ def test_run(task):
     assert program_name == 'gatk PrintReads'
     assert program_options['input_bam'] == task.input()[0].fn
     assert program_options['recalibration_table'] == task.input()[1].fn
-    expected_out = 'recalibrated.bam-luigi-tmp'
-    assert expected_out in program_options['output_bam']
+    assert 'recalibrated.bam-luigi-tmp' in program_options['output_bam']
     assert task.rename_temp_bai.call_count == 1
 

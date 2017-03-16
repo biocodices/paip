@@ -7,4 +7,5 @@ from .samtools_depth import SamtoolsDepth
 from .feature_counts import FeatureCounts, FeatureCountsCohort
 from .fastqc import FastQC, FastQCCohort
 from .panel_metrics import PanelMetrics
+from .diagnose_targets import DiagnoseTargets
 from .multiqc import MultiQC
