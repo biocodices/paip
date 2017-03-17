@@ -1,1 +1,2 @@
 from .panel_metrics_generator import PanelMetricsGenerator
+from .coverage_analyser import CoverageAnalyser

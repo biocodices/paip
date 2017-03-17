@@ -1,0 +1,48 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=BAD_MATE,Description="the reads are not properly mated, suggesting mapping errors">
+##FILTER=<ID=COVERAGE_GAPS,Description="absolutely no coverage was observed at a locus, regardless of the filtering parameters">
+##FILTER=<ID=EXCESSIVE_COVERAGE,Description="more than -maxDepth read at the locus, indicating some sort of mapping problem">
+##FILTER=<ID=LOW_COVERAGE,Description="there were less than min. depth bases at the locus, after applying filters">
+##FILTER=<ID=NO_READS,Description="there are no reads contained in the interval">
+##FILTER=<ID=PASS,Description="the base satisfied the min. depth for calling but had less than maxDepth to avoid having EXCESSIVE_COVERAGE">
+##FILTER=<ID=POOR_QUALITY,Description="more than --maxFractionOfReadsWithLowMAPQ at the locus, indicating a poor mapping quality of the reads">
+##FORMAT=<ID=FT,Number=.,Type=String,Description="Genotype-level filter">
+##FORMAT=<ID=IDP,Number=1,Type=Float,Description="Average sample depth across the interval. Sum of the sample specific depth in all loci divided by interval size.">
+##FORMAT=<ID=LL,Number=1,Type=Integer,Description="Number of loci for this sample, in this interval with low coverage (below the minimum coverage) but not zero.">
+##FORMAT=<ID=ZL,Number=1,Type=Integer,Description="Number of loci for this sample, in this interval with zero coverage.">
+##INFO=<ID="Diagnose Targets",Number=0,Type=Flag,Description="DiagnoseTargets mode">
+##INFO=<ID=END,Number=1,Type=Integer,Description="Stop position of the interval">
+##INFO=<ID=IDP,Number=1,Type=Float,Description="Average depth across the interval. Sum of the depth in a loci divided by interval size.">
+##INFO=<ID=IGC,Number=1,Type=Float,Description="GC Content of the interval">
+##contig=<ID=1,length=249250621,assembly=b37>
+##contig=<ID=2,length=243199373,assembly=b37>
+##contig=<ID=3,length=198022430,assembly=b37>
+##contig=<ID=4,length=191154276,assembly=b37>
+##contig=<ID=5,length=180915260,assembly=b37>
+##contig=<ID=6,length=171115067,assembly=b37>
+##contig=<ID=7,length=159138663,assembly=b37>
+##contig=<ID=8,length=146364022,assembly=b37>
+##contig=<ID=9,length=141213431,assembly=b37>
+##contig=<ID=10,length=135534747,assembly=b37>
+##contig=<ID=11,length=135006516,assembly=b37>
+##contig=<ID=12,length=133851895,assembly=b37>
+##contig=<ID=13,length=115169878,assembly=b37>
+##contig=<ID=14,length=107349540,assembly=b37>
+##contig=<ID=15,length=102531392,assembly=b37>
+##contig=<ID=16,length=90354753,assembly=b37>
+##contig=<ID=17,length=81195210,assembly=b37>
+##contig=<ID=18,length=78077248,assembly=b37>
+##contig=<ID=19,length=59128983,assembly=b37>
+##contig=<ID=20,length=63025520,assembly=b37>
+##contig=<ID=21,length=48129895,assembly=b37>
+##contig=<ID=22,length=51304566,assembly=b37>
+##contig=<ID=X,length=155270560,assembly=b37>
+##contig=<ID=Y,length=59373566,assembly=b37>
+##contig=<ID=MT,length=16569,assembly=b37>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	Sample3
+1	900	.	A	<DT>	.	PASS	END=1100;IDP=407.50;IGC=0.675	IDP:LL:ZL	407.50:0:0
+1	1900	.	G	<DT>	.	LOW_COVERAGE	END=2100;IDP=24.84;IGC=0.350	FT:IDP:LL:ZL	LOW_COVERAGE:24.84:184:0
+1	2900	.	C	<DT>	.	PASS	END=3100;IDP=2219.56;IGC=0.398	IDP:LL:ZL	2219.56:0:0
+1	4900	.	C	<DT>	.	PASS	END=5100;IDP=2362.03;IGC=0.498	IDP:LL:ZL	2362.03:0:0
+X	900	.	G	<DT>	.	LOW_COVERAGE	END=1100;IDP=2.49;IGC=0.678	FT:IDP:LL:ZL	LOW_COVERAGE:2.49:227:0
+
