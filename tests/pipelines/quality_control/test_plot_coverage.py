@@ -29,6 +29,7 @@ def test_run(task, monkeypatch):
 
     assert CoverageAnalyser.call_count == 1
     assert CoverageAnalyser.call_args[1]['panel_vcf'] == 'foo'
+    assert CoverageAnalyser.call_args[1]['reads_threshold'] == 30
 
     for fn in CoverageAnalyser.call_args[1]['coverage_files']:
         assert fn.endswith('coverage_diagnosis.vcf')

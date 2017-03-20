@@ -14,7 +14,8 @@ coverage_files = [pytest.helpers.file(fn) for fn in files]
 @pytest.fixture
 def ca():
     return CoverageAnalyser(panel_vcf=panel_vcf,
-                            coverage_files=coverage_files)
+                            coverage_files=coverage_files,
+                            reads_threshold=20)
 
 
 def test_extract_genes(ca):
@@ -137,6 +138,7 @@ def test_generate_interval_names(ca):
 def test_init(ca):
     assert len(ca.panel) == 10  # 10 total panel variants
     assert len(ca.intervals) == 10  # 5 intervals diagnosed each sample
+    assert ca.reads_threshold == 20
 
     for field in 'genes variants variants_count'.split():
         assert field in ca.intervals

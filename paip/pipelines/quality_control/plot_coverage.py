@@ -18,6 +18,7 @@ class PlotCoverage(CohortTask):
         coverage_analyser = CoverageAnalyser(
             panel_vcf=path_to_resource('panel_variants'),
             coverage_files=[input_.fn for input_ in self.input()],
+            reads_threshold=self.min_dp,
         )
 
         os.makedirs(self.outdir, exist_ok=True)
