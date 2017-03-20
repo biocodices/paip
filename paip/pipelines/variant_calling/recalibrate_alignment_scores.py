@@ -1,5 +1,6 @@
 from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import RealignAroundIndels, CreateRecalibrationTable
+from paip.helpers.create_cohort_task import create_cohort_task
 
 
 class RecalibrateAlignmentScores(SampleTask):
@@ -23,4 +24,7 @@ class RecalibrateAlignmentScores(SampleTask):
             self.run_program(program_name, program_options)
 
         self.rename_temp_bai()
+
+
+RecalibrateAlignmentScoresCohort = create_cohort_task(RecalibrateAlignmentScores)
 

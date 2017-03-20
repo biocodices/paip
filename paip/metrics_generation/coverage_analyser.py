@@ -8,6 +8,20 @@ from vcf_to_dataframe import vcf_to_dataframe
 
 
 class CoverageAnalyser:
+    """
+    Generates coverage plots given GATK DiagnoseTarget outputs.
+    Usage:
+
+        > cov_an = CoverageAnalyser(
+              panel_vcf='path/to/..',
+              coverage_files=['path/to/..', 'path/to/..']
+          )
+        > cov_an.plot('path/to/out')
+          # => will create path/to/out_chrom_1.png, etc.
+          # for each chromosome with data.
+
+    """
+
     COLOR_PALETTE = ('Vega10', 10)  # Name, number of colors to take
     MARKERS = 'xo*pshHP^v<>d'  # See matplotlib markers
 
