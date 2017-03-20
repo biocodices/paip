@@ -83,7 +83,8 @@ class CoverageAnalyser:
         Example: PINK1-AS:100861548|PINK1:65018 => ['PINK1-AS', 'PINK'].
         """
         genes_value = info.get('GENEINFO', '')
-        return [gene.split(':')[0] for gene in genes_value.split('|')]
+        genes = [gene.split(':')[0] for gene in genes_value.split('|')]
+        return [gene for gene in genes if gene]
 
     _find_variants_cache = {}
     def _find_variants(self, interval, panel_variants):
@@ -91,6 +92,10 @@ class CoverageAnalyser:
         Given an interval with 'pos' and 'end_pos', finds the *panel_variants*
         that are contained in it. Returns a list of variants (as DataFrame).
         """
+        # Check chrom comparison will be string vs. string!
+        assert isinstance(interval['chrom'], str)
+        assert isinstance(panel_variants['chrom'].iloc[0], str)
+
         key = '{0.chrom}:{0.pos}:{0.end_pos}'.format(interval)
 
         if key not in self._find_variants_cache:
@@ -116,7 +121,7 @@ class CoverageAnalyser:
         that are contained in it and returns a list of the genes they're in.
         """
         contained_variants = self._find_variants(interval, panel_variants)
-        return list(set(chain.from_iterable(contained_variants['genes'])))
+        return sorted(set(chain.from_iterable(contained_variants['genes'])))
 
     def plot(self, out_base_path):
         """
