@@ -148,6 +148,7 @@ class CoverageAnalyser:
         base for the filepath, adding a 'chrom_N.png' suffix each time.
         """
         self._define_sample_colors_and_markers()
+        self.plot_files = []
 
         sns.set_style('darkgrid')
 
@@ -231,7 +232,10 @@ class CoverageAnalyser:
 
             filepath = out_base_path + '_chrom_{}.png'.format(chrom)
             plt.savefig(filepath, bbox_inches='tight', dpi=150)
+            self.plot_files.append(filepath)
             plt.close()
+
+        return self.plot_files
 
     def _define_sample_colors_and_markers(self):
         """Define a unique color & marker for each sample."""
@@ -240,4 +244,7 @@ class CoverageAnalyser:
         markers = cycle(self.MARKERS)
         self.sample_colors = dict(zip(samples, colors))
         self.sample_markers = dict(zip(samples, markers))
+
+    def make_html_report(self, plot_files):
+        """Put the *plot_files* in a single HTML report."""
 

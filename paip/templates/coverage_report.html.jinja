@@ -1,0 +1,30 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Coverage Report</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          .coverage-plot {
+            margin: 10px;
+            padding: 5px;
+            max-width: 90%;
+            min-width: 800px;
+            border: 1px solid silver;
+          }
+        </style>
+    </head>
+    <body>
+
+        <div class="plots">
+            {% for plot_path in plot_paths %}
+                <p>
+                    <img class="coverage-plot" src="{{ plot_path }}">
+                </p>
+            {% endfor %}
+        </div><!-- .plots -->
+
+    </body>
+</html>
