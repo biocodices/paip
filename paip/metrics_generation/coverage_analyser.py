@@ -1,9 +1,13 @@
+import os
+from os.path import join, dirname
+import re
 from itertools import chain, cycle
 from operator import itemgetter
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import jinja2
 from vcf_to_dataframe import vcf_to_dataframe
 
 
@@ -141,10 +145,10 @@ class CoverageAnalyser:
         contained_variants = self._find_variants(interval, panel_variants)
         return sorted(set(chain.from_iterable(contained_variants['genes'])))
 
-    def plot(self, out_base_path):
+    def plot(self, basename):
         """
         Plots the coverage per sample, interval and chromosome.
-        Saves the figures (one per chromosome) using *out_base_path* path as a
+        Saves the figures (one per chromosome) using *basename* path as a
         base for the filepath, adding a 'chrom_N.png' suffix each time.
         """
         self._define_sample_colors_and_markers()
@@ -230,7 +234,7 @@ class CoverageAnalyser:
                 ax.axhline(y=y_value - 0.5, linewidth=1,
                            linestyle='solid', color='#BBBBBB')
 
-            filepath = out_base_path + '_chrom_{}.png'.format(chrom)
+            filepath = basename + '_chrom_{}.png'.format(chrom)
             plt.savefig(filepath, bbox_inches='tight', dpi=150)
             self.plot_files.append(filepath)
             plt.close()
@@ -245,6 +249,50 @@ class CoverageAnalyser:
         self.sample_colors = dict(zip(samples, colors))
         self.sample_markers = dict(zip(samples, markers))
 
-    def make_html_report(self, plot_files):
-        """Put the *plot_files* in a single HTML report."""
+    def make_html_report(self, plot_files, destination_path):
+        """
+        Puts the *plot_files* in an HTML report and saves it at
+        *destination_path*.
+        """
+        plot_paths = sorted(plot_files, key=self._plot_file_chrom_index)
 
+        jinja_env = jinja2.Environment(
+            loader=jinja2.PackageLoader('paip', 'templates'),
+            autoescape=jinja2.select_autoescape(['html'])
+        )
+
+        template = jinja_env.get_template('coverage_report.html.jinja')
+        template_data = {'plot_paths': plot_paths}
+        html = template.render(template_data)
+
+        with open(destination_path, 'w') as f:
+            f.write(html)
+
+        return destination_path
+
+    def _plot_file_chrom_index(self, filename):
+        """
+        Find the chromosome name in a plot filename and return the chromosome
+        index to aid the sorting.
+        """
+        chrom = re.search(r'_chrom_(.+)\.png', filename).group(1)
+        order = [str(n) for n in range(1, 23)] + ['X', 'Y', 'MT']
+        return order.index(chrom)
+
+    def report(self, destination_path):
+        """
+        Makes an HTML report with plots in *destination_path*. Returns the
+        filepath to the report. Will put the plots in a subdirectory named
+        "coverage_plots".
+        """
+        if not destination_path.endswith('.html'):
+            destination_path += '.html'
+
+        plots_dir = join(dirname(destination_path), 'coverage_plots')
+        os.makedirs(plots_dir, exist_ok=True)
+        plots_basename = join(plots_dir, 'coverage')
+
+        plot_files = self.plot(plots_basename)
+        html_file = self.make_html_report(plot_files, destination_path)
+
+        return html_file

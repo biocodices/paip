@@ -1,10 +1,7 @@
-import os
-from os.path import join
-
 from paip.task_types import CohortTask
 from paip.pipelines.quality_control import DiagnoseTargets
 from paip.metrics_generation import CoverageAnalyser
-from paip.helpers import path_to_resource, SomeTarget
+from paip.helpers import path_to_resource
 
 
 class PlotCoverage(CohortTask):
@@ -13,6 +10,7 @@ class PlotCoverage(CohortTask):
     per chromosome under the dir `coverage_plots`.
     """
     SAMPLE_REQUIRES = DiagnoseTargets
+    OUTPUT = 'coverage_report.html'
 
     def run(self):
         coverage_analyser = CoverageAnalyser(
@@ -21,11 +19,5 @@ class PlotCoverage(CohortTask):
             reads_threshold=self.min_dp,
         )
 
-        os.makedirs(self.outdir, exist_ok=True)
-
-        coverage_analyser.plot(out_base_path=join(self.outdir, 'coverage'))
-
-    def output(self):
-        self.outdir = self.cohort_path('coverage_plots')
-        return SomeTarget(self.outdir, '.png')
+        coverage_analyser.report(destination_path=self.output().fn)
 

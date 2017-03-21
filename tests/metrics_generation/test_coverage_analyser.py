@@ -1,7 +1,12 @@
-from unittest.mock import MagicMock
+import os
+from unittest.mock import MagicMock, mock_open, patch
 import pandas as pd
 import pytest
 
+from bs4 import BeautifulSoup
+import pandas
+
+import paip
 from paip.metrics_generation import CoverageAnalyser
 
 
@@ -147,12 +152,7 @@ def test_init(ca):
         assert field in ca.intervals
 
 
-# NOTE: This is tricky to test, I would need to patch pandas.DataFrame.plot
-
 def test_plot(ca, monkeypatch):
-    import paip
-    import pandas
-
     pyplot = MagicMock()
     pandas_plot = MagicMock()
 
@@ -167,4 +167,64 @@ def test_plot(ca, monkeypatch):
     assert pyplot.savefig.call_args_list[1][0][0] == '/path/to/plot_chrom_X.png'
 
     assert pandas_plot.scatter.call_count == 4  # 2 chroms * 2 samples
+
+
+def test_plot_file_chrom_index(ca):
+    filename = '/path/to/plot_chrom_X.png'
+    index = ca._plot_file_chrom_index(filename)
+    assert index == 22
+
+
+def test_make_html_report(ca):
+    destination_path = '/path/to/report.html'
+    plot_filenames = [
+        '/path/to/plot_chrom_1.png',
+        '/path/to/plot_chrom_X.png',
+    ]
+
+    open_ = mock_open()
+
+    with patch('paip.metrics_generation.coverage_analyser.open', open_):
+        ca.make_html_report(plot_filenames, destination_path)
+
+    assert open_().write.call_count == 1
+    html_written = open_().write.call_args[0][0]
+    soup = BeautifulSoup(html_written, 'html.parser')
+
+    for plot_filename in plot_filenames:
+        found_images = soup.select('img[src="{}"]'.format(plot_filename))
+        assert len(found_images) == 1
+
+
+def test_report(ca, monkeypatch):
+    plot = MagicMock()
+    ca.plot = plot
+
+    def mock_make_html_report(plot_files, destination_path):
+        mock_make_html_report.call_count += 1
+        return destination_path
+
+    mock_make_html_report.call_count = 0
+    ca.make_html_report = mock_make_html_report
+
+    makedirs = MagicMock()
+    monkeypatch.setattr(os, 'makedirs', makedirs)
+
+    result = ca.report('/path/to/report.html')
+
+    # Check the plots dir is created
+    assert makedirs.call_count == 1
+    assert makedirs.call_args[0][0] == '/path/to/coverage_plots'
+
+    # Check the plot files are generated with the correct basename
+    assert plot.call_count == 1
+    assert plot.call_args[0][0] == '/path/to/coverage_plots/coverage'
+
+    # Check the report is in the correct path
+    assert mock_make_html_report.call_count == 1
+    assert result == '/path/to/report.html'
+
+    # Check it adds .html to the filename
+    result = ca.report('/path/to/report')
+    assert result == '/path/to/report.html'
 
