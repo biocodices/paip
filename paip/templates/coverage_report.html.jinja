@@ -7,10 +7,22 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-          .report-title {
+          body {
             color: #444;
             font-family: 'Lucida Sans Unicode', sans-serif;
+            font-size: 13px;
+          }
+
+          .report-title {
             margin-bottom: 25px;
+          }
+
+          .plots {
+            text-align: center;
+          }
+
+          .secondary-color {
+            color: SteelBlue;
           }
 
           .coverage-plot {
@@ -22,17 +34,29 @@
           }
         </style>
     </head>
-    <body>
+    <body id="top">
 
-        <h1 class="report-title">{{ report_title }}</h1>
+      <h1 class="report-title">{{ report_title }}</h1>
 
-        <div class="plots">
-            {% for plot_path in plot_paths %}
-                <p>
-                    <img class="coverage-plot" src="{{ plot_path }}">
-                </p>
-            {% endfor %}
-        </div><!-- .plots -->
+      <ul class="navbar">
+        {% for plot_path in plot_paths %}
+          <li>
+            <a class="secondary-color" href="#{{ loop.index }}">
+              {{ plot_path.split('/')[-1] }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <div class="plots">
+        {% for plot_path in plot_paths %}
+          <p id="{{ loop.index }}">
+            <img class="coverage-plot" src="{{ plot_path }}">
+            <br>
+            <a class="secondary-color" href="#top">Back to top</a>
+          </p>
+        {% endfor %}
+      </div><!-- .plots -->
 
     </body>
-</html>
+  </html>
