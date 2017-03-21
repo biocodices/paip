@@ -176,6 +176,7 @@ def test_plot_file_chrom_index(ca):
 
 
 def test_make_html_report(ca):
+    report_title = 'Report Title'
     destination_path = '/path/to/report.html'
     plot_filenames = [
         '/path/to/plot_chrom_1.png',
@@ -185,10 +186,12 @@ def test_make_html_report(ca):
     open_ = mock_open()
 
     with patch('paip.metrics_generation.coverage_analyser.open', open_):
-        ca.make_html_report(plot_filenames, destination_path)
+        ca.make_html_report(report_title, plot_filenames, destination_path)
 
     assert open_().write.call_count == 1
     html_written = open_().write.call_args[0][0]
+    assert 'Report Title' in html_written
+
     soup = BeautifulSoup(html_written, 'html.parser')
 
     for plot_filename in plot_filenames:
@@ -200,7 +203,7 @@ def test_report(ca, monkeypatch):
     plot = MagicMock()
     ca.plot = plot
 
-    def mock_make_html_report(plot_files, destination_path):
+    def mock_make_html_report(report_title, plot_files, destination_path):
         mock_make_html_report.call_count += 1
         return destination_path
 
@@ -210,7 +213,7 @@ def test_report(ca, monkeypatch):
     makedirs = MagicMock()
     monkeypatch.setattr(os, 'makedirs', makedirs)
 
-    result = ca.report('/path/to/report.html')
+    result = ca.report('Report Title', '/path/to/report.html')
 
     # Check the plots dir is created
     assert makedirs.call_count == 1
@@ -225,6 +228,6 @@ def test_report(ca, monkeypatch):
     assert result == '/path/to/report.html'
 
     # Check it adds .html to the filename
-    result = ca.report('/path/to/report')
+    result = ca.report('Report Title', '/path/to/report')
     assert result == '/path/to/report.html'
 

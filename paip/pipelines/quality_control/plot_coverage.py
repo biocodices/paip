@@ -19,5 +19,7 @@ class PlotCoverage(CohortTask):
             reads_threshold=self.min_dp,
         )
 
-        coverage_analyser.report(destination_path=self.output().fn)
+        report_title = self.cohort_name.replace('_', ' ').title()
+        coverage_analyser.report(report_title=report_title,
+                                 destination_path=self.output().fn)
 

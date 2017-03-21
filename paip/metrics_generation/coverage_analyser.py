@@ -249,10 +249,11 @@ class CoverageAnalyser:
         self.sample_colors = dict(zip(samples, colors))
         self.sample_markers = dict(zip(samples, markers))
 
-    def make_html_report(self, plot_files, destination_path):
+    def make_html_report(self, report_title, plot_files, destination_path):
         """
         Puts the *plot_files* in an HTML report and saves it at
-        *destination_path*.
+        *destination_path*. The *report_title* will be used as the document
+        heading.
         """
         plot_paths = sorted(plot_files, key=self._plot_file_chrom_index)
 
@@ -262,7 +263,8 @@ class CoverageAnalyser:
         )
 
         template = jinja_env.get_template('coverage_report.html.jinja')
-        template_data = {'plot_paths': plot_paths}
+        template_data = {'plot_paths': plot_paths,
+                         'report_title': report_title}
         html = template.render(template_data)
 
         with open(destination_path, 'w') as f:
@@ -279,7 +281,7 @@ class CoverageAnalyser:
         order = [str(n) for n in range(1, 23)] + ['X', 'Y', 'MT']
         return order.index(chrom)
 
-    def report(self, destination_path):
+    def report(self, report_title, destination_path):
         """
         Makes an HTML report with plots in *destination_path*. Returns the
         filepath to the report. Will put the plots in a subdirectory named
@@ -293,6 +295,7 @@ class CoverageAnalyser:
         plots_basename = join(plots_dir, 'coverage')
 
         plot_files = self.plot(plots_basename)
-        html_file = self.make_html_report(plot_files, destination_path)
+        html_file = self.make_html_report(report_title, plot_files,
+                                          destination_path)
 
         return html_file
