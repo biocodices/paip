@@ -131,13 +131,8 @@ def test_define_sample_colors_and_markers(ca):
 
 def test_generate_interval_names(ca):
     ca._generate_interval_names()
-    assert list(ca.intervals['interval_name']) == [
-        '1:900-1100 | GENE1 (1 variants)',
-        '1:1900-2100 | GENE1 (1 variants)',
-        '1:2900-3100 | GENE1 (1 variants)',
-        '1:4900-5100 | GENE2 (1 variants)',
-        'X:900-1100 | GENE3, GENE4 (1 variants)'
-    ] * 2
+    expected_first_name = '1 : 900 – 1,100 | GENE1\nrs1;rs1_altname'
+    assert ca.intervals['interval_name'].iloc[0] == expected_first_name
 
 
 def test_init(ca):

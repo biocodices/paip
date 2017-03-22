@@ -7,3 +7,4 @@ from .pipeline_reseter import PipelineReseter
 from .set_luigi_logging import set_luigi_logging
 from .some_target import SomeTarget
 from .list_tasks import list_tasks
+from .grouper import grouper

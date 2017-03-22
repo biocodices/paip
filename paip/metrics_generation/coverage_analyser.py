@@ -7,8 +7,11 @@ from operator import itemgetter
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from humanfriendly import format_number
 import jinja2
 from vcf_to_dataframe import vcf_to_dataframe
+
+from paip.helpers import grouper
 
 
 class CoverageAnalyser:
@@ -84,12 +87,18 @@ class CoverageAnalyser:
 
     def _generate_interval_names(self):
         """Give each interval a unique ID and name for the plots."""
+
+        def lines_of_n(variants, n):
+            """List variants in groups of n per line."""
+            in_groups = grouper.grouper(7, variants)
+            return '\n'.join(', '.join(group) for group in in_groups)
+
         self.intervals['interval_name'] = (
-            self.intervals['chrom'].astype(str) + ':' +
-            self.intervals['pos'].astype(str) + '-' +
-            self.intervals['end_pos'].astype(str) + ' | ' +
-            self.intervals['genes'].str.join(', ') + ' (' +
-            self.intervals['variants_count'].astype(str) + ' variants)'
+            self.intervals['chrom'].astype(str) + ' : ' +
+            self.intervals['pos'].astype(str).map(format_number) + ' – ' +
+            self.intervals['end_pos'].astype(str).map(format_number) + ' | ' +
+            self.intervals['genes'].str.join(', ') + '\n' +
+            self.intervals['variants'].apply(lines_of_n, n=7)
         )
 
         interval_names = self.intervals['interval_name'].unique()
@@ -160,7 +169,7 @@ class CoverageAnalyser:
             intervals_here = chrom_intervals['interval_id'].unique()
 
             # Define plot size
-            fig_height = 2 + len(intervals_here) / 3
+            fig_height = 2 + len(intervals_here) / 2
             fig_width = 10
             tall_fig = fig_height > 7
 
@@ -214,7 +223,8 @@ class CoverageAnalyser:
 
             if tall_fig:
                 ax.tick_params(top='on', labeltop='on')
-            ax.tick_params(axis='x', direction='out', length=5, color='#888888')
+            ax.tick_params(axis='both', direction='out', length=5,
+                           color='#888888')
 
             # Legend aesthetics
             ax.legend(
