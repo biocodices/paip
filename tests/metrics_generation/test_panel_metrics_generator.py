@@ -88,10 +88,6 @@ def test_belongs_to_panel(pmg):
     assert not pmg.belongs_to_panel('rs8')
 
 
-def test_percentage(pmg):
-    assert pmg.percentage(15.5, 100) == 16.0
-
-
 def test_compute_metrics(pmg, monkeypatch):
     def mock_count_total_genos():
         mock_count_total_genos.was_called = True

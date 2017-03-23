@@ -9,4 +9,5 @@ from .fastqc import FastQC, FastQCCohort
 from .panel_metrics import PanelMetrics
 from .diagnose_targets import DiagnoseTargets, DiagnoseTargetsCohort
 from .plot_coverage import PlotCoverage
+from .summarize_coverage import SummarizeCoverage
 from .multiqc import MultiQC

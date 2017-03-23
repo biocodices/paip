@@ -2,6 +2,7 @@ import os
 from unittest.mock import MagicMock, mock_open, patch
 import pandas as pd
 import pytest
+import json
 
 from bs4 import BeautifulSoup
 import pandas
@@ -20,6 +21,13 @@ coverage_files = [pytest.helpers.file(fn) for fn in files]
 def ca():
     return CoverageAnalyser(panel_vcf=panel_vcf,
                             coverage_files=coverage_files,
+                            reads_threshold=20)
+
+
+@pytest.fixture
+def ca_single_sample():
+    return CoverageAnalyser(panel_vcf=panel_vcf,
+                            coverage_files=coverage_files[0:1],  # only one!
                             reads_threshold=20)
 
 
@@ -225,4 +233,21 @@ def test_report(ca, monkeypatch):
     # Check it adds .html to the filename
     result = ca.report('Report Title', '/path/to/report')
     assert result == '/path/to/report.html'
+
+
+def test_summarize_coverage(ca_single_sample):
+    data = ca_single_sample.summarize_coverage()
+    assert data['NO_READS intervals'] == 1
+    assert data['% bases with LOW DP'] == 40.9
+    assert data['mean_DP'] == 1003.284
+
+
+def test_json_coverage_summary_for_multiqc(ca_single_sample):
+    json_data = ca_single_sample.json_coverage_summary_for_multiqc(
+        sample_id='SampleFoo', module_name='module_foo',
+    )
+    data = json.loads(json_data)
+    assert 'id' in data
+    assert 'data' in data
+    assert 'SampleFoo' in data['data']
 

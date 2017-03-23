@@ -3,6 +3,8 @@ import json
 
 from vcf_to_dataframe import vcf_to_dataframe
 
+from paip.helpers import percentage
+
 
 class PanelMetricsGenerator:
     """
@@ -73,7 +75,7 @@ class PanelMetricsGenerator:
         # (We need to convert to int because numpy numbers aren't serializable)
         self.metrics['Panel genos'] = seen_n = int(counts.get(True) or 0)
         self.metrics['Extra-panel genos'] = int(counts.get(False) or 0)
-        self.metrics['% Panel seen'] = self.percentage(seen_n, self.panel_size)
+        self.metrics['% Panel seen'] = percentage(seen_n, self.panel_size)
 
     def count_missing_variants(self):
         """Count panel variants that are not seen in the sample VCF."""
@@ -93,7 +95,7 @@ class PanelMetricsGenerator:
             seen_ids.append(vcf_id) if seen else missing_ids.append(vcf_id)
 
         self.metrics['Panel variants missing'] = len(missing_ids)
-        self.metrics['% Panel missing'] = self.percentage(len(missing_ids),
+        self.metrics['% Panel missing'] = percentage(len(missing_ids),
                                                           self.panel_size)
 
         self.non_numerical_data['Panel missing IDs'] = sorted(missing_ids)
@@ -137,7 +139,7 @@ class PanelMetricsGenerator:
         self.metrics['Panel non-reportable'] = bq = len(self.genos[in_panel & bad_q])
 
         panel_size = len(self.genos[in_panel])
-        self.metrics['Panel non-reportable %'] = self.percentage(bq, panel_size)
+        self.metrics['Panel non-reportable %'] = percentage(bq, panel_size)
 
     def compute_GQ_DP_stats(self):
         """Compute some stats on GQ and DP."""
@@ -156,11 +158,4 @@ class PanelMetricsGenerator:
         panel_concatenated_ids = ';'.join(self.panel_ids)
 
         return any(id_ in panel_concatenated_ids for id_ in ids)
-
-    @staticmethod
-    def percentage(n, total):
-        if total == 0:
-            return 0
-
-        return round(100 * n / total)
 

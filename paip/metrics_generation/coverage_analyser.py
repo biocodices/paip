@@ -3,6 +3,8 @@ from os.path import join, dirname
 import re
 from itertools import chain, cycle
 from operator import itemgetter
+import json
+from collections import OrderedDict
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,21 +13,21 @@ from humanfriendly import format_number
 import jinja2
 from vcf_to_dataframe import vcf_to_dataframe
 
-from paip.helpers import grouper
+from paip.helpers import grouper, percentage
 
 
 class CoverageAnalyser:
     """
-    Generates coverage plots given GATK DiagnoseTarget outputs.
+    Generates coverage stats and plots given GATK DiagnoseTarget output.
+
     Usage:
 
         > cov_an = CoverageAnalyser(
               panel_vcf='path/to/..',
               coverage_files=['path/to/..', 'path/to/..']
           )
-        > cov_an.plot('path/to/out')
-          # => will create path/to/out_chrom_1.png, etc.
-          # for each chromosome with data.
+        > cov_an.report('Report Title', 'path/to/out.html')
+          # => will create an HTML report with plots for all chromosomes.
 
     """
 
@@ -90,7 +92,7 @@ class CoverageAnalyser:
 
         def lines_of_n(variants, n):
             """List variants in groups of n per line."""
-            in_groups = grouper.grouper(7, variants)
+            in_groups = grouper(7, variants)
             return '\n'.join(', '.join(group) for group in in_groups)
 
         self.intervals['interval_name'] = (
@@ -309,3 +311,50 @@ class CoverageAnalyser:
                                           destination_path)
 
         return html_file
+
+    def summarize_coverage(self):
+        """
+        Given a dataframe of a *single sample* in self.intervals,
+        generates a summary of the coverage data as a dict. All rows
+        should belong to the same sample for this to make sense.
+
+        This will work if only ONE DiagnoseTargets VCF has been fed
+        to the CoverageAnalyser (that is, from only one sample).
+
+        This data is later used by MultiQC.
+        """
+        assert len(self.intervals['sample_id'].unique()) == 1
+
+        data = {}
+
+        total_bases = self.intervals['length'].sum()
+        idp_by_length = self.intervals['IDP'] * self.intervals['length']
+        data['mean_DP'] = idp_by_length.sum() / total_bases
+
+        data['% bases with LOW DP'] = percentage(self.intervals['LL'].sum(),
+                                                 total_bases,
+                                                 decimal_places=2)
+
+        data['% bases with NO READS'] = percentage(self.intervals['ZL'].sum(),
+                                                   total_bases,
+                                                   decimal_places=2)
+
+        # Filter counts:
+        # NOTE: We need to convert numbers to int because numpy types
+        # aren't serializable.
+        data.update({'{} intervals'.format(k.replace(';', ' & ')): int(v)
+                    for k, v in self.intervals['FT'].value_counts().items()})
+
+        return data
+
+    def json_coverage_summary_for_multiqc(self, sample_id, module_name):
+        """
+        Return the coverage summary JSON-formatted for MultiQC. Specify a
+        *module_name* for MultiQC to identify this data.
+        """
+        data = self.summarize_coverage()
+        sorted_data = OrderedDict(sorted(data.items()))
+        multiqc_data = {'id': module_name,
+                        'data': {sample_id: sorted_data}}
+        return json.dumps(multiqc_data, sort_keys=True, indent=4)
+

@@ -85,15 +85,13 @@ Options:
 
 import sys
 from docopt import docopt
-from os.path import expanduser, join, dirname
-from os import environ
 
 import luigi
 import logging
-import coloredlogs
 
 from paip import software_name
-from paip.helpers import set_luigi_logging, list_tasks
+from paip.helpers import set_luigi_logging
+from paip.helpers.list_tasks import list_tasks
 
 
 logger = logging.getLogger('paip')
