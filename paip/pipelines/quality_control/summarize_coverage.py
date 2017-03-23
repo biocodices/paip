@@ -21,7 +21,7 @@ class SummarizeCoverage(SampleTask):
 
         json_data = coverage_analyser.json_coverage_summary_for_multiqc(
             sample_id=self.sample,
-            module_name='Coverage Summary',
+            module_name='coverage_summary',
         )
 
         with open(self.output().fn, 'w') as f:

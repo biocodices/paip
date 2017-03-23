@@ -13,6 +13,7 @@ from paip.pipelines.quality_control import (
     SamtoolsStats,
     FeatureCounts,
     PanelMetrics,
+    SummarizeCoverage,
 )
 
 
@@ -38,6 +39,7 @@ class MultiQC(CohortTask):
             SamtoolsStats,
             FeatureCounts,
             PanelMetrics,
+            SummarizeCoverage,
         ]
 
         sample_tasks = [task(sample=sample, **self.param_kwargs)

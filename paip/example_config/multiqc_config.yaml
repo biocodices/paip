@@ -30,3 +30,12 @@ custom_data:
         description: 'Some stats about seen vs. missing panel variants before filters have been applied.'
         plot_type: 'table'
 
+    coverage_summary:
+        id: 'coverage_summary'
+        sp:
+            fn: '*.coverage_summary_mqc.json'
+        file_format: 'json'
+        section_name: 'Coverage Summary'
+        description: 'Summary of coverage in the panel intervals.'
+        plot_type: 'table'
+
