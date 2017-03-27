@@ -480,8 +480,17 @@ gatk DiagnoseTargets:
    -T DiagnoseTargets
    -I {input_bam}
    --minimum_mapping_quality 40
-   --minimum_coverage 30
+   --minimum_coverage {min_dp}
    -R {reference_genome}
    -L {panel_regions}
    -o {output_vcf}'
+
+gatk DepthOfCoverage:
+  '{executable}
+   -T DepthOfCoverage
+   -I {input_bam}
+   --minMappingQuality 40
+   -R {reference_genome}
+   -L {panel_regions}
+   -o {outfile}'
 

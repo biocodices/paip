@@ -10,4 +10,5 @@ from .panel_metrics import PanelMetrics
 from .diagnose_targets import DiagnoseTargets, DiagnoseTargetsCohort
 from .plot_coverage import PlotCoverage
 from .summarize_coverage import SummarizeCoverage
+from .depth_of_coverage import DepthOfCoverage, DepthOfCoverageCohort
 from .multiqc import MultiQC

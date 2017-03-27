@@ -14,6 +14,7 @@ def test_run(task, mock_rename):
 
     assert program_name == 'gatk DiagnoseTargets'
     assert program_options['input_bam'] == task.input().fn
+    assert program_options['min_dp'] == task.min_dp
     assert 'coverage_diagnosis.vcf-luigi-tmp' in program_options['output_vcf']
     assert mock_rename.call_count == 2
 

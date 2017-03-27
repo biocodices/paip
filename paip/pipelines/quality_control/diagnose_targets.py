@@ -16,6 +16,7 @@ class DiagnoseTargets(SampleTask):
             program_name = 'gatk DiagnoseTargets'
             program_options = {
                 'input_bam': self.input().fn,
+                'min_dp': self.min_dp,
                 'output_vcf': self.temp_vcf,
             }
             self.run_program(program_name, program_options)
