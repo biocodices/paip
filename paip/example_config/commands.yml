@@ -490,7 +490,11 @@ gatk DepthOfCoverage:
    -T DepthOfCoverage
    -I {input_bam}
    --minMappingQuality 40
+   --countType COUNT_FRAGMENTS
    -R {reference_genome}
    -L {panel_regions}
    -o {outfile}'
+
+   # COUNT_FRAGMENTS instructs GATK to properly count any overlapping parts
+   # of paiered-end mate pairs *only once*.
 
