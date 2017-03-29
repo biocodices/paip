@@ -496,5 +496,10 @@ gatk DepthOfCoverage:
    -o {outfile}'
 
    # COUNT_FRAGMENTS instructs GATK to properly count any overlapping parts
-   # of paiered-end mate pairs *only once*.
+   # of paiered-end mate pairs *only once*. This is useful for the
+   # detection of CNVs, where we want to compare how deep each interval is
+   # read relative to the same interval in other samples. It shouldn't be
+   # used to analyze the absolute read depth and decide wether to trust
+   # a genotype or not, because it considers only half the reads in the
+   # overlapping part of the interval.
 
