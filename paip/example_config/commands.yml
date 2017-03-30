@@ -489,12 +489,21 @@ gatk DepthOfCoverage:
   '{executable}
    -T DepthOfCoverage
    -I {input_bam}
+   -dt BY_SAMPLE
+   -dcov 5000
+   --start 1
+   --stop 5000
+   --nBins 200
+   --includeRefNSites
    --minMappingQuality 40
    --countType COUNT_FRAGMENTS
    -R {reference_genome}
    -L {panel_regions}
    -o {outfile}'
 
+   # Many of this options are copied from the XHMM workflow:
+   # https://atgu.mgh.harvard.edu/xhmm/tutorial.shtml
+   #
    # COUNT_FRAGMENTS instructs GATK to properly count any overlapping parts
    # of paiered-end mate pairs *only once*. This is useful for the
    # detection of CNVs, where we want to compare how deep each interval is
