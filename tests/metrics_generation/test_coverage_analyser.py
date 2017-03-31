@@ -239,7 +239,8 @@ def test_summarize_coverage(ca_single_sample):
     data = ca_single_sample.summarize_coverage()
     assert data['NO_READS intervals'] == 1
     assert data['% bases with LOW DP'] == 40.9
-    assert data['mean_DP'] == 1003.284
+    assert data['mean_DP'] == 1003.28
+    assert data['std_DP'] == 237.47
 
 
 def test_json_coverage_summary_for_multiqc(ca_single_sample):

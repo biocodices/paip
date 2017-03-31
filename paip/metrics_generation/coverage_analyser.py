@@ -329,7 +329,8 @@ class CoverageAnalyser:
 
         total_bases = self.intervals['length'].sum()
         idp_by_length = self.intervals['IDP'] * self.intervals['length']
-        data['mean_DP'] = idp_by_length.sum() / total_bases
+        data['mean_DP'] = round(idp_by_length.sum() / total_bases, 2)
+        data['std_DP'] = round(idp_by_length.std() / total_bases, 2)
 
         data['% bases with LOW DP'] = percentage(self.intervals['LL'].sum(),
                                                  total_bases,
