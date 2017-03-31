@@ -4,8 +4,10 @@ import re
 from itertools import chain, cycle
 from operator import itemgetter
 import json
+from math import sqrt
 from collections import OrderedDict
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -330,7 +332,9 @@ class CoverageAnalyser:
         total_bases = self.intervals['length'].sum()
         idp_by_length = self.intervals['IDP'] * self.intervals['length']
         data['mean_DP'] = round(idp_by_length.sum() / total_bases, 2)
-        data['std_DP'] = round(idp_by_length.std() / total_bases, 2)
+        std = self._weighted_std(self.intervals['IDP'],
+                                 weights=self.intervals['length'])
+        data['std_DP'] = round(std, 2)
 
         data['% bases with LOW DP'] = percentage(self.intervals['LL'].sum(),
                                                  total_bases,
@@ -358,4 +362,17 @@ class CoverageAnalyser:
         multiqc_data = {'id': module_name,
                         'data': {sample_id: sorted_data}}
         return json.dumps(multiqc_data, sort_keys=True, indent=4)
+
+    @staticmethod
+    def _weighted_std(values, weights):
+        """
+        Return the weighted standard deviation.
+
+        values, weights -- Numpy ndarrays with the same shape.
+
+        Taken from http://stackoverflow.com/questions/2413522
+        """
+        average = np.average(values, weights=weights)
+        variance = np.average((values - average)**2, weights=weights)
+        return sqrt(variance)
 
