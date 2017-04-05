@@ -34,7 +34,7 @@ class CoverageAnalyser:
     """
 
     COLOR_PALETTE = ('Vega10', 10)  # Name, number of colors to take
-    MARKERS = 'xo*pshHP^v<>d'  # See matplotlib markers
+    MARKERS = 'xo*pshHP^v<>d'
 
     def __init__(self, panel_vcf, coverage_files, reads_threshold=30):
         """
@@ -90,7 +90,9 @@ class CoverageAnalyser:
         self.intervals['variants_count'] = self.intervals['variants'].map(len)
 
     def _generate_interval_names(self):
-        """Give each interval a unique ID and name for the plots."""
+        """
+        Give each interval a unique ID, name, and short name for the plots.
+        """
 
         def lines_of_n(variants, n):
             """List variants in groups of n per line."""
@@ -110,6 +112,16 @@ class CoverageAnalyser:
 
         self.intervals['interval_id'] = \
             self.intervals['interval_name'].map(interval_ids)
+
+        padded_indices = (self.intervals['interval_id'] + 1).map(
+            lambda ix: '{:04}'.format(ix)
+        )
+        self.intervals['interval_short_name'] = (
+            '[' + padded_indices + '] ' +
+            self.intervals['chrom'].astype(str) + ': ' +
+            self.intervals['pos'].astype(str).map(format_number) + '–' +
+            self.intervals['end_pos'].astype(str).map(format_number)
+        )
 
     def _extract_genes(self, info):
         """
@@ -158,16 +170,84 @@ class CoverageAnalyser:
         contained_variants = self._find_variants(interval, panel_variants)
         return sorted(set(chain.from_iterable(contained_variants['genes'])))
 
-    def plot(self, basename):
+    def _make_coverage_matrix(self):
+        """
+        Return a coverage matrix of samples vs. intervals with the data from
+        self.intervals.
+        """
+        return self.intervals.pivot(index='sample_id',
+                                    columns='interval_short_name',
+                                    values='IDP')
+
+    def plot_heatmap(self, dest_dir, max_value, colormap='Reds_r', **kwargs):
+        """
+        Use self.intervals coverage data to plot a heatmap of samples vs.
+        regions read depth. Saves the figure at *dest_dir*/coverage_heatmap.png
+
+        *max_value* is the threshold over which the top color of the colormap
+        is used. The heatmap is meant to highlight low coverage targets, so
+        *max_value* should be the pipeline depth threshold. This means all
+        targets that pass the threshold will be plotted with the same color,
+        and the low coverage ones will be highlighted against that background).
+
+        Optionally, select a different *colormap* from matplolib available
+        colormaps.
+
+        Extra *kwargs* will be passed to seaborn.heatmap().
+        """
+        coverage_matrix = self._make_coverage_matrix()
+
+        sns.set(style='ticks')
+
+        fig = plt.figure(figsize=(20, 6))
+        ax = fig.add_subplot(1, 1, 1)
+        ax = sns.heatmap(coverage_matrix, ax=ax,
+                         cbar_kws={'pad': 0.045, 'label': 'Read Depth'},
+                         vmin=0, vmax=max_value, cmap=colormap, **kwargs)
+        ax.set_xlabel('Interval')
+        ax.set_ylabel('Sample')
+        ax.set_title('Raw Coverage < {}'.format(max_value), y=1.08,
+                     fontdict={'size': 13})
+
+        # Keep the target labels where at least 10% of the samples have less
+        # than *max_value* read depth:
+        Q10_per_interval = coverage_matrix.quantile(0.10)
+        subthreshold = Q10_per_interval < max_value
+        problematic_intervals = Q10_per_interval[subthreshold].index
+
+        xticks = ax.get_xticks()
+        xlabels = [lab.get_text() for lab in ax.get_xticklabels()]
+        xticks_labels = {label: xval for xval, label in zip(xticks, xlabels)
+                         if label in problematic_intervals}
+
+        ax.set_xticks(list(xticks_labels.values()))
+        ax.set_xticklabels(list(xticks_labels.keys()), rotation='vertical')
+
+        ax.tick_params(axis='y', right='on', labelright='on')
+        ax.set_yticklabels(ax.get_yticklabels(), rotation='horizontal')
+
+        ax.hlines(ax.get_yticks() + 0.5, *ax.get_xlim(), color='Silver',
+                  linewidth=0.5)
+
+        filepath = os.path.join(dest_dir, 'coverage_heatmap.png')
+        plt.savefig(filepath, bbox_inches='tight', dpi=150)
+        plt.close()
+
+        self.heatmap_plot = filepath
+
+        return filepath
+
+    def plot_coverage_per_chromosome(self, basename):
         """
         Plots the coverage per sample, interval and chromosome.
+
         Saves the figures (one per chromosome) using *basename* path as a
         base for the filepath, adding a 'chrom_N.png' suffix each time.
         """
         self._define_sample_colors_and_markers()
-        self.plot_files = []
+        plot_files = []
 
-        sns.set_style('darkgrid')
+        sns.set(style='darkgrid')
 
         for chrom, chrom_intervals in self.intervals.groupby('chrom'):
             intervals_here = chrom_intervals['interval_id'].unique()
@@ -211,12 +291,13 @@ class CoverageAnalyser:
 
             # Plot aesthetics
             ax.set_title('Coverage in Chromosome {}'.format(chrom),
-                         y=1.06, fontdict={'size': 17})
+                         y=1.06, fontdict={'size': 12})
             ax.set_ylabel('Interval')
             ax.set_xlabel('Read Depth (hiding datapoints > 500X)')
             ax.set_yticks(intervals_here)
             ax.set_yticklabels(chrom_intervals['interval_name'].unique())
-            ax.axvline(30, color='FireBrick', linestyle='dashed', linewidth=1)
+            ax.axvline(self.reads_threshold, color='FireBrick',
+                       linestyle='dashed', linewidth=1)
             ax.grid(axis='y', color='white')
             ax.set_ylim([min(intervals_here) - 1, max(intervals_here) + 1])
 
@@ -250,10 +331,10 @@ class CoverageAnalyser:
 
             filepath = basename + '_chrom_{}.png'.format(chrom)
             plt.savefig(filepath, bbox_inches='tight', dpi=150)
-            self.plot_files.append(filepath)
+            plot_files.append(filepath)
             plt.close()
 
-        return self.plot_files
+        return plot_files
 
     def _define_sample_colors_and_markers(self):
         """Define a unique color & marker for each sample."""
@@ -263,29 +344,6 @@ class CoverageAnalyser:
         self.sample_colors = dict(zip(samples, colors))
         self.sample_markers = dict(zip(samples, markers))
 
-    def make_html_report(self, report_title, plot_files, destination_path):
-        """
-        Puts the *plot_files* in an HTML report and saves it at
-        *destination_path*. The *report_title* will be used as the document
-        heading.
-        """
-        plot_paths = sorted(plot_files, key=self._plot_file_chrom_index)
-
-        jinja_env = jinja2.Environment(
-            loader=jinja2.PackageLoader('paip', 'templates'),
-            autoescape=jinja2.select_autoescape(['html'])
-        )
-
-        template = jinja_env.get_template('coverage_report.html.jinja')
-        template_data = {'plot_paths': plot_paths,
-                         'report_title': report_title}
-        html = template.render(template_data)
-
-        with open(destination_path, 'w') as f:
-            f.write(html)
-
-        return destination_path
-
     def _plot_file_chrom_index(self, filename):
         """
         Find the chromosome name in a plot filename and return the chromosome
@@ -294,6 +352,31 @@ class CoverageAnalyser:
         chrom = re.search(r'_chrom_(.+)\.png', filename).group(1)
         order = [str(n) for n in range(1, 23)] + ['X', 'Y', 'MT']
         return order.index(chrom)
+
+    def make_html_report(self, report_title, heatmap_plot, chromosome_plots,
+                         destination_path):
+        """
+        Puts the *plot_files* in an HTML report and saves it at
+        *destination_path*. The *report_title* will be used as the document
+        heading.
+        """
+        chrom_plots = sorted(chromosome_plots, key=self._plot_file_chrom_index)
+
+        jinja_env = jinja2.Environment(
+            loader=jinja2.PackageLoader('paip', 'templates'),
+            autoescape=jinja2.select_autoescape(['html'])
+        )
+
+        template = jinja_env.get_template('coverage_report.html.jinja')
+        template_data = {'chrom_plot_paths': chrom_plots,
+                         'heatmap_path': heatmap_plot,
+                         'report_title': report_title}
+        html = template.render(template_data)
+
+        with open(destination_path, 'w') as f:
+            f.write(html)
+
+        return destination_path
 
     def report(self, report_title, destination_path):
         """
@@ -306,11 +389,12 @@ class CoverageAnalyser:
 
         plots_dir = join(dirname(destination_path), 'coverage_plots')
         os.makedirs(plots_dir, exist_ok=True)
-        plots_basename = join(plots_dir, 'coverage')
-
-        plot_files = self.plot(plots_basename)
-        html_file = self.make_html_report(report_title, plot_files,
-                                          destination_path)
+        chrom_plots_basename = join(plots_dir, 'coverage')
+        chromosome_plots = self.plot_coverage_per_chromosome(chrom_plots_basename)
+        heatmap_plot = self.plot_heatmap(dest_dir=plots_dir,
+                                         max_value=self.reads_threshold)
+        html_file = self.make_html_report(report_title, heatmap_plot,
+                                          chromosome_plots, destination_path)
 
         return html_file
 

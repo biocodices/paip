@@ -1,13 +1,13 @@
 import os
-from unittest.mock import MagicMock, mock_open, patch
+import shutil
+from tempfile import gettempdir
 import pandas as pd
 import pytest
 import json
+from glob import glob
 
 from bs4 import BeautifulSoup
-import pandas
 
-import paip
 from paip.metrics_generation import CoverageAnalyser
 
 
@@ -124,6 +124,13 @@ def test_add_panel_data_to_intervals(ca):
     assert list(ca.intervals['variants_count']) == [1] * 5 * 2
 
 
+def test_make_coverage_matrix(ca):
+    coverage_matrix = ca._make_coverage_matrix()
+
+    assert coverage_matrix.shape == (2, 5)  # 5 intervals, 2 samples
+    assert coverage_matrix.loc['Sample3', '[0005] X: 900–1,100'] == 2.49
+
+
 def test_define_sample_colors_and_markers(ca):
     ca._define_sample_colors_and_markers()
 
@@ -139,8 +146,9 @@ def test_define_sample_colors_and_markers(ca):
 
 def test_generate_interval_names(ca):
     ca._generate_interval_names()
-    expected_first_name = '1 : 900 – 1,100 | GENE1\nrs1;rs1_altname'
-    assert ca.intervals['interval_name'].iloc[0] == expected_first_name
+    first_row = ca.intervals.iloc[0]
+    assert first_row['interval_name'] == '1 : 900 – 1,100 | GENE1\nrs1;rs1_altname'
+    assert first_row['interval_short_name'] == '[0001] 1: 900–1,100'
 
 
 def test_init(ca):
@@ -155,21 +163,28 @@ def test_init(ca):
         assert field in ca.intervals
 
 
-def test_plot(ca, monkeypatch):
-    pyplot = MagicMock()
-    pandas_plot = MagicMock()
+def test_plot_heatmap(ca):
+    plot_file = ca.plot_heatmap(dest_dir=gettempdir(), max_value=30,
+                                colormap='Oranges_r')
 
-    monkeypatch.setattr(paip.metrics_generation.coverage_analyser, 'plt', pyplot)
-    monkeypatch.setattr(pandas.DataFrame, 'plot', pandas_plot)
+    assert os.path.isfile(plot_file)
+    assert os.path.getsize(plot_file)
 
-    ca.plot('/path/to/plot')
+    os.remove(plot_file)
+    assert not os.path.isfile(plot_file)
+
+
+def test_plot_coverage_per_chromosome(ca):
+    basename = os.path.join(gettempdir(), 'test_paip-cvg_plots')
+    plot_files = ca.plot_coverage_per_chromosome(basename)
 
     # Test we save a plot for each chromosome with data
-    assert pyplot.savefig.call_count == 2
-    assert pyplot.savefig.call_args_list[0][0][0] == '/path/to/plot_chrom_1.png'
-    assert pyplot.savefig.call_args_list[1][0][0] == '/path/to/plot_chrom_X.png'
+    for plot_file in plot_files:
+        assert os.path.isfile(plot_file)
+        assert os.path.getsize(plot_file)
 
-    assert pandas_plot.scatter.call_count == 4  # 2 chroms * 2 samples
+        os.remove(plot_file)
+        assert not os.path.isfile(plot_file)
 
 
 def test_plot_file_chrom_index(ca):
@@ -179,60 +194,62 @@ def test_plot_file_chrom_index(ca):
 
 
 def test_make_html_report(ca):
-    report_title = 'Report Title'
-    destination_path = '/path/to/report.html'
-    plot_filenames = [
-        '/path/to/plot_chrom_1.png',
-        '/path/to/plot_chrom_X.png',
-    ]
+    report_filepath = os.path.join(gettempdir(),
+                                   'paip_test-coverage_report.html')
+    chromosome_plots = ['/path/to/plot_chrom_1.png',
+                        '/path/to/plot_chrom_X.png']
+    heatmap_plot = '/path/to/heatmap.png'
 
-    open_ = mock_open()
+    ca.make_html_report(
+        report_title='Report Title',
+        heatmap_plot=heatmap_plot,
+        chromosome_plots=chromosome_plots,
+        destination_path=report_filepath,
+    )
 
-    with patch('paip.metrics_generation.coverage_analyser.open', open_):
-        ca.make_html_report(report_title, plot_filenames, destination_path)
+    assert os.path.isfile(report_filepath)
+    assert os.path.getsize(report_filepath)
 
-    assert open_().write.call_count == 1
-    html_written = open_().write.call_args[0][0]
+    with open(report_filepath) as f:
+        html_written = f.read()
+
     assert 'Report Title' in html_written
 
     soup = BeautifulSoup(html_written, 'html.parser')
 
-    for plot_filename in plot_filenames:
+    for plot_filename in chromosome_plots + [heatmap_plot]:
         found_images = soup.select('img[src="{}"]'.format(plot_filename))
         assert len(found_images) == 1
 
+    os.remove(report_filepath)
+    assert not os.path.isfile(report_filepath)
 
-def test_report(ca, monkeypatch):
-    plot = MagicMock()
-    ca.plot = plot
 
-    def mock_make_html_report(report_title, plot_files, destination_path):
-        mock_make_html_report.call_count += 1
-        return destination_path
+def test_report(ca):
+    given_path = os.path.join(gettempdir(), 'paip_test-cov_report')
+    result_path = ca.report('Report Title', given_path)
 
-    mock_make_html_report.call_count = 0
-    ca.make_html_report = mock_make_html_report
-
-    makedirs = MagicMock()
-    monkeypatch.setattr(os, 'makedirs', makedirs)
-
-    result = ca.report('Report Title', '/path/to/report.html')
+    # Check .html is added to the filename if not present
+    assert result_path.endswith('.html')
 
     # Check the plots dir is created
-    assert makedirs.call_count == 1
-    assert makedirs.call_args[0][0] == '/path/to/coverage_plots'
+    expected_plots_dir = os.path.join(os.path.dirname(given_path),
+                                      'coverage_plots')
+    assert os.path.isdir(expected_plots_dir)
 
-    # Check the plot files are generated with the correct basename
-    assert plot.call_count == 1
-    assert plot.call_args[0][0] == '/path/to/coverage_plots/coverage'
+    # Check the plots are saved there
+    cvg_plots = glob(os.path.join(expected_plots_dir, '*coverage*.png'))
+    assert len(cvg_plots) == 3
 
-    # Check the report is in the correct path
-    assert mock_make_html_report.call_count == 1
-    assert result == '/path/to/report.html'
+    heatmap_plots = glob(os.path.join(expected_plots_dir, '*heatmap*.png'))
+    assert len(heatmap_plots) == 1
 
-    # Check it adds .html to the filename
-    result = ca.report('Report Title', '/path/to/report')
-    assert result == '/path/to/report.html'
+    # Remove files after testing
+    os.remove(result_path)
+    assert not os.path.isfile(result_path)
+
+    shutil.rmtree(expected_plots_dir)
+    assert not os.path.isdir(expected_plots_dir)
 
 
 def test_summarize_coverage(ca_single_sample):
