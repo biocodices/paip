@@ -199,7 +199,7 @@ class CoverageAnalyser:
 
         sns.set(style='ticks')
 
-        fig = plt.figure(figsize=(20, 6))
+        fig = plt.figure(figsize=(20, 4))
         ax = fig.add_subplot(1, 1, 1)
         ax = sns.heatmap(coverage_matrix, ax=ax,
                          cbar_kws={'pad': 0.045, 'label': 'Read Depth'},
