@@ -1,7 +1,7 @@
 import os
 from os.path import join, dirname
 import re
-from itertools import chain, cycle
+from itertools import chain, cycle, zip_longest
 from operator import itemgetter
 import json
 from math import sqrt
@@ -206,7 +206,7 @@ class CoverageAnalyser:
                          vmin=0, vmax=max_value, cmap=colormap, **kwargs)
         ax.set_xlabel('Interval')
         ax.set_ylabel('Sample')
-        ax.set_title('Raw Coverage < {}'.format(max_value), y=1.08,
+        ax.set_title('Coverage < {}'.format(max_value), y=1.08,
                      fontdict={'size': 13})
 
         # Keep the target labels where at least 10% of the samples have less
@@ -234,6 +234,49 @@ class CoverageAnalyser:
         plt.close()
 
         self.heatmap_plot = filepath
+
+        return filepath
+
+    def plot_boxplot(self, destination_dir):
+        """
+        Uses the read depths in self.intervals to make a boxplot of coverage
+        per sample. Saves the figure in the *destination_dir*.
+        """
+
+        assert 0
+
+        ## SEGUIR ACA: testear este método y agregarlo al report
+
+
+        sns.set(style='ticks')
+
+        fig = plt.figure(figsize=(15, 4))
+        ax = fig.add_subplot(1, 1, 1)
+
+        sns.boxplot(ax=ax, data=self.intervals, x='sample', y='mean_coverage',
+                    width=0.6, linewidth=1, color='LightBlue')
+
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+        ax.spines['left'].set_color('Silver')
+        ax.spines['bottom'].set_color('Silver')
+        ax.tick_params(axis='both', color='Silver')
+        ax.set_ylim([-10, self.intervals['mean_coverage'].max()])
+        ax.set_xlabel('Sample')
+        ax.set_ylabel('Read Depth')
+        ax.set_yticks([100, 200, 300, 400], minor=True)
+
+        sequencing_mean = self.intervals['IDP'].mean()
+        seq_mean_pretty = format_number(sequencing_mean, num_decimals=0)
+        ax.axhline(y=sequencing_mean, color='DodgerBlue', linewidth=2,
+                   linestyle='dashed')
+        ax.set_title('Coverage (${{mean = {}}}$)'
+                     .format(seq_mean_pretty), y=1.08)
+
+        sns.despine()
+
+        filepath = os.path.join(destination_dir, 'coverage_boxplot.png')
+        plt.savefig(filepath, bbox_inches='tight', dpi=150)
+        plt.close()
 
         return filepath
 
