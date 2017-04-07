@@ -197,7 +197,7 @@ class CoverageAnalyser:
         """
         coverage_matrix = self._make_coverage_matrix()
 
-        sns.set(style='ticks')
+        sns.set(style='ticks', context='paper')
 
         fig = plt.figure(figsize=(20, 4))
         ax = fig.add_subplot(1, 1, 1)
@@ -206,8 +206,8 @@ class CoverageAnalyser:
                          vmin=0, vmax=max_value, cmap=colormap, **kwargs)
         ax.set_xlabel('Interval')
         ax.set_ylabel('Sample')
-        ax.set_title('Coverage < {}'.format(max_value), y=1.08,
-                     fontdict={'size': 13})
+        ax.set_title('Low Coverage Targets (Read Depth < {})'
+                     .format(max_value), y=1.08, fontsize=13)
 
         # Keep the target labels where at least 10% of the samples have less
         # than *max_value* read depth:
@@ -221,7 +221,8 @@ class CoverageAnalyser:
                          if label in problematic_intervals}
 
         ax.set_xticks(list(xticks_labels.values()))
-        ax.set_xticklabels(list(xticks_labels.keys()), rotation='vertical')
+        ax.set_xticklabels(list(xticks_labels.keys()), rotation='vertical',
+                           fontsize=7)
 
         ax.tick_params(axis='y', right='on', labelright='on')
         ax.set_yticklabels(ax.get_yticklabels(), rotation='horizontal')
@@ -242,22 +243,24 @@ class CoverageAnalyser:
         Uses the read depths in self.intervals to make a boxplot of coverage
         per sample. Saves the figure in the *dest_dir*.
         """
-        sns.set(style='ticks')
+        sns.set(style='ticks', context='paper', font_scale=0.8)
 
-        fig = plt.figure(figsize=(10, 7))
+        fig = plt.figure(figsize=(6, 4))
         ax = fig.add_subplot(1, 1, 1)
 
         medians = self.intervals.groupby('sample_id')['IDP'].median()
         sample_order = medians.sort_values().index
 
         sns.boxplot(
-            ax=ax, data=self.intervals, x='sample_id', y='IDP', order=sample_order,
+            ax=ax, data=self.intervals, x='sample_id', y='IDP',
+            order=sample_order, color='Gray',
+
             # Tufte style options:
             showcaps=False, showbox=False,
-            color='Gray', width=0.1, linewidth=1,
+            width=0.1, linewidth=1,
             medianprops={'linestyle': '-', 'color': 'DodgerBlue',
                          'linewidth': 4},
-            flierprops={'markerfacecolor': 'Black', 'marker': '.',
+            flierprops={'markerfacecolor': 'DarkGray', 'marker': '.',
                         'markersize': 4}
         )
 
