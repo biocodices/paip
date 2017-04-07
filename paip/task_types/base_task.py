@@ -28,10 +28,19 @@ class BaseTask(luigi.Task):
     # This parameter gives you extra flexibility for the trimming step
     trim_software = luigi.Parameter(default='cutadapt')
 
+    # Override in the child class to automatically define an output() method:
+    OUTPUT = None
+
+    # Override in the child class to put outputs in a subdirectory:
+    SUBDIR = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.basedir = abspath(expanduser(self.basedir))
         self.sequencing_data = self.load_sample_data_from_yaml()
+
+        if self.SUBDIR:
+            os.makedirs(join(self.basedir, self.SUBDIR), exist_ok=True)
 
     def requires(self):
         """
@@ -46,12 +55,19 @@ class BaseTask(luigi.Task):
 
     def output(self):
         """
-        Take the filename in self.OUTPUT and return it as a path to that
-        file in the sample's dir, and wrapped as a luigi.LocalTarget.
+        Take the filename in self.OUTPUT and return it as a luigi.LocalTarget
+        that points to that filename in the sample's/cohort's directory.
 
-        If self.OUTPUT has a list of filenames, return a list too.
+        If self.OUTPUT has a list of filenames, a list of targets will be
+        returned instead.
+
+        If self.OUTPUT is not defined, the task is expected to define its own
+        customn output() method that will override this one.
+
+        If self.SUBDIR is defined, the filepaths will be in it that
+        subdirectory.
         """
-        if not hasattr(self, 'OUTPUT'):
+        if not self.OUTPUT:
             return
 
         if isinstance(self.OUTPUT, list):
@@ -59,14 +75,26 @@ class BaseTask(luigi.Task):
 
         return luigi.LocalTarget(self.path(self.OUTPUT))
 
-    def path(self):
-        raise NotImplementedError
+    def path(self, filename):
+        """
+        Return the filepath to the given *filename* under this sample or
+        cohort directory (and subdirectory, if self.SUBDIR is defined).
+
+        The sample/cohort name is used as a prefix of the *filename*.
+        """
+        base = self.dir if not self.SUBDIR else join(self.dir, self.SUBDIR)
+        return join(base, '{}.{}'.format(self.name, filename))
 
     def paths(self, filenames):
+        """
+        Call self.path for each filename in *filenames*.
+        """
         return [self.path(filename) for filename in filenames]
 
     def log_path(self, log_name):
-        """Generate the filepath for a log with the given *log_name*."""
+        """
+        Generate the filepath for a log with the given *log_name*.
+        """
         return self.path('log.{}'.format(log_name))
 
     def run_program(self, program_name, program_options, **kwargs):

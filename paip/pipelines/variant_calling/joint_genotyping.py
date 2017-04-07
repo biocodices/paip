@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import MakeGVCF
 
@@ -9,6 +7,8 @@ class JointGenotyping(CohortTask):
     Use the gVCF files from many samples to do a joint genotyping.
     Generates a multisample VCF.
     """
+    OUTPUT = 'vcf'
+
     def requires(self):
         return [MakeGVCF(sample=sample, basedir=self.basedir)
                 for sample in self.sample_list]
@@ -28,7 +28,4 @@ class JointGenotyping(CohortTask):
             self.run_program(program_name, program_options)
 
         self.rename_temp_idx()
-
-    def output(self):
-        return luigi.LocalTarget(self.cohort_path('vcf'))
 

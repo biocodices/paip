@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import ExtractSample
 
@@ -10,6 +8,8 @@ class KeepReportableGenotypes(SampleTask):
     for that sample where only the variants with FILTER=PASS and genotypes
     with DP > min_dp and GQ > min_gq are kept.
     """
+    OUTPUT = 'reportable.vcf'
+
     def requires(self):
         return ExtractSample(**self.param_kwargs)
 
@@ -26,8 +26,4 @@ class KeepReportableGenotypes(SampleTask):
             self.run_program(program_name, program_options)
 
         self.rename_temp_idx()
-
-    def output(self):
-        fp = self.sample_pipeline_path('reportable.vcf')
-        return luigi.LocalTarget(fp)
 

@@ -12,20 +12,14 @@ def sample_task(test_cohort_basedir):
     return task
 
 
-def test_sample_path(sample_task):
-    path = sample_task.sample_path('foo.txt')
+def test_path(sample_task):
+    path = sample_task.path('foo.txt')
     assert isabs(path)
     assert path.endswith('Sample1/Sample1.foo.txt')
 
 
-def test_sample_pipeline_path(sample_task):
-    path = sample_task.sample_pipeline_path('foo.txt')
-    assert isabs(path)
-    assert path.endswith('Sample1/Sample1.variant_sites.foo.txt')
-
-
-def test_sample_paths(sample_task):
-    paths = sample_task.sample_paths(['foo.txt', 'bar.txt'])
+def test_paths(sample_task):
+    paths = sample_task.paths(['foo.txt', 'bar.txt'])
     expected_paths = ['Sample1/Sample1.foo.txt', 'Sample1/Sample1.bar.txt']
     for path, expected_path in zip(paths, expected_paths):
         assert path.endswith(expected_path)

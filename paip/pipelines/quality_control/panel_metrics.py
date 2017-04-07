@@ -50,8 +50,7 @@ class PanelMetrics(SampleTask):
                    'reportable_variants_mqc.json',
                    'reportable_variants_data.json']
 
-        return [luigi.LocalTarget(self.sample_pipeline_path(fn))
-                for fn in outputs]
+        return [luigi.LocalTarget(self.path(fn)) for fn in outputs]
 
 PanelMetricsCohort = create_cohort_task(PanelMetrics)
 

@@ -18,38 +18,25 @@ class SampleTask(BaseTask):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.name = self.sample
         self.dir = join(self.basedir, self.sample)
 
         sequencing_data = self.sequencing_data[self.sample]
         for key in sequencing_data.keys():
             setattr(self, key, sequencing_data[key])
 
-    def path(self, filename):
-        return join(self.dir, '{}.{}'.format(self.sample, filename))
+    #  def sample_path(self, filename):
+        #  """
+        #  Generate a path to the given *filename* under self.sample's
+        #  directory, using self.sample as a prefix. Example:
 
-    def sample_pipeline_path(self, filename):
-        """
-        Generate a path to the given filename under the sample's directory
-        and include the pipeline type in the filename. Example:
+            #  > sample_path('foo.txt')  # => SampleX/SampleX.foo.txt
 
-            > sample_path('foo.txt')  # => SampleX/SampleX.foo.txt
+        #  """
+        #  return self.path(filename)
 
-        """
-        return join(self.dir, '{}.{}.{}'.format(self.sample,
-                                                self.pipeline_type,
-                                                filename))
-
-    def sample_path(self, filename):
-        """
-        Generate a path to the given *filename* under self.sample's
-        directory, using self.sample as a prefix. Example:
-
-            > sample_path('foo.txt')  # => SampleX/SampleX.foo.txt
-
-        """
-        return self.path(filename)
-
-    def sample_paths(self, filenames):
-        """Alias of self.paths"""
-        return self.paths(filenames)
+    #  def sample_paths(self, filenames):
+        #  """Alias of self.paths"""
+        #  return self.paths(filenames)
 

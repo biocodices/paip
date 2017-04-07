@@ -14,7 +14,7 @@ class VariantCallingMetrics(SampleTask):
         program_name = 'picard CollectVariantCallingMetrics'
         program_options = {
             'input_vcf': self.input().fn,
-            'output_txt': self.sample_path('QC'),
+            'output_txt': self.path('QC'),
             # ^ The file extension of both output files will be added by Picard
         }
         self.run_program(program_name, program_options)

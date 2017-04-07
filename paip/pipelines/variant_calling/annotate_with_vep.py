@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import FilterGenotypes
 
@@ -10,6 +8,7 @@ class AnnotateWithVEP(CohortTask):
     Generats a new VCF.
     """
     REQUIRES = FilterGenotypes
+    OUTPUT = 'vep.tsv'
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
@@ -21,8 +20,4 @@ class AnnotateWithVEP(CohortTask):
                                                               '_summary.html')
             }
             self.run_program(program_name, program_options)
-
-    def output(self):
-        fn = self.cohort_path('vep.tsv')
-        return luigi.LocalTarget(fn)
 

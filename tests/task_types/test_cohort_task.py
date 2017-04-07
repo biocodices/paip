@@ -40,6 +40,8 @@ def test_init(cohort_task_all, test_cohort_basedir):
     # Test default value for pipe type
     assert cohort_task_all.pipeline_type == 'variant_sites'
 
+    assert cohort_task_all.name == 'Cohort1'
+
     # Test init kwargs are stored
     assert cohort_task_all.param_kwargs == {
         'basedir': test_cohort_basedir,
@@ -65,31 +67,14 @@ def test_init(cohort_task_all, test_cohort_basedir):
         CohortTask(basedir=pytest.helpers.file('Cohort1/Sample1'))
 
 
-def test_define_cohort_name(cohort_task_all, cohort_task_2):
-    assert cohort_task_all._define_cohort_name() == 'Cohort1__3_Samples'
-    assert cohort_task_2._define_cohort_name() == 'Cohort1__2_Samples'
-
-
 def test_log_path(cohort_task_all):
-    expected_fn = 'Cohort1__3_Samples.variant_sites.log.foo'
+    expected_fn = 'Cohort1.log.foo'
     assert cohort_task_all.log_path('foo').endswith(expected_fn)
-
-
-def test_cohort_path(cohort_task_all):
-    expected_fn = 'Cohort1__3_Samples.variant_sites.foo'
-    assert cohort_task_all.cohort_path('foo').endswith(expected_fn)
 
 
 def test_sample_path(cohort_task_all):
     result = cohort_task_all.sample_path('foo', 'Sample1')
-    assert result.endswith('Sample1/Sample1.{}.foo'
-                           .format(cohort_task_all.pipeline_type))
-
-    # Test it uses self.sample if no sample is provided
-    cohort_task_all.sample = 'Sample2'
-    result = cohort_task_all.sample_path('foo')
-    assert result.endswith('Sample2/Sample2.{}.foo'
-                           .format(cohort_task_all.pipeline_type))
+    assert result.endswith('Sample1/Sample1.foo')
 
 
 def test_sample_requires(cohort_task_params):

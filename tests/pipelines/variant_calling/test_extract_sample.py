@@ -23,7 +23,3 @@ def test_run(task, mock_rename):
     assert 'with_filters.vcf-luigi-tmp' in program_options['output_vcf']
     assert mock_rename.call_count == 2
 
-
-def test_output(task):
-    assert task.output().fn.endswith('variant_sites.with_filters.vcf')
-

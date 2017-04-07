@@ -1,3 +1,6 @@
+import os
+from unittest.mock import MagicMock
+
 import pytest
 import luigi
 
@@ -18,6 +21,20 @@ def MockTask():
     return MockClass
 
 
+def test_init(test_cohort_basedir, monkeypatch):
+    # Test it creates a subdirectory if needed
+    class SomeCohortTask(paip.task_types.BaseTask):
+        SUBDIR = 'foo'
+
+    mock_makedirs = MagicMock()
+    monkeypatch.setattr(os, 'makedirs', mock_makedirs)
+
+    SomeCohortTask(basedir=test_cohort_basedir)
+
+    assert mock_makedirs.call_count == 1
+    assert mock_makedirs.call_args[0][0].endswith('foo')
+
+
 def test_load_sample_data_from_yaml(base_task):
     # By default, sequencing_data.yml is read
     for key in ['Sample1', 'Sample2', 'Sample3']:
@@ -28,8 +45,33 @@ def test_load_sample_data_from_yaml(base_task):
     assert other_data['foo'] == 'bar'
 
 
+def test_output(base_task, monkeypatch):
+    # These are defined in CohortTask and SampleTask
+    base_task.name = 'BaseTask'
+    base_task.dir = '/path/to/BaseTask'
+
+    assert base_task.output() is None
+
+    base_task.OUTPUT = 'foo'
+    assert base_task.output().path.endswith('BaseTask/BaseTask.foo')
+
+    base_task.OUTPUT = ['foo', 'bar']
+    outputs = base_task.output()
+    assert outputs[0].path.endswith('BaseTask/BaseTask.foo')
+    assert outputs[1].path.endswith('BaseTask/BaseTask.bar')
+
+    base_task.SUBDIR = 'xhmm_run'
+    base_task.OUTPUT = 'baz'
+    assert base_task.output().path.endswith('BaseTask/xhmm_run/BaseTask.baz')
+
+    base_task.OUTPUT = ['spam', 'eggs']
+    outputs = base_task.output()
+    assert outputs[0].path.endswith('BaseTask/xhmm_run/BaseTask.spam')
+    assert outputs[1].path.endswith('BaseTask/xhmm_run/BaseTask.eggs')
+
+
 def test_run_program(base_task, monkeypatch):
-    # run_program uses generate_command, but we test that method elsewhere
+    # run_program uses generate_command, but we test the latter elsewhere,
     # so we just mock it here:
     def fake_generate_command(program_name, options):
         opts = list(options.items())[0]

@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import MergeVCFs, JointGenotyping
 
@@ -11,6 +9,8 @@ class SelectIndels(CohortTask):
     This step is needed to later apply SNP-specific filters to the
     resulting VCF.
     """
+    OUTPUT = 'indels.vcf'
+
     def requires(self):
         in_targets_pipeline = self.pipeline_type == 'target_sites'
         task = MergeVCFs if in_targets_pipeline else JointGenotyping
@@ -28,7 +28,4 @@ class SelectIndels(CohortTask):
             self.run_program(program_name, program_options)
 
         self.rename_temp_idx()
-
-    def output(self):
-        return luigi.LocalTarget(self.cohort_path('indels.vcf'))
 
