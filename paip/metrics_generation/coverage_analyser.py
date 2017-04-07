@@ -1,7 +1,7 @@
 import os
 from os.path import join, dirname
 import re
-from itertools import chain, cycle, zip_longest
+from itertools import chain, cycle
 from operator import itemgetter
 import json
 from math import sqrt
@@ -237,44 +237,58 @@ class CoverageAnalyser:
 
         return filepath
 
-    def plot_boxplot(self, destination_dir):
+    def plot_boxplot(self, dest_dir):
         """
         Uses the read depths in self.intervals to make a boxplot of coverage
-        per sample. Saves the figure in the *destination_dir*.
+        per sample. Saves the figure in the *dest_dir*.
         """
-
-        assert 0
-
-        ## SEGUIR ACA: testear este método y agregarlo al report
-
-
         sns.set(style='ticks')
 
-        fig = plt.figure(figsize=(15, 4))
+        fig = plt.figure(figsize=(10, 7))
         ax = fig.add_subplot(1, 1, 1)
 
-        sns.boxplot(ax=ax, data=self.intervals, x='sample', y='mean_coverage',
-                    width=0.6, linewidth=1, color='LightBlue')
+        medians = self.intervals.groupby('sample_id')['IDP'].median()
+        sample_order = medians.sort_values().index
 
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-        ax.spines['left'].set_color('Silver')
-        ax.spines['bottom'].set_color('Silver')
+        sns.boxplot(
+            ax=ax, data=self.intervals, x='sample_id', y='IDP', order=sample_order,
+            # Tufte style options:
+            showcaps=False, showbox=False,
+            color='Gray', width=0.1, linewidth=1,
+            medianprops={'linestyle': '-', 'color': 'DodgerBlue',
+                         'linewidth': 4},
+            flierprops={'markerfacecolor': 'Black', 'marker': '.',
+                        'markersize': 4}
+        )
+
+        samples = self.intervals['sample_id'].unique()
+        ax.set_xticklabels(ax.get_xticklabels(),
+                           rotation=45 if len(samples) > 12 else 0)
+
         ax.tick_params(axis='both', color='Silver')
-        ax.set_ylim([-10, self.intervals['mean_coverage'].max()])
-        ax.set_xlabel('Sample')
-        ax.set_ylabel('Read Depth')
+        ax.set_ylim([-10, self.intervals['IDP'].max()])
+        ax.set_xlabel('Sample', labelpad=20)
+        ax.set_ylabel('Read Depth', labelpad=20)
+
+        # We want to discriminate the low values in a more granular way, so:
         ax.set_yticks([100, 200, 300, 400], minor=True)
 
-        sequencing_mean = self.intervals['IDP'].mean()
-        seq_mean_pretty = format_number(sequencing_mean, num_decimals=0)
-        ax.axhline(y=sequencing_mean, color='DodgerBlue', linewidth=2,
-                   linestyle='dashed')
-        ax.set_title('Coverage (${{mean = {}}}$)'
-                     .format(seq_mean_pretty), y=1.08)
+        # Draw the global median
+        sequencing_median = self.intervals['IDP'].median()
+        seq_median_pretty = format_number(sequencing_median, num_decimals=0)
+        ax.axhline(y=sequencing_median, color='DodgerBlue', linewidth=1,
+                   linestyle='dotted')
+        ax.text(x=max(ax.get_xticks()) + 0.6, color='DodgerBlue',
+                y=sequencing_median, s='$median={}$'.format(seq_median_pretty),
+                verticalalignment='center', horizontalalignment='left')
+
+        ax.set_title('Coverage per Sample', y=1.08)
 
         sns.despine()
+        ax.spines['left'].set_color('Silver')
+        ax.spines['bottom'].set_color('Silver')
 
-        filepath = os.path.join(destination_dir, 'coverage_boxplot.png')
+        filepath = os.path.join(dest_dir, 'coverage_boxplot.png')
         plt.savefig(filepath, bbox_inches='tight', dpi=150)
         plt.close()
 
@@ -396,14 +410,16 @@ class CoverageAnalyser:
         order = [str(n) for n in range(1, 23)] + ['X', 'Y', 'MT']
         return order.index(chrom)
 
-    def make_html_report(self, report_title, heatmap_plot, chromosome_plots,
-                         destination_path):
+    def make_html_report(self, report_title, boxplot_path, heatmap_path,
+                         chrom_plot_paths, destination_path):
         """
-        Puts the *plot_files* in an HTML report and saves it at
+        Puts the plots from *heatmap_path*, *boxplot_path* and
+        *chrom_plot_paths* in an HTML report and saves it at
         *destination_path*. The *report_title* will be used as the document
         heading.
         """
-        chrom_plots = sorted(chromosome_plots, key=self._plot_file_chrom_index)
+        chrom_plot_paths = sorted(chrom_plot_paths,
+                                  key=self._plot_file_chrom_index)
 
         jinja_env = jinja2.Environment(
             loader=jinja2.PackageLoader('paip', 'templates'),
@@ -411,8 +427,9 @@ class CoverageAnalyser:
         )
 
         template = jinja_env.get_template('coverage_report.html.jinja')
-        template_data = {'chrom_plot_paths': chrom_plots,
-                         'heatmap_path': heatmap_plot,
+        template_data = {'boxplot_path': boxplot_path,
+                         'heatmap_path': heatmap_path,
+                         'chrom_plot_paths': chrom_plot_paths,
                          'report_title': report_title}
         html = template.render(template_data)
 
@@ -427,17 +444,26 @@ class CoverageAnalyser:
         filepath to the report. Will put the plots in a subdirectory named
         "coverage_plots".
         """
+        # Make the plots, get their filepaths
+        plots_dir = join(dirname(destination_path), 'coverage_plots')
+        os.makedirs(plots_dir, exist_ok=True)
+        boxplot_path = self.plot_boxplot(dest_dir=plots_dir)
+        heatmap_path = self.plot_heatmap(dest_dir=plots_dir,
+                                         max_value=self.reads_threshold)
+        chrom_plots_basename = join(plots_dir, 'coverage')
+        chrom_plot_paths = self.plot_coverage_per_chromosome(chrom_plots_basename)
+
+        # Put the plots in the HTML
         if not destination_path.endswith('.html'):
             destination_path += '.html'
 
-        plots_dir = join(dirname(destination_path), 'coverage_plots')
-        os.makedirs(plots_dir, exist_ok=True)
-        chrom_plots_basename = join(plots_dir, 'coverage')
-        chromosome_plots = self.plot_coverage_per_chromosome(chrom_plots_basename)
-        heatmap_plot = self.plot_heatmap(dest_dir=plots_dir,
-                                         max_value=self.reads_threshold)
-        html_file = self.make_html_report(report_title, heatmap_plot,
-                                          chromosome_plots, destination_path)
+        html_file = self.make_html_report(
+            report_title,
+            boxplot_path,
+            heatmap_path,
+            chrom_plot_paths,
+            destination_path
+        )
 
         return html_file
 

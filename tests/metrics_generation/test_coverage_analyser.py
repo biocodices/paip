@@ -1,10 +1,10 @@
 import os
-import shutil
 from tempfile import gettempdir
 import pandas as pd
 import pytest
 import json
 from glob import glob
+import shutil
 
 from bs4 import BeautifulSoup
 
@@ -174,6 +174,15 @@ def test_plot_heatmap(ca):
     assert not os.path.isfile(plot_file)
 
 
+def test_plot_boxplot(ca):
+    plot_file = ca.plot_boxplot(dest_dir=gettempdir())
+
+    assert os.path.isfile(plot_file)
+    assert os.path.getsize(plot_file)
+
+    os.remove(plot_file)
+    assert not os.path.isfile(plot_file)
+
 def test_plot_coverage_per_chromosome(ca):
     basename = os.path.join(gettempdir(), 'test_paip-cvg_plots')
     plot_files = ca.plot_coverage_per_chromosome(basename)
@@ -196,14 +205,16 @@ def test_plot_file_chrom_index(ca):
 def test_make_html_report(ca):
     report_filepath = os.path.join(gettempdir(),
                                    'paip_test-coverage_report.html')
-    chromosome_plots = ['/path/to/plot_chrom_1.png',
-                        '/path/to/plot_chrom_X.png']
-    heatmap_plot = '/path/to/heatmap.png'
+    chrom_plots = ['/path/to/plot_chrom_1.png',
+                   '/path/to/plot_chrom_X.png']
+    heatmap = '/path/to/heatmap.png'
+    boxplot = '/path/to/boxplot.png'
 
     ca.make_html_report(
         report_title='Report Title',
-        heatmap_plot=heatmap_plot,
-        chromosome_plots=chromosome_plots,
+        boxplot_path=boxplot,
+        heatmap_path=heatmap,
+        chrom_plot_paths=chrom_plots,
         destination_path=report_filepath,
     )
 
@@ -217,7 +228,7 @@ def test_make_html_report(ca):
 
     soup = BeautifulSoup(html_written, 'html.parser')
 
-    for plot_filename in chromosome_plots + [heatmap_plot]:
+    for plot_filename in [boxplot, heatmap] + chrom_plots:
         found_images = soup.select('img[src="{}"]'.format(plot_filename))
         assert len(found_images) == 1
 
@@ -226,30 +237,32 @@ def test_make_html_report(ca):
 
 
 def test_report(ca):
-    given_path = os.path.join(gettempdir(), 'paip_test-cov_report')
-    result_path = ca.report('Report Title', given_path)
+    basename = os.path.join(gettempdir(), 'paip_test-cov_report')
+    report_path = ca.report('Report Title', basename)
 
     # Check .html is added to the filename if not present
-    assert result_path.endswith('.html')
+    assert report_path.endswith('.html')
 
     # Check the plots dir is created
-    expected_plots_dir = os.path.join(os.path.dirname(given_path),
-                                      'coverage_plots')
-    assert os.path.isdir(expected_plots_dir)
+    plots_dir = os.path.join(os.path.dirname(basename), 'coverage_plots')
+    assert os.path.isdir(plots_dir)
 
     # Check the plots are saved there
-    cvg_plots = glob(os.path.join(expected_plots_dir, '*coverage*.png'))
-    assert len(cvg_plots) == 3
+    cvg_plots = glob(os.path.join(plots_dir, '*coverage_chrom*.png'))
+    assert len(cvg_plots) == 2
 
-    heatmap_plots = glob(os.path.join(expected_plots_dir, '*heatmap*.png'))
+    heatmap_plots = glob(os.path.join(plots_dir, '*heatmap*.png'))
     assert len(heatmap_plots) == 1
 
-    # Remove files after testing
-    os.remove(result_path)
-    assert not os.path.isfile(result_path)
+    boxplot_plots = glob(os.path.join(plots_dir, '*boxplot*.png'))
+    assert len(boxplot_plots) == 1
 
-    shutil.rmtree(expected_plots_dir)
-    assert not os.path.isdir(expected_plots_dir)
+    # Remove files after testing
+    os.remove(report_path)
+    assert not os.path.isfile(report_path)
+
+    shutil.rmtree(plots_dir)
+    assert not os.path.isdir(plots_dir)
 
 
 def test_summarize_coverage(ca_single_sample):
