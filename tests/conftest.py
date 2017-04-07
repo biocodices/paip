@@ -68,7 +68,8 @@ def task_factory(monkeypatch):
                             MagicMock(return_value=('stdout', 'stderr')))
 
         # TODO: Test that the program called exists in example_commands
-        # etc.
+        # etc. Use MagicMock with the side_effect option to call
+        # a check (assertions).
         assert 0
 
         return task
