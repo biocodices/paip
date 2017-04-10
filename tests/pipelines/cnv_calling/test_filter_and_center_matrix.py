@@ -11,7 +11,7 @@ def task(cohort_task_factory):
 def test_run(task):
     task.run()
 
-    (program_name, program_options), _ = task.run_program.call_args_list[0]
+    (program_name, program_options), _ = task.run_program.call_args
     assert program_name == 'xhmm centerData'
     assert 'DATA.RD.txt' in program_options['read_depth_matrix']
     assert 'DATA.filtered_centered.RD.txt' in program_options['out_matrix']

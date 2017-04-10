@@ -575,3 +575,21 @@ xhmm PCA:
    --PCA -r {filtered_centered_matrix}
    --PCAfiles {outfiles_basename}'
 
+xhmm PCA_normalization:
+  '{executable}
+   --normalize -r {filtered_centered_matrix}
+   --PCAfiles {pca_files_basename}
+   --normalizeOutput {outfile}
+   --PCnormalizeMethod PVE_mean
+   --PVE_mean_factor 0.7'
+
+xhmm Z_scores:
+  '{executable}
+   --matrix -r {pca_normalized_matrix}
+   --centerData --centerType sample
+   --zScoreData
+   -o {out_zscores}
+   --outputExcludedTargets {out_excluded_targets}
+   --outputExcludedSamples {out_excluded_samples}
+   --maxSdTargetRD 30'
+
