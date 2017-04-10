@@ -2,6 +2,7 @@ base_dir: /home/juan/paip_resources
 
 snpeff_datadir: snpeff_data
 vep_datadir: vep_data
+xhmm_params_file: xhmm_params.txt
 
 ##################################################################
 #                                                                #

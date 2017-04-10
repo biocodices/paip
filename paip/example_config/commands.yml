@@ -593,3 +593,22 @@ xhmm Z_scores:
    --outputExcludedSamples {out_excluded_samples}
    --maxSdTargetRD 30'
 
+xhmm filter_prenormalized_matrix:
+  '{executable}
+   --matrix -r {read_depth_matrix}
+   --excludeTargets {raw_excluded_targets}
+   --excludeTargets {zscore_excluded_targets}
+   --excludeSamples {raw_excluded_samples}
+   --excludeSamples {zscore_excluded_samples}
+   -o {outfile}'
+
+xhmm discover:
+  '{executable}
+   --discover
+   -s {data_files_basename}
+   -p {xhmm_params_file}
+   -r {zscores_matrix}
+   -R {read_depth_matrix_filtered}
+   -c {outfile}
+   -a {aux_outfile}'
+
