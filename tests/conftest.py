@@ -67,11 +67,6 @@ def task_factory(monkeypatch):
         monkeypatch.setattr(task, 'run_program',
                             MagicMock(return_value=('stdout', 'stderr')))
 
-        # TODO: Test that the program called exists in example_commands
-        # etc. Use MagicMock with the side_effect option to call
-        # a check (assertions).
-        assert 0
-
         return task
 
     return factory

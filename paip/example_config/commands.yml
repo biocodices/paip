@@ -512,3 +512,37 @@ gatk DepthOfCoverage:
    # a genotype or not, because it considers only half the reads in the
    # overlapping part of the interval.
 
+
+
+#########################################
+#                                       #
+# Variant Calling Pipeline              #
+#                                       #
+#########################################
+
+
+# These CNV calling steps are taken from
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4065038/pdf/nihms-590058.pdf
+
+
+xhmm MergeGATKDepths:
+  '{executable}
+  --mergeGATKdepths
+  -o {outfile}
+  {sample_cvg_files}'
+
+gatk GCContentByInterval:
+  '{executable}
+  -T GCContentByInterval
+  -L {panel_regions}
+  -R {reference_genome}
+  -o {outfile}'
+
+awk extreme_GC_targets:
+  "awk ($2 < 0.1 || $2 > 0.9) {{print $1}}' {gc_content_by_interval} > {outfile}"
+  # The input file has two columns: interval name and GC content of the interval
+  # This awk command keeps the interval names of the intervals with extreme
+  # values (i.e. less than 10% or more than 90%) in the second column.
+  # The double curly braces {{ }} around the awk print statement are necessary
+  # because of Python string formatting.
+ 

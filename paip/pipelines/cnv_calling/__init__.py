@@ -1,1 +1,2 @@
 from .merge_gatk_depths import MergeGATKDepths
+from .gc_content_by_interval import GCContentByInterval
