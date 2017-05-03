@@ -45,11 +45,11 @@ Options:
                             'target_sites' or 'all_sites'.
                             (default=variant_sites)
 
-    --min-gq                Minimum Genotype Quality (GQ) to
+    --min-gq GQ             Minimum Genotype Quality (GQ) to
                             use during genotype filtering.
                             (default=30)
 
-    --min-dp                Minimum read depth to use during
+    --min-dp DP             Minimum read depth to use during
                             genotype filtering.
                             (default=30)
 
