@@ -39,14 +39,13 @@ class MultiQC(CohortTask):
             BcftoolsStats,
             SamtoolsStats,
             FeatureCounts,
+            SummarizeCoverage,
         ]
 
+        # Some pipelines might not have a VCF of panel variants
+        # (e.g. exomes, exon panels like Trusight Cardio)
         if 'panel_variants' in available_resources():
-            # These tasks need the VCF of target variants:
-            sample_tasks += [
-                PanelMetrics,
-                SummarizeCoverage,
-            ]
+            sample_tasks.append(PanelMetrics)
 
         sample_tasks = [task(sample=sample, **self.param_kwargs)
                         for sample in self.sample_list

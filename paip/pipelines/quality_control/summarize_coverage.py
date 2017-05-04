@@ -13,8 +13,13 @@ class SummarizeCoverage(SampleTask):
     OUTPUT = 'coverage_summary_mqc.json'
 
     def run(self):
+        try:
+            panel_variants = path_to_resource('panel_variants')
+        except KeyError:  # variant_sites pipelines might not have a panel VCF
+            panel_variants = None
+
         coverage_analyser = CoverageAnalyser(
-            panel_vcf=path_to_resource('panel_variants'),
+            panel_vcf=panel_variants,
             coverage_files=[self.input().fn],
             reads_threshold=self.min_dp,
         )

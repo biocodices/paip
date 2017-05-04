@@ -163,6 +163,23 @@ def test_init(ca):
         assert field in ca.intervals
 
 
+def test_init_without_panel_vcf():
+    ca = CoverageAnalyser(coverage_files=coverage_files)
+    assert not ca.has_panel
+
+
+def test_plots_without_saving(ca):
+    heatmap = ca.plot_heatmap(max_value=30)
+    boxplot = ca.plot_boxplot()
+    chromosomes = ca.plot_coverage_per_chromosome(plt_show=False)
+
+    from matplotlib.axes import Axes
+
+    assert isinstance(heatmap, Axes)
+    assert isinstance(boxplot, Axes)
+    assert isinstance(chromosomes[0], Axes)
+
+
 def test_plot_heatmap(ca):
     plot_file = ca.plot_heatmap(dest_dir=gettempdir(), max_value=30,
                                 colormap='Oranges_r')
