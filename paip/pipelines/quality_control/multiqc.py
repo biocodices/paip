@@ -1,3 +1,4 @@
+from paip.helpers import available_resources
 from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import (
     TrimAdapters,
@@ -38,9 +39,14 @@ class MultiQC(CohortTask):
             BcftoolsStats,
             SamtoolsStats,
             FeatureCounts,
-            PanelMetrics,
-            SummarizeCoverage,
         ]
+
+        if 'panel_variants' in available_resources():
+            # These tasks need the VCF of target variants:
+            sample_tasks += [
+                PanelMetrics,
+                SummarizeCoverage,
+            ]
 
         sample_tasks = [task(sample=sample, **self.param_kwargs)
                         for sample in self.sample_list

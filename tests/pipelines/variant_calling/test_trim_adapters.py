@@ -15,6 +15,6 @@ def test_run(task):
     assert program_name == 'cutadapt'
     assert program_options['forward_reads'] == task.input()[0].fn
     assert program_options['reverse_reads'] == task.input()[1].fn
-    assert program_options['forward_output'] == task.output()[0].fn
-    assert program_options['reverse_output'] == task.output()[1].fn
+    assert 'R1.trimmed.fastq-luigi' in program_options['forward_output']
+    assert 'R2.trimmed.fastq-luigi' in program_options['reverse_output']
 

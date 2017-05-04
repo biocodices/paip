@@ -12,6 +12,10 @@ class PanelMetrics(SampleTask):
     Takes VCF files of unfiltered and reportable variants. For each one,
     it generates metrics of the panel variants (missing %, seen %, etc.),
     JSON-formatted for MultiQC.
+
+    This will only work if the variant calling is done on a panel of variants,
+    (that is, a VCF with the panel variants must be available),
+    as opposed to a panel of some or all exons.
     """
     REQUIRES = [ExtractSample, KeepReportableGenotypes]
 
