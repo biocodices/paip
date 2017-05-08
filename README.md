@@ -12,9 +12,22 @@ You need a working Python 3.5 or greater installation.
 Then you can install `paip`:
 
 ```bash
-# cd to paip directory and run:
+git clone git@github.com:biocodices/paip.git
+cd paip
 pip install -r requirements.txt
 python setup.py install  # This will make the paip command available
+```
+
+You also need to clone and install these packages:
+
+```bash
+git clone git@github.com:biocodices/vcf_to_dataframe.git
+cd vcf_to_dataframe
+python setup.py install
+
+git clone git@github.com:biocodices/anotamela.git
+cd anotamela
+python setup.py install
 
 # Now you should be able to run paip
 paip --help
@@ -46,6 +59,8 @@ java -jar /path/to/snpeff.jar \
     -s homo_sapiends_merged \
     -y GRCh37
 ```
+
+###
 
 ## Resources
 

@@ -7,14 +7,14 @@ from paip.pipelines.variant_calling import (
 )
 from paip.pipelines.quality_control import (
     FastQC,
+    BcftoolsStats,
+    SamtoolsStats,
+    PanelMetrics,
+    SummarizeCoverage,
     #  AlignmentMetrics,
     #  VariantCallingMetrics,
     #  VariantEval,
-    BcftoolsStats,
-    SamtoolsStats,
-    FeatureCounts,
-    PanelMetrics,
-    SummarizeCoverage,
+    #  FeatureCounts,
 )
 
 
@@ -26,20 +26,21 @@ class MultiQC(CohortTask):
     OUTPUT = 'multiqc_report.html'
 
     def requires(self):
-        cohort_tasks = [AnnotateWithVEP]
+        cohort_tasks = [] # [AnnotateWithVEP]
         cohort_tasks = [task(**self.param_kwargs) for task in cohort_tasks]
 
         sample_tasks = [
             FastQC,
             TrimAdapters,
-            #  AlignmentMetrics,  # SamtoolsStats replaces this
-            #  VariantCallingMetrics,  # MultiQC doesn't use this
             AnnotateWithSnpeff,
-            #  VariantEval,  # The count of SNPs seems to be wrong, misleading!
             BcftoolsStats,
             SamtoolsStats,
-            FeatureCounts,
             SummarizeCoverage,
+
+            #  AlignmentMetrics,  # SamtoolsStats replaces this
+            #  VariantCallingMetrics,  # MultiQC doesn't use this
+            #  VariantEval,  # The count of SNPs seems to be wrong, misleading!
+            #  FeatureCounts,
         ]
 
         # Some pipelines might not have a VCF of panel variants

@@ -13,7 +13,7 @@ from paip.metrics_generation import CoverageAnalyser
 
 
 panel_vcf = pytest.helpers.file('panel_variants.vcf')
-panel_bed = pytest.helpers.file('panel_variants.bed')
+panel_bed = pytest.helpers.file('panel_regions.bed')
 files = ['Cohort1/Sample2/Sample2.coverage_diagnosis.vcf',
          'Cohort1/Sample3/Sample3.coverage_diagnosis.vcf']
 coverage_files = [pytest.helpers.file(fn) for fn in files]
@@ -21,14 +21,14 @@ coverage_files = [pytest.helpers.file(fn) for fn in files]
 
 @pytest.fixture
 def ca():
-    return CoverageAnalyser(panel_vcf=panel_vcf,
+    return CoverageAnalyser(panel=panel_vcf,
                             coverage_files=coverage_files,
                             reads_threshold=20)
 
 
 @pytest.fixture
 def ca_single_sample():
-    return CoverageAnalyser(panel_vcf=panel_vcf,
+    return CoverageAnalyser(panel=panel_vcf,
                             coverage_files=coverage_files[0:1],  # only one!
                             reads_threshold=20)
 
@@ -63,10 +63,12 @@ def test_read_panel_from_vcf(ca):
     for field in 'qual filter info ref alt'.split():
         assert field not in panel
 
+
 def test_read_panel_from_bed(ca):
     panel = ca._read_panel_from_bed(panel_bed)
     assert all(isinstance(chrom, str) for chrom in panel['chrom'])
-    assert all(isinstance(genes, tuple) for genes in panel['genes'])
+    features = ['Feature-1', 'Feature-2', 'Feature-3', 'Feature-X']
+    assert features == list(panel['genes'])
 
 
 def test_read_coverage_files(ca):
@@ -139,6 +141,12 @@ def test_add_panel_data_to_intervals(ca):
         ('rs1;rs1_altname',), ('rs2',), ('rs3',), ('rs5',), ('rsX1',),
     ] * 2
     assert list(ca.intervals['variants_count']) == [1] * 5 * 2
+
+
+@pytest.mark.skip(reason="Write this test!")
+def test_add_panel_data_to_intervals_from_bed():
+    ca = CoverageAnalyser(coverage_files, panel=panel_bed)
+    assert 0
 
 
 def test_make_coverage_matrix(ca):
