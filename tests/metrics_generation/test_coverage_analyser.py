@@ -5,6 +5,7 @@ import pytest
 import json
 from glob import glob
 import shutil
+from unittest.mock import MagicMock
 
 from bs4 import BeautifulSoup
 
@@ -12,6 +13,7 @@ from paip.metrics_generation import CoverageAnalyser
 
 
 panel_vcf = pytest.helpers.file('panel_variants.vcf')
+panel_bed = pytest.helpers.file('panel_variants.bed')
 files = ['Cohort1/Sample2/Sample2.coverage_diagnosis.vcf',
          'Cohort1/Sample3/Sample3.coverage_diagnosis.vcf']
 coverage_files = [pytest.helpers.file(fn) for fn in files]
@@ -43,13 +45,28 @@ def test_extract_genes(ca):
 
 
 def test_read_panel(ca):
-    panel = ca._read_panel(panel_vcf)
+    ca._read_panel_from_vcf = MagicMock()
+    ca._read_panel(panel_vcf)
+    ca._read_panel_from_vcf.assert_called_once
+
+    ca._read_panel_from_bed = MagicMock()
+    ca._read_panel(panel_bed)
+    ca._read_panel_from_bed.assert_called_once
+
+
+def test_read_panel_from_vcf(ca):
+    panel = ca._read_panel_from_vcf(panel_vcf)
     assert all(isinstance(chrom, str) for chrom in panel['chrom'])
     assert all(isinstance(genes, tuple) for genes in panel['genes'])
     assert list(panel['varclass']) == ['SNV'] * 5 + ['DIV'] + [None] * 4
 
     for field in 'qual filter info ref alt'.split():
         assert field not in panel
+
+def test_read_panel_from_bed(ca):
+    panel = ca._read_panel_from_bed(panel_bed)
+    assert all(isinstance(chrom, str) for chrom in panel['chrom'])
+    assert all(isinstance(genes, tuple) for genes in panel['genes'])
 
 
 def test_read_coverage_files(ca):
