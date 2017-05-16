@@ -49,11 +49,11 @@ picard AddOrReplaceReadGroups:
     '{executable}
      AddOrReplaceReadGroups
      I={input_sam}
-     RGID={flowcell_id}.{lane_number}.{sample_barcode}
-     RGSM={sample_barcode}
+     RGID={flowcell_id}.{lane_number}.{sample_id}
+     RGSM={sample_id}
      RGLB={library_id}
      RGPL={platform}
-     RGPU={flowcell_id}.{lane_number}.{sample_barcode}
+     RGPU={flowcell_id}.{lane_number}.{sample_id}
      O={output_bam}
      SO=coordinate
      CREATE_INDEX=True
@@ -378,7 +378,7 @@ gatk SelectVariants sample:
      -nt 1
      -R {reference_genome}
      -V {input_vcf}
-     --sample_name {sample}
+     --sample_name {sample_id}
      --logging_level INFO
      -o {output_vcf}'
 

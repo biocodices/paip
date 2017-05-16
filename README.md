@@ -171,20 +171,15 @@ Sample1:
   platform: ILLUMINA
   flowcell_id: 000000000-D0UCC
   lane_number: 1
-  sample_barcode: Sample1
 
 Sample2:
   library_id: LIB1
   platform: ILLUMINA
   flowcell_id: 000000-ABCDE
   lane_number: 1
-  sample_barcode: Sample1
 ```
 
-Most of these data will be used to give a name to the read groups. I recommend
-keeping the `sample_barcode` the same as the sample ID, because the read groups
-and the VCF headers will use the former, while the filenames will use the
-latter, so different sample names might lead to confusion.
+Most of these data will be used to give a name to the read groups, and later to extract the sample from the multisample VCF. 
 
 The data about `flowcell_id` and `lane_number` is usually found in the
 read IDs of the `fastq` files. Their format is

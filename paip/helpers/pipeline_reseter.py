@@ -13,8 +13,6 @@ class PipelineReseter:
     and configuration YAMLs.
     """
 
-    KEEP = re.compile(r'(.*\.yml|R(1|2)\.fastq(\.gz)?\b)')
-
     def __init__(self, basedir):
         """Pass the base directory of the cohort."""
         self.basedir = abspath(basedir)
@@ -24,12 +22,23 @@ class PipelineReseter:
 
     @property
     def removable_files(self):
-        """Recursively list the removable files in self.basedir."""
+        """
+        Recursively list the removable files in self.basedir. Keeps scripts
+        ending in .py, .sh, or .rb, config files ending in .yml, and fastqs
+        (but not trimmed fastqs).
+        """
         removable_files = []
 
         for root, dirs, files in os.walk(self.basedir):
-            removable_files.extend([join(root, f) for f in files
-                                    if not self.KEEP.search(f)])
+            for filename in files:
+                if 'fastq' in filename:
+                    if not re.search(r'(trimmed|html)', filename):
+                        continue
+
+                if re.search(r'(\.rb|\.py|\.sh|\.yml)$', filename):
+                    continue
+
+                removable_files.append(join(root, filename))
 
         return sorted(removable_files)
 

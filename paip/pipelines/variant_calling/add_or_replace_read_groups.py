@@ -20,7 +20,7 @@ class AddOrReplaceReadGroups(SampleTask):
                 'platform': self.platform,
                 'flowcell_id': self.flowcell_id,
                 'lane_number': self.lane_number,
-                'sample_barcode': self.sample_barcode,
+                'sample_id': self.sample,
                 'output_bam': self.temp_bam,
             }
 

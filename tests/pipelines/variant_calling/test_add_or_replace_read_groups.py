@@ -14,7 +14,6 @@ def test_run(task, mock_rename):
 
     assert program_name == 'picard AddOrReplaceReadGroups'
     assert program_options['input_sam'] == task.input().fn
-    assert program_options['sample_barcode'] == 'Sample-Barcode'
     assert program_options['library_id'] == 'Library-ID'
     assert program_options['flowcell_id'] == 'Flowcell-ID'
     assert program_options['lane_number'] == 'Lane-Number'

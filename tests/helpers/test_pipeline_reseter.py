@@ -31,6 +31,10 @@ def test_removable_files(reseter):
     assert pytest.helpers.file('Cohort1/sequencing_data.yml') not in files
     assert pytest.helpers.file('Cohort1/other_seq_data.yml') not in files
 
+    assert pytest.helpers.file('Cohort1/non_removable_script.py') not in files
+    assert pytest.helpers.file('Cohort1/non_removable_script.rb') not in files
+    assert pytest.helpers.file('Cohort1/non_removable_script.sh') not in files
+
 
 def test_reset_pipeline(reseter, monkeypatch):
     mock_remove = MagicMock()

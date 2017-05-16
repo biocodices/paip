@@ -33,7 +33,6 @@ def test_log_path(sample_task):
 def test_load_sample_data_from_yaml(sample_task):
     assert sample_task.flowcell_id == 'Flowcell-ID'
     assert sample_task.library_id == 'Library-ID'
-    assert sample_task.sample_barcode == 'Sample-Barcode'
     assert sample_task.platform == 'Platform'
     assert sample_task.lane_number == 'Lane-Number'
 

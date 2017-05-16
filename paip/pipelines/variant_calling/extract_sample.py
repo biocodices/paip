@@ -20,7 +20,7 @@ class ExtractSample(SampleTask):
             program_name = 'gatk SelectVariants sample'
             program_options = {
                 'input_vcf': self.input().fn,
-                'sample': self.sample_barcode,
+                'sample_id': self.sample,
                 'output_vcf': self.temp_vcf,
             }
             self.run_program(program_name, program_options)

@@ -1,13 +1,11 @@
 Sample1:
   platform: Platform
-  sample_barcode: Sample-Barcode
   library_id: Library-ID
   flowcell_id: Flowcell-ID
   lane_number: Lane-Number
 
 Sample2:
   platform: Platform
-  sample_barcode: Sample-Barcode
   flowcell_id: Flowcell-ID
   library_id: Library-ID
   lane_number: Lane-Number
@@ -15,7 +13,6 @@ Sample2:
 Sample3:
   platform: Platform
   flowcell_id: Flowcell-ID
-  sample_barcode: Sample-Barcode
   library_id: Library-ID
   lane_number: Lane-Number
 
