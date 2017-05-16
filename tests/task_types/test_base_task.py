@@ -1,8 +1,10 @@
+import time
 import os
 from unittest.mock import MagicMock
 
 import pytest
 import luigi
+from luigi.tools.luigi_grep import LuigiGrep
 
 import paip.task_types
 
@@ -99,6 +101,9 @@ def test_run_program(base_task, monkeypatch):
     #  monkeypatch.setattr(paip.task_types.base_task, 'path', fake_path)
     base_task.path = fake_path
 
+    sleep_until_available_to_run = MagicMock()
+    base_task.sleep_until_available_to_run = sleep_until_available_to_run
+
     args_received = base_task.run_program(
         program_name='program',
         program_options={'foo': 'bar'},
@@ -113,6 +118,8 @@ def test_run_program(base_task, monkeypatch):
 
     # Test extra kwargs were passed to run_command
     assert args_received['extra_kwarg'] == 'foo'
+
+    sleep_until_available_to_run.assert_called_once()
 
 
 def test_find_output(base_task):
@@ -157,4 +164,36 @@ def test_requires(MockTask, test_cohort_basedir):
     assert mock_task.requires() == [MockTask(**mock_task.param_kwargs),
                                     MockTask(**mock_task.param_kwargs)]
 
+def test_running_tasks_of_this_class(MockTask, monkeypatch):
+    current_tasks = [
+        {'name': 'TaskName__foo1__bar__baz__30__30__123', 'status': 'RUNNING'},
+        {'name': 'TaskName__foo2__bar__baz__30__30__123', 'status': 'RUNNING'},
+        {'name': 'TaskName__foo3__bar__baz__30__30__123', 'status': 'RUNNING'},
+    ]
+    mock_status_search = MagicMock(return_value=current_tasks)
+    monkeypatch.setattr(LuigiGrep, 'status_search', mock_status_search)
+    MockTask.__name__ = 'TaskName'
+    n = MockTask.running_tasks_of_this_class()
+    assert n == 3
+
+def test_sleep_until_available_to_run(MockTask, monkeypatch):
+    # Pretend other tasks are running:
+    MockTask.running_tasks_of_this_class = lambda: 2
+
+    def fake_sleep(*args, **kwargs):
+        # Now pretend that after sleeping, the other processes have finished:
+        MockTask.running_tasks_of_this_class = lambda: 0
+        fake_sleep.called_once = True
+
+    fake_sleep.called_once = False
+    monkeypatch.setattr(time, 'sleep', fake_sleep)
+
+    # Check it doesn't sleep if a concurrency limit has not been set
+    MockTask.MAX_CONCURRENT_TASKS = None
+    MockTask.sleep_until_available_to_run()
+    assert not fake_sleep.called_once
+
+    MockTask.MAX_CONCURRENT_TASKS = 2
+    MockTask.sleep_until_available_to_run()
+    assert fake_sleep.called_once
 

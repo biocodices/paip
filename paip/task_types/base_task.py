@@ -1,3 +1,4 @@
+import time
 import os
 from os.path import join, expanduser, abspath
 import yaml
@@ -7,6 +8,7 @@ import luigi
 from paip.helpers import (
     generate_command,
     run_command,
+    get_running_tasks,
 )
 
 
@@ -33,6 +35,10 @@ class BaseTask(luigi.Task):
 
     # Override in the child class to put outputs in a subdirectory:
     SUBDIR = None
+
+    # Override in the child class to only allow a number of simultaneous
+    # tasks of that type to be running at the same time:
+    MAX_CONCURRENT_TASKS = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -110,6 +116,7 @@ class BaseTask(luigi.Task):
         """
         command = generate_command(program_name, program_options)
         logfile = self.log_path(self.__class__.__name__)
+        self.sleep_until_available_to_run()
         command_result = run_command(command, logfile=logfile, **kwargs)
         return command_result
 
@@ -194,4 +201,27 @@ class BaseTask(luigi.Task):
             raise IOError(msg.format(fp))
 
         return data
+
+    @classmethod
+    def running_tasks_of_this_class(cls):
+        """
+        Return the number of running tasks of this class.
+        """
+        this_class_name = cls.__name__
+        running_now = [task for task in get_running_tasks()
+                       if task == this_class_name]
+        return len(running_now)
+
+    @classmethod
+    def sleep_until_available_to_run(cls):
+        """
+        Sleep until the number of running tasks of this class is less than
+        cls.MAX_CONCURRENT_TASKS.
+        """
+        print('cls.MAX_CONCURRENT_TASKS', cls.MAX_CONCURRENT_TASKS)
+        if cls.MAX_CONCURRENT_TASKS is None:
+            return
+
+        while cls.running_tasks_of_this_class() >= cls.MAX_CONCURRENT_TASKS:
+            time.sleep(1)
 

@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 from paip.helpers import get_running_tasks
 from luigi.tools.luigi_grep import LuigiGrep
-from collections import defaultdict
 
 
 def test_get_running_tasks(monkeypatch):
