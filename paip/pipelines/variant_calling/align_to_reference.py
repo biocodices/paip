@@ -13,7 +13,6 @@ class AlignToReference(SampleTask):
     """
     REQUIRES = TrimAdapters
     OUTPUT = 'raw_alignment.sam'
-    MAX_CONCURRENT_TASKS = 2
 
     def run(self):
         program_name = 'bwa'

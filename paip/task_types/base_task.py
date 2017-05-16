@@ -218,10 +218,9 @@ class BaseTask(luigi.Task):
         Sleep until the number of running tasks of this class is less than
         cls.MAX_CONCURRENT_TASKS.
         """
-        print('cls.MAX_CONCURRENT_TASKS', cls.MAX_CONCURRENT_TASKS)
         if cls.MAX_CONCURRENT_TASKS is None:
             return
 
         while cls.running_tasks_of_this_class() >= cls.MAX_CONCURRENT_TASKS:
-            time.sleep(1)
+            time.sleep(10)
 
