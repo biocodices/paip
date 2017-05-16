@@ -25,7 +25,7 @@ class CoverageAnalyser:
     Usage to generate an HTML report with all the plots:
 
         > cov_an = CoverageAnalyser(
-              panel_vcf='path/to/..',
+              panel='path/to/..',  # BED of regions or VCF of target variants
               coverage_files=['path/to/..', 'path/to/..']
           )
         > cov_an.report('Report Title', 'path/to/out.html')

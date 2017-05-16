@@ -19,7 +19,7 @@ class SummarizeCoverage(SampleTask):
             panel_variants = None
 
         coverage_analyser = CoverageAnalyser(
-            panel_vcf=panel_variants,
+            panel=panel_variants,
             coverage_files=[self.input().fn],
             reads_threshold=self.min_dp,
         )
