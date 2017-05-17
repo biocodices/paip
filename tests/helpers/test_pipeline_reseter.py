@@ -23,6 +23,7 @@ def test_removable_files(reseter):
     assert pytest.helpers.file('Cohort1/removable_file') in files
 
     assert pytest.helpers.file('Cohort1/Sample1/Sample1.R1.fastq_report.html') in files
+    assert pytest.helpers.file('Cohort1/Sample1/Sample1.R1_fastqc.zip') in files
     assert pytest.helpers.file('Cohort1/Sample2/Sample2.R1.trimmed.fastq') in files
 
     assert pytest.helpers.file('Cohort1/Sample1/Sample1.R1.fastq') not in files

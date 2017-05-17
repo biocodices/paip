@@ -31,7 +31,7 @@ class PipelineReseter:
 
         for root, dirs, files in os.walk(self.basedir):
             for filename in files:
-                if 'fastq' in filename:
+                if 'fastq' in filename and 'fastqc' not in filename:
                     if not re.search(r'(trimmed|html)', filename):
                         continue
 
