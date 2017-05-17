@@ -29,8 +29,8 @@ cutadapt:  # Default for TrimAdapters
    -q 20,20
    --max-n=10
    --minimum-length=50
-   -b file:{illumina_adapters_fwd}
-   -B file:{illumina_adapters_rev}
+   -b file:{illumina_adapters_read1}
+   -B file:{illumina_adapters_read2}
    --output={forward_output}
    --paired-output={reverse_output}
    {forward_reads}
@@ -217,8 +217,10 @@ bcftools reset_filters:
      {input_vcf}'
 
 gatk CombineVariants:
+
     # The {input_vcfs} will be filled in the corresponding
     # task with -V <VCF path> for each sample VCF.
+
     '{executable}
      -T CombineVariants
      -nt 8
@@ -228,7 +230,9 @@ gatk CombineVariants:
      -o {output_vcf}'
 
 snpsift dbSNP:
+
      # output goes to STDOUT
+
     '{executable}
      annotate
      -v

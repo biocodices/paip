@@ -42,14 +42,21 @@ human_features: Homo_sapiens.GRCh37.87.gtf
 #                                                                #
 ##################################################################
 
-illumina_adapters: illumina_adapters.fasta
-illumina_adapters_fwd: illumina_adapters_fwd.fasta
-illumina_adapters_rev: illumina_adapters_rev.fasta
+illumina_adapters: &adapters_both illumina_adapters_both_REDUCED.fasta
+# I'm using the same set to be removed from both reads in each pair.
+# That set of adapters includes the reverse complements.
+illumina_adapters_read1: *adapters_both
+illumina_adapters_read2: *adapters_both
 
 ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
-panel_regions: *ENPv1_amplicons
+ENPv1_variants: &ENPv1_variants ENPv1_213_variants.vcf
+ENPv1_reduced: &ENPv1_reduced ENPv1_206_variants.vcf
 
-# This file is used only in the "target_sites" pipeline
-ENPv1_variants: &ENPv1_variants ENPv1_variants.vcf
-panel_variants: *ENPv1_variants
+TS_Cardio_regions: &TS_Cardio_regions trusight_cardio_grch37.sorted.bed
+# panel_regions: *ENPv1_amplicons
+
+panel_regions: *TS_Cardio_regions
+
+# This file is used only in the "target_sites" pipeline:
+# panel_variants: *ENPv1_reduced
 
