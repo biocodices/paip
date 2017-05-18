@@ -6,7 +6,6 @@ from paip.pipelines.cnv_calling import *
 from paip.pipelines.quality_control import *
 from paip.pipelines.variant_calling_task import VariantCalling
 from paip.pipelines.quality_control_task import QualityControl
-from paip.pipelines.annotate_variants import AnnotateVariants
 
 
 def list_tasks():

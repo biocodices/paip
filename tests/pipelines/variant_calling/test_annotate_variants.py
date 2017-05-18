@@ -1,8 +1,8 @@
 from unittest.mock import mock_open, patch, MagicMock
 import pytest
 
-import paip.pipelines.annotate_variants
-from paip.pipelines.annotate_variants import AnnotateVariants
+import paip.pipelines.variant_calling.annotate_variants
+from paip.pipelines.variant_calling.annotate_variants import AnnotateVariants
 
 
 @pytest.fixture
@@ -19,13 +19,12 @@ def test_run(task, monkeypatch):
     # Mock the AnnotationPipeline class and the returned instance:
     pipeline_instance = MagicMock()
     AnnotationPipeline = MagicMock(return_value=pipeline_instance)
-    monkeypatch.setattr(paip.pipelines.annotate_variants, 'AnnotationPipeline',
-                        AnnotationPipeline)
+    monkeypatch.setattr(paip.pipelines.variant_calling.annotate_variants,
+                        'AnnotationPipeline', AnnotationPipeline)
 
     # Mock the open built-in function to test the output is written
     open_ = mock_open()
-
-    with patch('paip.pipelines.annotate_variants.open', open_):
+    with patch('paip.pipelines.variant_calling.annotate_variants.open', open_):
         task.run()
 
     assert AnnotationPipeline.call_count == 1

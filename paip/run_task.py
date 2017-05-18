@@ -143,10 +143,9 @@ def run_task():
     try:
         luigi.run()
     except luigi.task_register.TaskClassNotFoundException:
-        available_tasks = '\n'.join(list_tasks())
         logger.info('No task found with name "{}". '
-                    'Available tasks are:\n\n{}\n'
-                    .format(arguments['TASK'], available_tasks))
+                    'Run paip --tasks to list the available tasks'
+                    .format(arguments['TASK']))
 
 
 def logo():

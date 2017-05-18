@@ -22,3 +22,4 @@ from .annotate_with_vep import AnnotateWithVEP
 from .extract_sample import ExtractSample
 from .keep_reportable_genotypes import KeepReportableGenotypes
 from .annotate_with_snpeff import AnnotateWithSnpeff
+from .annotate_variants import AnnotateVariants
