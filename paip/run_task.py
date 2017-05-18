@@ -11,7 +11,7 @@
 
 Usage:
     paip TASK [options]
-    paip --tasks
+    paip (-T | --tasks)
     paip (-h | --help)
 
 Examples:
@@ -22,63 +22,130 @@ Examples:
     paip ResetPipeline [--basedir BASEDIR] [--dry-run BOOL]
 
 Options:
-    -T --tasks              List available tasks to run.
 
-    --sample SAMPLE         Sample ID that must match the name
-                            of a subdirectory of the current dir.
-
-                            Use for tasks that operate on a
-                            single sample.
+    VariantCalling options
+    ----------------------
 
     --basedir BASEDIR       Base directory for the run
+
                             (default=current directory).
 
-    --samples SAMPLES       Samples to include in the Cohort.
-                            Pass a list of comma-separated names
-                            like S1,S2,S3 to limit the Cohort to
-                            those samples.
-                            (default=ALL)
+    --pipeline-type TYPE    Pipeline type: 'variant_sites', 'target_sites' or
+                            'all_sites'.
 
-                            Use for Cohort tasks.
-
-    --pipeline-type TYPE    Pipeline type: 'variant_sites',
-                            'target_sites' or 'all_sites'.
                             (default=variant_sites)
 
-    --min-gq GQ             Minimum Genotype Quality (GQ) to
-                            use during genotype filtering.
-                            (default=30)
-
-    --min-dp DP             Minimum read depth to use during
+    --min-gq GQ             Minimum Genotype Quality (GQ) to use during
                             genotype filtering.
+
                             (default=30)
 
-    --trim-software NAME    Name of the software to use in the
-                            reads trimming step. Options:
-                            'cutadapt' (default), 'fastq-mcf'.
+    --min-dp DP             Minimum read depth to use during genotype filtering.
 
-    --workers WORKERS       Number of parallel tasks to run.
-                            (default=1)
+                            (default=30)
 
-    --cache CACHE           Name of a cache for AnnotateVariants.
-                            Options: 'mysq', 'postgres',
-                            'redis', 'dict'.
+    --trim-software NAME    Name of the software to use in the reads trimming
+                            step. Options: 'cutadapt', 'fastq-mcf'.
+
+                            (default=cutadapt)
+
+    --samples SAMPLES       Samples to include in the Cohort. Pass a list of
+                            comma-separated names like S1,S2,S3 to limit the
+                            Cohort to those samples.
+
+                            Use for Cohort tasks, in case you don't want to
+                            include all samples in the pipeline.
+
+                            (default=ALL)
+
+    --sample SAMPLE         Sample ID that must match the name of a subdirectory
+                            of the current dir.
+
+                            Use for tasks that operate on a single sample. Not
+                            needed for Cohort tasks.
+
+
+    AnnotateVariants options
+    ------------------------
+
+    --cache CACHE           Options: 'mysq', 'postgres', 'redis', 'dict'. The
+                            cache must be available! Check the `anotamela`
+                            package for details about that.
+
                             (default='mysql')
 
-    --http-proxy PROXY      HTTP proxy to use for AnnotateVariants.
-                            Typically, you would set a Tor instance
-                            and use the default value.
+    --http-proxy PROXY      HTTP proxy to use for AnnotateVariants. Typically,
+                            you would set a Tor instance locally and use the
+                            default value.
+
                             (default='socks5://localhost:9050')
 
-    --annotation-kwargs JSON   Extra keyword arguments for
-                               AnnotateVariants, which will be
-                            passed to anotamela's AnnotationPipeline.
-                            Pass them as a JSON dictionary.
-                            (default='{}')
+    --annotation-kwargs JSON  Extra keyword arguments for AnnotateVariants,
+                              which will be passed to `anotamela`'s
+                              AnnotationPipeline. Pass them as a JSON
+                              dictionary.
 
-    --dry-run BOOL          Argument for ResetPipeline, if set
-                            as 1, it will not delete any files,
-                            if set as 0, it will.
+                              (default='{}')
+
+
+    GenerateReports options
+    -----------------------
+
+    --templates-dir TPL_DIR    Directory with the Jinja templates for the HTML
+                               report generation.
+
+    --translations-dir TRANS_DIR     Directory with the translation files (.yml)
+                                     with texts for the reports.
+
+    --min-odds-ratio MIN_OR    Minimum odds ratio to consider a GWAS association
+                               as reportable.
+
+                               (default=1) Includes all associations.
+
+    --max-frequency MAX_FR     Maximum allele frequency of an allele to be
+                               reportable.
+
+                               (default=1) Includes all alleles.
+
+    --min-reportable-category MIN_CAT   Minimum category to consider an
+                                        annotation as reportable. E.g. DRUG,
+                                        ASSOC, LPAT, PAT.
+
+                                        (default=DRUG)
+
+
+    If you run GenerateReports for a single sample, you also have to specify
+    where the annotation files (generated at the Cohort level) are located:
+
+    --vep-tsv VEP_TSV       .tsv file with Variant Effect Predictor annotations
+                            for the cohort variants.
+
+    --variants-json VARIANTS_JSON   JSON file with the annotations of variants
+                                    with an RSID.
+
+    --genes-json GENES_JSON     JSON file with the annotations of genes
+                                associated to the annotated variants.
+
+
+    ResetPipeline options
+    ---------------------
+
+    --dry-run BOOL          If set as 1, it will print the files to delete, but
+                            won't actually delete anything.
+
+                            If set as 0, it deletes all files under the
+                            directory, except: .fastq[.gz], .rb, .py, and .yml.
+
+                            (default=1)
+
+
+    General options
+    ---------------------
+
+    -T --tasks              List available tasks to run.
+
+    --workers WORKERS       Number of parallel tasks to run.
+
                             (default=1)
 
 """

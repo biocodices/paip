@@ -16,7 +16,7 @@ def task(cohort_task_factory):
 
 
 def test_run(task, monkeypatch):
-    # Mock the AnnotationPipeline class and the returned instance:
+    # Mock the AnnotationPipeline class so it returns a mocked instance:
     pipeline_instance = MagicMock()
     AnnotationPipeline = MagicMock(return_value=pipeline_instance)
     monkeypatch.setattr(paip.pipelines.variant_calling.annotate_variants,
@@ -45,5 +45,5 @@ def test_run(task, monkeypatch):
     assert pipeline_instance.gene_annotations.to_json.call_args[1] == \
         {'orient': 'split'}
 
-    open_().write.call_count == 2
+    assert open_().write.call_count == 2
 
