@@ -7,16 +7,23 @@ from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import AnnotateWithSnpeff
 
 
-
 # TODO:
 # Create a GenerateReports Cohort Task that requires
 # AnnotateWithVEP and AnnotateVariants
+# and runs GenerateReports for each sample in the cohort
+
+# It should share and pass down all the relevant params
+# with/to the sample task
+
+
+# TODO:
+# Make this accept --phenos-regex-file or --phenos-regex-list
+# parameters
 
 
 class GenerateReports(SampleTask):
     """
-    This task will work if `reports_generation` Python package is installed
-    in the system.
+    Makes an HTML and a CSV report of the sample reportable variants.
 
     Takes annotation files:
 
@@ -40,6 +47,8 @@ class GenerateReports(SampleTask):
         - *min_reportable_category*, the minimum pathogenicity category
           of an allele to be included in the reports
 
+    This task will work if `reports_generation` Python package is installed
+    in the system.
     """
     # Files with annotations
     vep_tsv = luigi.Parameter()
