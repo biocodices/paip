@@ -6,13 +6,13 @@ from paip.pipelines.annotate_variants import AnnotateVariants
 
 
 @pytest.fixture
-def task(sample_task_factory):
+def task(cohort_task_factory):
     extra_params = {
         'cache': 'cache_name',
-        'http_proxy': 'proxy_foo',
-        'annotation_kwargs': '{"foo": "bar"}'
+        'http_proxy': 'some_proxy',
+        'annotation_kwargs': '{"extra_param": "extra_param_value"}'
     }
-    return sample_task_factory(AnnotateVariants, extra_params=extra_params)
+    return cohort_task_factory(AnnotateVariants, extra_params=extra_params)
 
 
 def test_run(task, monkeypatch):
@@ -22,7 +22,7 @@ def test_run(task, monkeypatch):
     monkeypatch.setattr(paip.pipelines.annotate_variants, 'AnnotationPipeline',
                         AnnotationPipeline)
 
-    # Mock the open built-in to test the output is written
+    # Mock the open built-in function to test the output is written
     open_ = mock_open()
 
     with patch('paip.pipelines.annotate_variants.open', open_):
@@ -31,8 +31,8 @@ def test_run(task, monkeypatch):
     assert AnnotationPipeline.call_count == 1
     assert AnnotationPipeline.call_args[1] == {
         'cache': 'cache_name',
-        'proxies': {'http': 'proxy_foo'},
-        'foo': 'bar',
+        'proxies': {'http': 'some_proxy'},
+        'extra_param': 'extra_param_value',
     }
 
     pipe_run = pipeline_instance.run_from_vcf

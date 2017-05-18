@@ -6,11 +6,11 @@ import json
 import luigi
 from anotamela import AnnotationPipeline
 
-from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import KeepReportableGenotypes
+from paip.task_types import CohortTask
+from paip.pipelines.variant_calling import FilterGenotypes
 
 
-class AnnotateVariants(SampleTask):
+class AnnotateVariants(CohortTask):
     """
     Annotates each sample's variants (taken from the reportable-variants VCF)
     and generates some JSON files with the annotations.
@@ -21,35 +21,37 @@ class AnnotateVariants(SampleTask):
     # Receive an arbitrary JSON string with arguments for AnnotationPipeline.
     # They can be either annotation or cache keyword arguments.
     # If some argument is frequently used, you can extract it as a separate
-    # parameter, as we already did with 'cache' and 'http_proxy' above.
+    # parameter, as I already did with 'cache' and 'http_proxy' above.
     annotation_kwargs = luigi.Parameter(default='{}')
 
-    OUTPUT = ['annotated_rs_variants.json',
-              'annotated_genes.json']
+    OUTPUT = ['rs_variants.json', 'genes.json']
 
     def requires(self):
+        # Remove the extra parameters that the annotation needs, but that
+        # are not needed nor expected by the tasks upstream:
         params = self.param_kwargs.copy()
+
         del(params['cache'])
         del(params['http_proxy'])
         del(params['annotation_kwargs'])
-        return KeepReportableGenotypes(**params)
+
+        return FilterGenotypes(**params)
 
     def run(self):
         extra_kwargs = json.loads(self.annotation_kwargs)
 
-        pipe = AnnotationPipeline(
+        annotator = AnnotationPipeline(
             cache=self.cache,
             proxies={'http': self.http_proxy},
             **extra_kwargs
         )
+        annotator.run_from_vcf(self.input().fn)
 
-        pipe.run_from_vcf(self.input().fn)
-
-        rs_variants_json = pipe.rs_variants.to_json(orient='split')
+        rs_variants_json = annotator.rs_variants.to_json(orient='split')
         with open(self.output()[0].fn, 'w') as f:
             f.write(rs_variants_json)
 
-        genes_json = pipe.gene_annotations.to_json(orient='split')
+        genes_json = annotator.gene_annotations.to_json(orient='split')
         with open(self.output()[1].fn, 'w') as f:
             f.write(genes_json)
 
