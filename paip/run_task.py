@@ -22,7 +22,7 @@ Examples:
     paip ResetPipeline [--basedir BASEDIR] [--dry-run BOOL]
 
 Options:
-    --tasks                 List available tasks to run.
+    -T --tasks              List available tasks to run.
 
     --sample SAMPLE         Sample ID that must match the name
                             of a subdirectory of the current dir.
