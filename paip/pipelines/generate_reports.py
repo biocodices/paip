@@ -1,35 +1,38 @@
 from os.path import join
+import json
 
 import luigi
 from reports_generation import ReportsPipeline
 
-from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import AnnotateWithSnpeff
+from paip.task_types import SampleTask, CohortTask
+from paip.pipelines.variant_calling import (
+    AnnotateWithSnpeff,
+    AnnotateWithVEP,
+    AnnotateVariants,
+)
 
 
-# TODO:
-# Create a GenerateReports Cohort Task that requires
-# AnnotateWithVEP and AnnotateVariants
-# and runs GenerateReports for each sample in the cohort
+class ReportsTask:
+    """
+    Abstract class to provide common parameters to GenerateReports and
+    GenerateReportsCohort. See the former class for a full explanation of
+    each parameter.
+    """
+    # Directories
+    templates_dir = luigi.Parameter()
+    translations_dir = luigi.Parameter()
 
-# It should share and pass down all the relevant params
-# with/to the sample task
+    # Reportable variants settings
+    min_odds_ratio = luigi.FloatParameter(default=1)  # All by default
+    max_frequency = luigi.FloatParameter(default=1)  # All by default
+    min_reportable_category = luigi.Parameter(default='DRUG')
+    phenos_regex_list = luigi.Parameter(default=None)
+    phenos_regex_file = luigi.Parameter(default=None)
 
 
-# TODO:
-# Make this accept --phenos-regex-file or --phenos-regex-list
-# parameters
-
-
-class GenerateReports(SampleTask):
+class GenerateReports(SampleTask, ReportsTask):
     """
     Makes an HTML and a CSV report of the sample reportable variants.
-
-    Takes annotation files:
-
-        - *vep_tsv* with Variant Effect Predictor annotations
-        - *variants_json* with the result from `anotamela` (RSIDs)
-        - *genes_json* with the result from `anotamela` (genes of the RSIDs)
 
     Report templates:
 
@@ -46,55 +49,54 @@ class GenerateReports(SampleTask):
           to be reportable
         - *min_reportable_category*, the minimum pathogenicity category
           of an allele to be included in the reports
+        - *phenos_regex_list*, a JSON string with a list of phenotype patterns
+          to keep in the report (non-matching phenotypes will not be included,
+          no matter how serious their pathogenicity!)
+        - *phenos_regex_file*, a plain text file with one regex per line
+          of the phenotype patterns that should be kept
 
     This task will work if `reports_generation` Python package is installed
     in the system.
     """
-    # Files with annotations
-    vep_tsv = luigi.Parameter()
-    variants_json = luigi.Parameter()
-    genes_json = luigi.Parameter()
-
-    # Directories
-    templates_dir = luigi.Parameter()
-    translations_dir = luigi.Parameter()
-
-    # Reportable variants settings
-    min_odds_ratio = luigi.FloatParameter(default=1)  # All by default
-    max_frequency = luigi.FloatParameter(default=1)  # All by default
-    min_reportable_category = luigi.Parameter(default='DRUG')
-
     def requires(self):
         # Remove the extra parameters that the report generation needs, but
         # that are not needed nor expected by the tasks upstream:
-        params = self.param_kwargs.copy()
+        sample_params = self.param_kwargs.copy()
 
         extra_params = [
-            'vep_tsv',
-            'variants_json',
-            'genes_json',
             'templates_dir',
             'translations_dir',
             'min_odds_ratio',
             'max_frequency',
             'min_reportable_category',
+            'phenos_regex_list',
+            'phenos_regex_file',
         ]
         for param_name in extra_params:
-            del(params[param_name])
+            del(sample_params[param_name])
 
-        return AnnotateWithSnpeff(**params)
+        cohort_params = sample_params.copy()
+        del(cohort_params['sample'])
+
+        return [
+            AnnotateWithVEP(**cohort_params),  # vep.tsv
+            AnnotateVariants(**cohort_params),  # rs_variants.json, genes.json
+            AnnotateWithSnpeff(**sample_params),  # .eff.vcf
+        ]
 
     def run(self):
         """
         Generate HTML and CSV reports for a sample given its genotypes and
         the annotations for the variants and genes.
         """
-        reports_pipeline = ReportsPipeline(
-            genotypes_vcf=self.input().fn,
+        if self.phenos_regex_list:
+            self.phenos_regex_list = json.loads(self.phenos_regex_list)
 
-            vep_tsv=self.vep_tsv,
-            variants_json=self.variants_json,
-            genes_json=self.genes_json,
+        reports_pipeline = ReportsPipeline(
+            vep_tsv=self.input()[0].fn,  # AnnotateWithVEP
+            variants_json=self.input()[1][0].fn,  # AnnotateVariants
+            genes_json=self.input()[1][1].fn,  # AnnotateVariants
+            genotypes_vcf=self.input()[2].fn,  # AnnotateWithSnpeff
 
             templates_dir=self.templates_dir,
             translations_dir=self.translations_dir,
@@ -103,6 +105,8 @@ class GenerateReports(SampleTask):
             min_reportable_category=self.min_reportable_category,
             min_odds_ratio=self.min_odds_ratio,
             max_frequency=self.max_frequency,
+            phenos_regex_list=self.phenos_regex_list,
+            phenos_regex_file=self.phenos_regex_file,
         )
 
         reports_pipeline.run(samples=self.sample)
@@ -110,4 +114,8 @@ class GenerateReports(SampleTask):
     def output(self):
         fp = join(self.dir, 'report_{}'.format(self.sample), 'index.html')
         return luigi.LocalTarget(fp)
+
+
+class GenerateReportsCohort(CohortTask, ReportsTask, luigi.WrapperTask):
+    SAMPLE_REQUIRES = GenerateReports
 

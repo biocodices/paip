@@ -7,16 +7,14 @@ import paip.pipelines.generate_reports
 
 
 extra_params = {
-    'vep_tsv': 'vep.tsv',
-    'genes_json': 'genes.json',
-    'variants_json': 'variants.json',
-
     'templates_dir': '/path/to/templates',
     'translations_dir': '/path/to/translations',
 
     'min_reportable_category': 'CATEGORY',
     'min_odds_ratio': 1.5,
     'max_frequency': 0.5,
+    'phenos_regex_list': '["pheno-1"]',
+    'phenos_regex_file': '/path/to/phenos',
 }
 
 
@@ -44,7 +42,20 @@ def test_run(task, monkeypatch):
     init_args = ReportsPipeline.call_args[1]
 
     for param_name, param_value in extra_params.items():
+        if param_name == 'phenos_regex_list':
+            assert init_args[param_name] == ['pheno-1']
+            continue
+
         assert init_args[param_name] == param_value
+
+    annotation_inputs = {
+        'vep_tsv': 'vep.tsv',
+        'genes_json': 'genes.json',
+        'variants_json': 'rs_variants.json',
+    }
+    for name, filename in annotation_inputs.items():
+        expected_file = pytest.helpers.file('Cohort1/Cohort1.{}'.format(filename))
+        assert init_args[name] == expected_file
 
     assert init_args['genotypes_vcf'] == \
         pytest.helpers.file('Cohort1/Sample1/Sample1.reportable.eff.vcf')

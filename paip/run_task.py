@@ -113,18 +113,15 @@ Options:
 
                                         (default=DRUG)
 
+    --phenos-regex-list PHENOS  Optional JSON string with the list of phenotype
+                                patterns to keep in the report (removes any
+                                allele info that is about a non-matching
+                                phenotype). Patters are matched in case
+                                insensitive mode. E.g.: "['cardi', 'myo']"
 
-    If you run GenerateReports for a single sample, you also have to specify
-    where the annotation files (generated at the Cohort level) are located:
-
-    --vep-tsv VEP_TSV       .tsv file with Variant Effect Predictor annotations
-                            for the cohort variants.
-
-    --variants-json VARIANTS_JSON   JSON file with the annotations of variants
-                                    with an RSID.
-
-    --genes-json GENES_JSON     JSON file with the annotations of genes
-                                associated to the annotated variants.
+    --phenos-regex-file FILE    Optional file with one phenotype pattern to
+                                keep per line (removes any allele info that is
+                                about a non-matching phenotype).
 
 
     ResetPipeline options
