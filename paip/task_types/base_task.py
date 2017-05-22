@@ -116,7 +116,8 @@ class BaseTask(luigi.Task):
         """
         command = generate_command(program_name, program_options)
         logfile = self.log_path(self.__class__.__name__)
-        self.sleep_until_available_to_run()
+        # TODO: implement this correctly:
+        # self.sleep_until_available_to_run()
         command_result = run_command(command, logfile=logfile, **kwargs)
         return command_result
 

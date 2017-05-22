@@ -58,5 +58,5 @@ TS_Cardio_regions: &TS_Cardio_regions trusight_cardio_grch37.sorted.bed
 panel_regions: *TS_Cardio_regions
 
 # This file is used only in the "target_sites" pipeline:
-# panel_variants: *ENPv1_reduced
+panel_variants: *ENPv1_reduced
 

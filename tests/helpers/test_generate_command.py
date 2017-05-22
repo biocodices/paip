@@ -1,7 +1,7 @@
 from paip.helpers import generate_command
 
 
-def test_generate_command():
+def test_generate_command(config_test_files):
     options = {
         'foo_option': 'foo_value',
         'bar_option': 'bar_value',

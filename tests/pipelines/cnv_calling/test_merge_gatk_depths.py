@@ -12,7 +12,7 @@ def test_run(task):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'xhmm mergeGATKDepths'
+    assert program_name == 'xhmm MergeGATKDepths'
     assert 'DATA.RD.txt' in program_options['outfile']
 
     cvg_files = ['Sample1.depth_of_coverage.sample_coverage_summary',

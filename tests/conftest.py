@@ -6,7 +6,8 @@ pytest_plugins = ['helpers_namespace']
 
 import pytest
 
-from paip.helpers import Config
+from paip.helpers import Config, generate_command
+
 
 
 @pytest.helpers.register
@@ -16,6 +17,14 @@ def file(filename):
 
 
 @pytest.fixture(autouse=True)
+def config_example_files(monkeypatch):
+    # Read the Config files from paip/example_config:
+    app_root_directory = dirname(dirname(__file__))
+    monkeypatch.setattr(Config, 'BASE_DIR',
+                        join(app_root_directory, 'paip/example_config'))
+
+
+@pytest.fixture
 def config_test_files(monkeypatch):
     # Read the Config files from tests/files/config_dir:
     monkeypatch.setattr(Config, 'BASE_DIR',
@@ -60,12 +69,33 @@ def task_factory(monkeypatch):
     Returns a function that takes a task class and instantiates it
     with test parameters and mock run_program, rename_temp_bai,
     rename_temp_idx.
+
+    The mocked run_program will check if executables, resources, and commands
+    are defined in the example config files, so we keep them updated.
     """
+
+    def extra_checks(program_name, program_options, **kwargs):
+        # Test the command is generated correctly with the options passed
+        # using the example_config YAML files as models.
+        generate_command(program_name, program_options)
+
+        return_value = []
+
+        if not kwargs.get('log_stdout'):
+            return_value.append('stdout')
+
+        if not kwargs.get('log_stderr'):
+            return_value.append('stderr')
+
+        return return_value
+
+
+    run_program = MagicMock(side_effect=extra_checks)
+
     def factory(klass, params, extra_params={}):
         task = klass(**params, **extra_params)
 
-        monkeypatch.setattr(task, 'run_program',
-                            MagicMock(return_value=('stdout', 'stderr')))
+        monkeypatch.setattr(task, 'run_program', run_program)
 
         return task
 

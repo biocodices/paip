@@ -19,7 +19,7 @@ class MergeGATKDepths(CohortTask):
         )
 
         with self.output().temporary_path() as tempfile:
-            program_name = 'xhmm mergeGATKDepths'
+            program_name = 'xhmm MergeGATKDepths'
             program_options = {
                 'sample_cvg_files': sample_cvg_files,
                 'outfile': tempfile,
