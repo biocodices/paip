@@ -6,3 +6,4 @@ from .xhmm_pca_normalization import XhmmPCANormalization
 from .xhmm_zscores import XhmmZscores
 from .filter_prenormalized_matrix import FilterPrenormalizedMatrix
 from .discover_cnvs import DiscoverCNVs
+from .genotype_cnvs import GenotypeCNVs

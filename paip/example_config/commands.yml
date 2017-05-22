@@ -616,3 +616,13 @@ xhmm discover:
    -c {outfile}
    -a {aux_outfile}'
 
+xhmm genotype:
+  '{executable}
+   --genotype
+   -p {xhmm_params_file}
+   -r {zscores_matrix}
+   -R {read_depth_matrix}
+   -g {cnvs_file}
+   -F {reference_genome}
+   -v {output_vcf}'
+
