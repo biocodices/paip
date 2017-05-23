@@ -8,21 +8,22 @@ class GCContentByInterval(CohortTask):
     """
     OUTPUT = ['DATA.locus_GC.txt', 'extreme_gc_targets.txt']
     SUBDIR = 'xhmm_run'
+    REQUIRES = []
 
     def run(self):
-        gc_by_interval_file = self.output()[0]
+        gc_by_interval_file = self.output()[0].path
 
-        with gc_by_interval_file.temporary_path() as tempfile:
-            program_name = 'gatk GCContentByInterval'
-            program_options = {'outfile': tempfile}
-            self.run_program(program_name, program_options)
+        # First step: run GATK and produce a 'GC content by interval' file
+        program_name = 'gatk GCContentByInterval'
+        program_options = {'outfile': gc_by_interval_file}
+        self.run_program(program_name, program_options)
 
-        # This second step takes the file produced above and filters
-        # the interval names with extreme GC content into a new file:
+        # Second step: take the file produced above and keep only
+        # the interval names with extreme GC content:
         program_name = 'awk extreme_GC_targets'
         program_options = {
-            'gc_content_by_interval': gc_by_interval_file.path,
-            'outfile': 'extreme_gc_targets.txt',
+            'gc_content_by_interval': gc_by_interval_file,
+            'outfile': self.output()[1].path,
         }
         self.run_program(program_name, program_options)
 

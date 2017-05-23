@@ -16,12 +16,16 @@ class XhmmZscores(CohortTask):
     SUBDIR = 'xhmm_run'
 
     def run(self):
-        program_name = 'xhmm Z_scores'
-        program_options = {
-            'pca_normalized_matrix': self.input().path,
-            'out_zscores': self.output()[0].path,
-            'out_excluded_targets': self.output()[1].path,
-            'out_excluded_samples': self.output()[2].path,
-        }
-        self.run_program(program_name, program_options)
+        with self.output()[0].temporary_path() as temp_zscores, \
+             self.output()[1].temporary_path() as temp_targets, \
+             self.output()[2].temporary_path() as temp_samples:
+
+            program_name = 'xhmm Z_scores'
+            program_options = {
+                'pca_normalized_matrix': self.input().path,
+                'out_zscores': temp_zscores,
+                'out_excluded_targets': temp_targets,
+                'out_excluded_samples': temp_samples,
+            }
+            self.run_program(program_name, program_options)
 

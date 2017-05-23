@@ -14,14 +14,18 @@ class FilterAndCenterMatrix(CohortTask):
     SUBDIR = 'xhmm_run'
 
     def run(self):
-        program_name = 'xhmm centerData'
-        program_options = {
-            'read_depth_matrix': self.input()[0].path,
-            'out_matrix': self.output()[0].path,
-            'out_excluded_targets': self.output()[1].path,
-            'out_excluded_samples': self.output()[2].path,
-            'extreme_gc_targets': self.input()[1][1].path,
-            # ^ 2nd output of GCContentByInterval
-        }
-        self.run_program(program_name, program_options)
+        with self.output()[0].temporary_path() as temp_matrix_fn, \
+             self.output()[1].temporary_path() as temp_targets_fn, \
+             self.output()[2].temporary_path() as temp_samples_fn:
+
+            program_name = 'xhmm centerData'
+            program_options = {
+                'read_depth_matrix': self.input()[0].path,
+                'out_matrix': temp_matrix_fn,
+                'out_excluded_targets': temp_targets_fn,
+                'out_excluded_samples': temp_samples_fn,
+                'extreme_gc_targets': self.input()[1][1].path,
+                # ^ 2nd output of GCContentByInterval
+            }
+            self.run_program(program_name, program_options)
 

@@ -12,11 +12,12 @@ class XhmmPCANormalization(CohortTask):
     SUBDIR = 'xhmm_run'
 
     def run(self):
-        program_name = 'xhmm PCA_normalization'
-        program_options = {
-            'filtered_centered_matrix': self.input()[0][0].path,
-            'pca_files_basename': 'DATA.RD_PCA',
-            'outfile': self.output().path,
-        }
-        self.run_program(program_name, program_options)
+        with self.output().temporary_path() as temp_outfile:
+            program_name = 'xhmm PCA_normalization'
+            program_options = {
+                'filtered_centered_matrix': self.input()[0][0].path,
+                'pca_files_basename': self.path('DATA.RD_PCA'),
+                'outfile': temp_outfile,
+            }
+            self.run_program(program_name, program_options)
 

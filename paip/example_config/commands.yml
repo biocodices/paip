@@ -543,7 +543,7 @@ gatk GCContentByInterval:
    -o {outfile}'
 
 awk extreme_GC_targets:
-  "awk ($2 < 0.1 || $2 > 0.9) {{print $1}}' {gc_content_by_interval} > {outfile}"
+  "awk '($2 < 0.1 || $2 > 0.9) {{print $1}}' {gc_content_by_interval} > {outfile}"
 
   # The input file has two columns: interval name and GC content of the interval
   # This awk command keeps the interval names of the intervals with extreme
@@ -559,9 +559,9 @@ xhmm centerData:
    --outputExcludedTargets {out_excluded_targets}
    --outputExcludedSamples {out_excluded_samples}
    --excludeTargets {extreme_gc_targets}
-   --minTargetSize 10 --maxTargetSize 10000
+   --minTargetSize 10 --maxTargetSize 1000
    --minMeanTargetRD 10 --maxMeanTargetRD 800
-   --minMeanSampleRD 200 --maxMeanSampleRD 800 --maxSdSampleRD 150'
+   --minMeanSampleRD 50 --maxMeanSampleRD 300 --maxSdSampleRD 100'
 
   # Default values (for EXOMES!) are these:
   #
@@ -573,6 +573,11 @@ xhmm centerData:
   # They should, however, be tuned for each specific NGS run, since the
   # range of read depth will vary greatly according to the NGS settings
   # and those cannot be guessed here in advance.
+
+  # ENP parameters
+  # --minTargetSize 10 --maxTargetSize 10000
+  # --minMeanTargetRD 10 --maxMeanTargetRD 800
+  # --minMeanSampleRD 200 --maxMeanSampleRD 800 --maxSdSampleRD 150'
 
 xhmm PCA:
   '{executable}

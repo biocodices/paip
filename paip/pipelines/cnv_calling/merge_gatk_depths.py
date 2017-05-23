@@ -14,7 +14,7 @@ class MergeGATKDepths(CohortTask):
 
     def run(self):
         sample_cvg_files = ' '.join(
-            ['--GATKdepths {}.sample_coverage_summary'.format(target.path)
+            ['--GATKdepths {}.sample_interval_summary'.format(target.path)
              for target in self.requires().input()]
         )
 

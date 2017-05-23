@@ -12,13 +12,16 @@ class DiscoverCNVs(CohortTask):
     SUBDIR = 'xhmm_run'
 
     def run(self):
-        program_name = 'xhmm discover'
-        program_options = {
-            'data_files_basename': 'DATA',
-            'zscores_matrix': self.input()[1][0].path,
-            'read_depth_matrix_filtered': self.input()[0].path,
-            'outfile': self.output()[0].path,
-            'aux_outfile': self.output()[1].path,
-        }
-        self.run_program(program_name, program_options)
+        with self.output()[0].temporary_path() as temp_xcnv, \
+             self.output()[1].temporary_path() as temp_aux:
+
+            program_name = 'xhmm discover'
+            program_options = {
+                'data_files_basename': self.path('DATA'),
+                'zscores_matrix': self.input()[1][0].path,
+                'read_depth_matrix_filtered': self.input()[0].path,
+                'outfile': temp_xcnv,
+                'aux_outfile': temp_aux,
+            }
+            self.run_program(program_name, program_options)
 

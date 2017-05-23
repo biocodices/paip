@@ -1,5 +1,11 @@
+import os
+import logging
+
 from paip.task_types import CohortTask
 from paip.pipelines.cnv_calling import FilterAndCenterMatrix
+
+
+logger = logging.getLogger(__name__)
 
 
 class XhmmPCA(CohortTask):
@@ -9,15 +15,43 @@ class XhmmPCA(CohortTask):
     """
     REQUIRES = FilterAndCenterMatrix
     OUTPUT = ['DATA.RD_PCA.PC.txt',
-              'DATA.RD_PCA.PC_LOADINGS.txt'
+              'DATA.RD_PCA.PC_LOADINGS.txt',
               'DATA.RD_PCA.PC_SD.txt']
     SUBDIR = 'xhmm_run'
 
     def run(self):
+        input_matrix = self.input()[0].path
+        self.check_matrix(input_matrix)
+
+        temp_basename = 'DATA-temp.RD_PCA'
+
         program_name = 'xhmm PCA'
         program_options = {
-            'filtered_centered_matrix': self.input()[0].path,
-            'outfiles_basename': 'DATA.RD_PCA',
+            'filtered_centered_matrix': input_matrix,
+            'outfiles_basename': self.path(temp_basename),
         }
         self.run_program(program_name, program_options)
+
+        for outfile in self.output():
+            tempfile = outfile.fn.replace('DATA.RD_PCA', temp_basename)
+            os.rename(tempfile, outfile.fn)
+
+    def check_matrix(self, matrix_file):
+        """Check that the input matrix is not (almost) empty."""
+        with open(matrix_file) as f:
+            lines = [line.strip() for line in f]
+
+        if len(lines) <= 1:  # Just the header!
+            msg = ('The input matrix at {} looks empty. '
+                   'Probably the filtering of the previous step went too far. '
+                   'Check the xhmm params file to tune the threshold values '
+                   'of the "xhmm centerData" command.'
+                   .format(matrix_file))
+
+            logger.warning(msg)
+            raise EmptyInputMatrix
+
+
+class EmptyInputMatrix(Exception):
+    pass
 

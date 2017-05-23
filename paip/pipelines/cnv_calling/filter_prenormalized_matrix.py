@@ -16,20 +16,21 @@ class FilterPrenormalizedMatrix(CohortTask):
     SUBDIR = 'xhmm_run'
 
     def run(self):
-        program_name = 'xhmm filter_prenormalized_matrix'
-        program_options = {
-            # Original raw read depths:
-            'read_depth_matrix': self.input()[0].path,
+        with self.output().temporary_path() as temp_outfile:
+            program_name = 'xhmm filter_prenormalized_matrix'
+            program_options = {
+                # Original raw read depths:
+                'read_depth_matrix': self.input()[0].path,
 
-            # First filtering files:
-            'raw_excluded_targets': self.input()[1][1].path,
-            'raw_excluded_samples': self.input()[1][2].path,
+                # First filtering files:
+                'raw_excluded_targets': self.input()[1][1].path,
+                'raw_excluded_samples': self.input()[1][2].path,
 
-            # Z-score based filtering files:
-            'zscore_excluded_targets': self.input()[2][1].path,
-            'zscore_excluded_samples': self.input()[2][2].path,
+                # Z-score based filtering files:
+                'zscore_excluded_targets': self.input()[2][1].path,
+                'zscore_excluded_samples': self.input()[2][2].path,
 
-            'outfile': self.output().path,
-        }
-        self.run_program(program_name, program_options)
+                'outfile': temp_outfile,
+            }
+            self.run_program(program_name, program_options)
 

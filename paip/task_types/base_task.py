@@ -50,9 +50,13 @@ class BaseTask(luigi.Task):
 
     def requires(self):
         """
+        Assumes that self.REQUIRES is defined.
+
         Take the class or classes in self.REQUIRES and initialize them
-        with this class parameters. Returns a single object or a list
-        according to what finds in self.REQUIRES.
+        with self.param_kwargs as parameters.
+
+        Returns a single object or a list, according to what finds in
+        self.REQUIRES.
         """
         if isinstance(self.REQUIRES, list):
             return [require(**self.param_kwargs) for require in self.REQUIRES]

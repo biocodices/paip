@@ -15,8 +15,8 @@ def test_run(task):
     assert program_name == 'xhmm MergeGATKDepths'
     assert 'DATA.RD.txt' in program_options['outfile']
 
-    cvg_files = ['Sample1.depth_of_coverage.sample_coverage_summary',
-                 'Sample2.depth_of_coverage.sample_coverage_summary']
+    cvg_files = ['Sample1.depth_of_coverage.sample_interval_summary',
+                 'Sample2.depth_of_coverage.sample_interval_summary']
 
     for cvg_file in cvg_files:
         assert cvg_file in program_options['sample_cvg_files']
