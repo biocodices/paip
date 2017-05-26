@@ -187,11 +187,9 @@ def run_task():
 
     if arguments['--tasks']:
         for task_group_name, tasks in list_tasks().items():
-            print(' --- {} ---'.format(task_group_name))
-            print()
-            for task_name, obj in sorted(tasks):
-                if isinstance(obj, luigi.task_register.Register):
-                    print('  *  {}'.format(task_name))
+            print('--- {} ---\n'.format(task_group_name))
+            for task_name in tasks:
+                print('  *  {}'.format(task_name))
             print()
         sys.exit()
 
