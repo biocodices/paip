@@ -5,7 +5,7 @@ from paip.helpers import path_to_resource
 from paip.task_types import CohortTask
 
 
-class VizCNVs(CohortTask):
+class VisualizeCNVs(CohortTask):
     """
     Take the result of the CNV Calling pipeline and run the R scripts provided
     by XHMM to produce several visualizations.

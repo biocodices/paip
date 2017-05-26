@@ -5,12 +5,12 @@ from unittest.mock import MagicMock
 import pytest
 
 import paip
-from paip.pipelines.cnv_calling import VizCNVs
+from paip.pipelines.cnv_calling import VisualizeCNVs
 
 
 @pytest.fixture
 def task(cohort_task_factory):
-    return cohort_task_factory(VizCNVs)
+    return cohort_task_factory(VisualizeCNVs)
 
 
 def test_run(task, monkeypatch):
@@ -39,7 +39,7 @@ def test_copy_and_edit_R_script(task, monkeypatch):
             raise ValueError('Resource "{}" not mocked in this test'
                              .format(label))
 
-    monkeypatch.setattr(paip.pipelines.cnv_calling.viz_cnvs,
+    monkeypatch.setattr(paip.pipelines.cnv_calling.visualize_cnvs,
                         'path_to_resource', test_resources)
 
     task.copy_and_edit_R_script()

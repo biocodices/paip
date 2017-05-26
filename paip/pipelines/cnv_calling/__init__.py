@@ -7,4 +7,4 @@ from .xhmm_zscores import XhmmZscores
 from .filter_prenormalized_matrix import FilterPrenormalizedMatrix
 from .discover_cnvs import DiscoverCNVs
 from .genotype_cnvs import GenotypeCNVs
-from .viz_cnvs import VizCNVs
+from .visualize_cnvs import VisualizeCNVs
