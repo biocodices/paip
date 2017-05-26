@@ -33,4 +33,5 @@ featureCounts: /home/juan/software/subread-1.5.1-source/bin/featureCounts
 
 xhmm: /home/juan/software/xhmm/bin/xhmm
 awk: /usr/bin/awk
+Rscript: /usr/bin/Rscript
 

@@ -113,7 +113,7 @@ class BaseTask(luigi.Task):
         """
         return self.path('log.{}'.format(log_name))
 
-    def run_program(self, program_name, program_options, **kwargs):
+    def run_program(self, program_name, program_options={}, **kwargs):
         """
         Will generate a command to run in the shell for *program_name* with
         *program_options*. Extra kwargs are passed to run_command().

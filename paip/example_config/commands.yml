@@ -631,3 +631,6 @@ xhmm genotype:
    -F {reference_genome}
    -v {output_vcf}'
 
+Rscript make_XHMM_plots:
+  '{executable} {script_path}'
+

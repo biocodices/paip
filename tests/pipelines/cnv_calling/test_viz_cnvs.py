@@ -13,10 +13,19 @@ def task(cohort_task_factory):
     return cohort_task_factory(VizCNVs)
 
 
-#  def test_run(task, monkeypatch):
-    #  task.run()
-    #  task.run_program.assert_called_once()
-    #  (program_name, program_options), _ = task.run_program.call_args
+def test_run(task, monkeypatch):
+    mock_makedirs = MagicMock(name='makedirs')
+    monkeypatch.setattr(os, 'makedirs', mock_makedirs)
+
+    task.run()
+
+    mock_makedirs.assert_called_once()
+    assert mock_makedirs.call_args[0][0].endswith('xhmm_run/plots')
+
+    task.run_program.assert_called_once()
+    (program_name, program_options), _ = task.run_program.call_args
+    assert program_name == 'Rscript make_XHMM_plots'
+    assert program_options['script_path'].endswith('make_XHMM_plots.R')
 
 
 def test_copy_and_edit_R_script(task, monkeypatch):
@@ -36,7 +45,7 @@ def test_copy_and_edit_R_script(task, monkeypatch):
     task.copy_and_edit_R_script()
 
     # Check that a new file with edited variables has been generated
-    edited_R_script = task.path('make_XHMM_plots.R')
+    edited_R_script = pytest.helpers.file('Cohort1/xhmm_run/make_XHMM_plots.R')
     assert isfile(edited_R_script)
 
     with open(edited_R_script) as f:
