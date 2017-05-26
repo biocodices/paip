@@ -1,6 +1,7 @@
 import os
 from os.path import basename
 
+from paip.pipelines.cnv_calling import DiscoverCNVs
 from paip.helpers import path_to_resource
 from paip.task_types import CohortTask
 
@@ -11,6 +12,7 @@ class VisualizeCNVs(CohortTask):
     by XHMM to produce several visualizations.
     """
     SUBDIR = 'xhmm_run'
+    REQUIRES = DiscoverCNVs
 
     @property
     def plot_path(self):
