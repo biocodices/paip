@@ -90,7 +90,7 @@ def task_factory(monkeypatch):
         return return_value
 
 
-    run_program = MagicMock(side_effect=extra_checks)
+    run_program = MagicMock(side_effect=extra_checks, name='run_program')
 
     def factory(klass, params, extra_params={}):
         task = klass(**params, **extra_params)
@@ -104,7 +104,7 @@ def task_factory(monkeypatch):
 
 @pytest.fixture(scope='function', autouse=True)
 def mock_rename(monkeypatch):
-    mock_rename = MagicMock()
+    mock_rename = MagicMock(name='os.rename')
     monkeypatch.setattr(os, 'rename', mock_rename)
     return mock_rename
 

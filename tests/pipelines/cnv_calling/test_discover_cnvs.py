@@ -13,7 +13,7 @@ def test_run(task):
 
     (program_name, program_options), _ = task.run_program.call_args
     assert program_name == 'xhmm discover'
-    assert program_options['data_files_basename'] == 'DATA'
+    assert program_options['data_files_basename'].endswith('DATA')
     assert ('DATA.PCA_normalized.filtered.sample_zscores.RD.txt' in
             program_options['zscores_matrix'])
     assert ('DATA.same_filtered.RD.txt'

@@ -4,7 +4,7 @@ snpeff_datadir: snpeff_data
 vep_datadir: vep_data
 
 xhmm_params_file: xhmm_params.txt
-xhmm_R_script_template: /home/juan/software/xhmm/sources/scripts/example_make_XHMM_plots.R
+xhmm_R_script: example_make_XHMM_plots.R
 
 ##################################################################
 #                                                                #
@@ -53,11 +53,11 @@ illumina_adapters_read2: *adapters_both
 ENPv1_regions: &ENPv1_amplicons ENPv1_amplicons_sorted.bed
 ENPv1_variants: &ENPv1_variants ENPv1_213_variants.vcf
 ENPv1_reduced: &ENPv1_reduced ENPv1_206_variants.vcf
-
-TS_Cardio_regions: &TS_Cardio_regions trusight_cardio_grch37.sorted.bed
 # panel_regions: *ENPv1_amplicons
 
+TS_Cardio_regions: &TS_Cardio_regions trusight_cardio_grch37.sorted.bed
 panel_regions: *TS_Cardio_regions
+panel_annotated_intervals: trusight_cardio_grch37.sorted.annotated_targets.from_bed
 
 # This file is used only in the "target_sites" pipeline:
 panel_variants: *ENPv1_reduced

@@ -22,7 +22,7 @@ class XhmmZscores(CohortTask):
 
             program_name = 'xhmm Z_scores'
             program_options = {
-                'pca_normalized_matrix': self.input().path,
+                'pca_normalized_matrix': self.input()[0].path,
                 'out_zscores': temp_zscores,
                 'out_excluded_targets': temp_targets,
                 'out_excluded_samples': temp_samples,

@@ -37,6 +37,28 @@ def test_init(test_cohort_basedir, monkeypatch):
     assert mock_makedirs.call_args[0][0].endswith('foo')
 
 
+def test_path(base_task):
+    # self.dir and self.name is defined in the subclasses, so here I pretend
+    # this was done like in a CohortTask:
+    base_task.dir = base_task.basedir
+    base_task.name = 'Cohort1'
+
+    assert base_task.path('foo.txt').endswith('Cohort1/Cohort1.foo.txt')
+
+    base_task.SUBDIR = 'some_subdir'
+
+    expected = 'Cohort1/some_subdir/Cohort1.foo.txt'
+    assert base_task.path('foo.txt').endswith(expected)
+
+    expected = 'Cohort1/some_subdir/foo.txt'
+    assert base_task.path('foo.txt', prefix=False).endswith(expected)
+
+    # Clean the fixture base_task for other tests:
+    del(base_task.dir)
+    del(base_task.name)
+    del(base_task.SUBDIR)
+
+
 def test_load_sample_data_from_yaml(base_task):
     # By default, sequencing_data.yml is read
     for key in ['Sample1', 'Sample2', 'Sample3']:

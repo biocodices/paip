@@ -85,15 +85,21 @@ class BaseTask(luigi.Task):
 
         return luigi.LocalTarget(self.path(self.OUTPUT))
 
-    def path(self, filename):
+    def path(self, filename, prefix=True):
         """
         Return the filepath to the given *filename* under this sample or
-        cohort directory (and subdirectory, if self.SUBDIR is defined).
+        cohort directory (self.dir) and subdirectory, if self.SUBDIR is
+        defined.
 
-        The sample/cohort name is used as a prefix of the *filename*.
+        The sample/cohort name is used as a prefix of the *filename* by
+        default, unless *prefix* is set to False.
         """
-        base = self.dir if not self.SUBDIR else join(self.dir, self.SUBDIR)
-        return join(base, '{}.{}'.format(self.name, filename))
+        root = self.dir if not self.SUBDIR else join(self.dir, self.SUBDIR)
+
+        if prefix:
+            filename = '{}.{}'.format(self.name, filename)
+
+        return join(root, filename)
 
     def paths(self, filenames):
         """
