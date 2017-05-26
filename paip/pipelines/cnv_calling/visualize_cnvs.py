@@ -1,6 +1,8 @@
 import os
 from os.path import basename
 
+import luigi
+
 from paip.pipelines.cnv_calling import DiscoverCNVs
 from paip.helpers import path_to_resource
 from paip.task_types import CohortTask
@@ -27,6 +29,9 @@ class VisualizeCNVs(CohortTask):
             'script_path': self.path('make_XHMM_plots.R', prefix=False)
         }
         self.run_program(program_name, program_options)
+
+    def output(self):
+        return luigi.LocalTarget(self.plot_path)
 
     def copy_and_edit_R_script(self):
         """
