@@ -2,8 +2,8 @@ from unittest.mock import mock_open, patch, MagicMock
 
 import pytest
 
-from paip.pipelines.generate_reports import GenerateReports
-import paip.pipelines.generate_reports
+from paip.pipelines.annotation_and_report.generate_reports import GenerateReports
+import paip.pipelines.annotation_and_report.generate_reports
 
 
 extra_params = {
@@ -28,11 +28,11 @@ def test_run(task, monkeypatch):
     # Mock the ReportsPipeline class so it returns a mocked instance:
     pipeline_instance = MagicMock()
     ReportsPipeline = MagicMock(return_value=pipeline_instance)
-    monkeypatch.setattr(paip.pipelines.generate_reports,
+    monkeypatch.setattr(paip.pipelines.annotation_and_report.generate_reports,
                         'ReportsPipeline', ReportsPipeline)
 
     open_ = mock_open()
-    with patch('paip.pipelines.generate_reports.open', open_):
+    with patch('paip.pipelines.annotation_and_report.generate_reports.open', open_):
         task.run()
 
     # Check the reports generator has been called with the correct arguments

@@ -1,6 +1,6 @@
 import pytest
 
-from paip.pipelines.variant_calling import AnnotateWithVEP
+from paip.pipelines.annotation_and_report import AnnotateWithVEP
 
 
 @pytest.fixture

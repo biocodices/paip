@@ -1,7 +1,7 @@
 from unittest.mock import mock_open, patch
 import pytest
 
-from paip.pipelines.variant_calling import AnnotateWithSnpeff
+from paip.pipelines.annotation_and_report import AnnotateWithSnpeff
 
 
 @pytest.fixture
@@ -15,7 +15,7 @@ def test_run(task):
 
     # FIXME: this whole 'path' to the module hardcoding is ugly, there must
     # be a better way:
-    with patch('paip.pipelines.variant_calling.annotate_with_snpeff.open', open_):
+    with patch('paip.pipelines.annotation_and_report.annotate_with_snpeff.open', open_):
         task.run()
 
     (program_name, program_options), kwargs = task.run_program.call_args

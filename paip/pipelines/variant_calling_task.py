@@ -1,7 +1,10 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipelines.variant_calling import AnnotateWithVEP, AnnotateWithSnpeff
+from paip.pipelines.annotation_and_report import (
+    AnnotateWithVEP,
+    AnnotateWithSnpeff
+)
 
 
 class VariantCalling(CohortTask, luigi.WrapperTask):
