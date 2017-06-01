@@ -6,6 +6,8 @@ vep_datadir: vep_data
 xhmm_params_file: xhmm_params.txt
 xhmm_R_script: example_make_XHMM_plots.R
 
+igv_batch_template: igv_batch_template
+
 ##################################################################
 #                                                                #
 # Resources that are part of the GATK Bundle:                    #

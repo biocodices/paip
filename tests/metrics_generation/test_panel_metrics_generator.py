@@ -7,7 +7,7 @@ from paip.metrics_generation import PanelMetricsGenerator
 @pytest.fixture(scope='function')
 def pmg():
     return PanelMetricsGenerator(
-        sample_vcf=pytest.helpers.file('Sample1_genos.vcf'),
+        sample_vcf=pytest.helpers.file('Cohort1/Sample1/Sample1_genos.vcf'),
         sample_name='Sample1',
         panel_vcf=pytest.helpers.file('panel_variants.vcf'),
         min_gq=30,
