@@ -1,0 +1,80 @@
+# IGV Batch script template. Tested on IGV 3.0 beta.
+#
+# --------------------
+# Create a new session
+# --------------------
+#
+# Unloads all tracks except the default genome annotations:
+new
+#
+# -----------
+# Preferences
+# -----------
+#
+# These have temporary effect only.
+# The List of available settings can be guessed from here:
+#
+# https://github.com/sjackman/IGV/blob/master/src/org/broad/igv/PreferenceManager.java
+#
+# Or setting it manually and later checking /path/to/igv/prefs.properties
+#
+snapshotDirectory {{ sample_igv_snapshots_dir }}
+#
+maxPanelHeight 2000
+#
+# Shows the aminoacids for all reading frames of the human sequence:
+preference SHOW_SEQUENCE_TRANSLATION true
+#
+# NAME_PANEL_WIDTH controls the width of the panel on the left, with the name
+# of the tracks (in pixels):
+preference NAME_PANEL_WIDTH 300
+#
+# Downsampling: show up to 100 reads so that the screenshots are not huge
+preference SAM.MAX_LEVELS 150
+#
+# Show duplicates: since this is not a WGA, we're interested in the
+# pile of similar reads on top of each target!
+preference SAM.SHOW_DUPLICATES true
+#
+# ---------
+# Resources
+# ---------
+#
+genome hg19
+load {{ dbsnp_GRCh37 }}
+load {{ exac_GRCh37  }}
+load {{ clinvar_GRCh37 }}
+load {{ indels_1000G }}
+load {{ indels_mills }}
+#
+# ------------
+# Sample files
+# ------------
+#
+load {{ sample_alignment }}
+load {{ sample_all_variants }}
+load {{ sample_reportable_variants }}
+load {{ cohort_variants }}
+#
+# --------
+# Variants
+# --------
+#
+{% for variant in variants %}
+# -------------------------------
+# {{ variant.id }} - CHROM {{ variant.chrom }} - POS {{ variant.pos }}
+# -------------------------------
+#
+goto {{ variant.range_around }}
+sort position
+sort strand
+sort base {{ variant.pos }}
+squish {{ sample_alignment_trackname }}
+snapshot {{ variant.dest_filename }}
+#
+{% endfor %}
+# ---
+# Bye
+# ---
+#
+exit
