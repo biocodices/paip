@@ -1,0 +1,13 @@
+[
+    {
+        "vcf_id": "rs1",
+        "vcf_chrom": "1",
+        "vcf_pos": 1000
+    },
+    {
+        "vcf_id": "rs2",
+        "vcf_chrom": "2",
+        "vcf_pos": 2000
+    }
+]
+

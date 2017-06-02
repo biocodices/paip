@@ -78,12 +78,22 @@ class BaseTask(luigi.Task):
         subdirectory.
         """
         if not self.OUTPUT:
-            return
+            raise Exception('Please define an output method or an OUTPUT '
+                            'constant for the class {}'
+                            .format(self.__class__.__name__))
 
         if isinstance(self.OUTPUT, list):
-            return [luigi.LocalTarget(self.path(fn)) for fn in self.OUTPUT]
+            targets = [luigi.LocalTarget(self.path(fn))
+                       for fn in self.OUTPUT]
 
-        return luigi.LocalTarget(self.path(self.OUTPUT))
+        elif isinstance(self.OUTPUT, dict):
+            targets = {key: luigi.LocalTarget((self.path(fn)))
+                       for key, fn in self.OUTPUT.items()}
+
+        else:
+            targets = luigi.LocalTarget(self.path(self.OUTPUT))
+
+        return targets
 
     def path(self, filename, prefix=True):
         """

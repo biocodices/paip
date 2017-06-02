@@ -9,6 +9,7 @@ from paip.pipelines.annotation_and_report import (
     AnnotateWithSnpeff,
     AnnotateWithVEP,
     AnnotateVariants,
+    TakeIGVScreenshots,
 )
 
 
@@ -61,7 +62,7 @@ class GenerateReports(SampleTask, ReportsTask):
     def requires(self):
         # Remove the extra parameters that the report generation needs, but
         # that are not needed nor expected by the tasks upstream:
-        sample_params = self.param_kwargs.copy()
+        self.sample_params = self.param_kwargs.copy()
 
         extra_params = [
             'templates_dir',
@@ -73,16 +74,16 @@ class GenerateReports(SampleTask, ReportsTask):
             'phenos_regex_file',
         ]
         for param_name in extra_params:
-            del(sample_params[param_name])
+            del(self.sample_params[param_name])
 
-        cohort_params = sample_params.copy()
-        del(cohort_params['sample'])
+        self.cohort_params = self.sample_params.copy()
+        del(self.cohort_params['sample'])
 
-        return [
-            AnnotateWithVEP(**cohort_params),  # vep.tsv
-            AnnotateVariants(**cohort_params),  # rs_variants.json, genes.json
-            AnnotateWithSnpeff(**sample_params),  # .eff.vcf
-        ]
+        return {
+            'vep': AnnotateWithVEP(**self.cohort_params),
+            'annotate': AnnotateVariants(**self.cohort_params),
+            'snpeff': AnnotateWithSnpeff(**self.sample_params),
+        }
 
     def run(self):
         """
@@ -93,10 +94,10 @@ class GenerateReports(SampleTask, ReportsTask):
             self.phenos_regex_list = json.loads(self.phenos_regex_list)
 
         reports_pipeline = ReportsPipeline(
-            vep_tsv=self.input()[0].fn,  # AnnotateWithVEP
-            variants_json=self.input()[1][0].fn,  # AnnotateVariants
-            genes_json=self.input()[1][1].fn,  # AnnotateVariants
-            genotypes_vcf=self.input()[2].fn,  # AnnotateWithSnpeff
+            vep_tsv=self.input()['vep'].fn,
+            genotypes_vcf=self.input()['snpeff'].fn,
+            variants_json=self.input()['annotate']['variants_json'].fn,
+            genes_json=self.input()['annotate']['genes_json'].fn,
 
             templates_dir=self.templates_dir,
             translations_dir=self.translations_dir,
@@ -111,9 +112,24 @@ class GenerateReports(SampleTask, ReportsTask):
 
         reports_pipeline.run(samples=self.sample)
 
+        # This is an extra tasks that is triggered by GenerateReports.
+        # It can't be a dependency (i.e. be in the requires) because it
+        # needs to happen *after* the ReportsPipeline, since it uses
+        # its variants_json output.
+        TakeIGVScreenshots(**self.sample_params,
+                           variants_json=self.output()['variants_json'])
+
     def output(self):
-        fp = join(self.dir, 'report_{}'.format(self.sample), 'index.html')
-        return luigi.LocalTarget(fp)
+        report_dir = join(self.dir, 'report_{}'.format(self.sample))
+        report_html = join(report_dir, 'index.html')
+        variants_json = join(report_dir, 'report_data', 'variants.split.json')
+        variants_records_json = join(report_dir, 'report_data',
+                                     'variants.records.json')
+        return {
+            'report_html': luigi.LocalTarget(report_html),
+            'variants_json': luigi.LocalTarget(variants_json),
+            'variants_records_json': luigi.LocalTarget(variants_records_json),
+        }
 
 
 class GenerateReportsCohort(CohortTask, ReportsTask, luigi.WrapperTask):

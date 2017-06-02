@@ -1,6 +1,8 @@
 import os
 from os.path import join, basename
 
+import luigi
+
 from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import (
     RecalibrateAlignmentScores,
@@ -20,6 +22,8 @@ class TakeIGVScreenshots(SampleTask):
     in a sample VCF.
     """
     OUTPUT = 'igv_batch_script'
+
+    variants_json = luigi.Parameter()
 
     def requires(self):
         cohort_params = self.param_kwargs.copy()
@@ -49,10 +53,12 @@ class TakeIGVScreenshots(SampleTask):
         }
 
         script_helper = IGVScriptHelper(
-            vcf=input_vcf,
+            variants_json=self.variants_json,
             template_path=path_to_resource('igv_batch_template'),
             template_data=template_data,
         )
 
         script_helper.write_script(out_path=self.output().path)
+
+        # TODO: run the script!
 

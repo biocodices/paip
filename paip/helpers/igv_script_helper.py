@@ -1,3 +1,6 @@
+from copy import deepcopy
+import json
+
 import jinja2
 from vcf_to_dataframe import vcf_to_dataframe
 
@@ -9,12 +12,15 @@ class IGVScriptHelper:
     Helper class to write a batch script for IGV from the variants
     present in a VCF and a script template.
     """
-    def __init__(self, vcf, template_path, template_data={}):
+    def __init__(self, template_path, vcf=None, variants_json=None,
+                 template_data={}):
         """
         Provide:
 
-        - a *vcf* with the variants to analyse in IGV,
         - a *template_path* to a template in jinja2 format,
+        - a *vcf* with the variants to analyse in IGV, or a *variants_json*
+          with the path to a json file that has the list of variants to
+          include (their ID will be looked in 'vcf_id'),
         - the *template_data* (a dictionary) with the values to fill the
           variables in the template.
 
@@ -41,7 +47,12 @@ class IGVScriptHelper:
           > igv_helper.write_script(out_path='/path/to/out_script')
 
         """
-        self.vcf = vcf
+        self.variants_file = vcf or variants_json
+
+        if not self.variants_file:
+            raise ValueError('Please provide either a VCF or a JSON '
+                             'with the variants that shoud be analysed.')
+
         self.template_data = template_data
         self.template_path = template_path
 
@@ -56,14 +67,62 @@ class IGVScriptHelper:
 
     def _read_variants_file(self):
         """
-        Reads *self.vcf* and makes a dictionary with the variants,
-        suited for use in the script template.
+        Reads *self.variants_file* and makes a dictionary with the variants,
+        adding some fields to use in the script template. The file might be a
+        VCF or a JSON with a list of variants.
         """
-        variants = vcf_to_dataframe(self.vcf)[['chrom', 'pos', 'id']]
-        variants = variants.to_dict(orient='records')
+        if self.variants_file.endswith('.vcf'):
+            read_function = self._read_variants_from_vcf
+        elif self.variants_file.endswith('.json'):
+            read_function = self._read_variants_from_json
+        else:
+            raise ValueError("I don't know how to read {}"
+                             .format(self.variants_file))
+
+        variants = read_function(self.variants_file)
+        return self._add_fields_to_variants(variants)
+
+    @staticmethod
+    def _read_variants_from_json(variants_json):
+        """
+        Read variants from a *json*, and return them as a dictionary.
+        Variants are expected to have keys 'vcf_chrom', 'vcf_pos', 'vcf_id',
+        but will be returned with keys 'chrom', 'pos', and 'id'.
+        """
+        with open(variants_json) as f:
+            variants = json.load(f)
 
         for variant in variants:
-            window = 160  # Basepairs to show centered in the variant
+            for key in list(variant.keys()):
+                variant[key.replace('vcf_', '')] = variant[key]
+                del(variant[key])
+
+        return variants
+
+    @staticmethod
+    def _read_variants_from_vcf(vcf):
+        """
+        Read variants from a *vcf* path, and return them as a dictionary.
+        """
+        variants = vcf_to_dataframe(vcf)[['chrom', 'pos', 'id']]
+        variants = variants.to_dict(orient='records')
+
+        return variants
+
+    @staticmethod
+    def _add_fields_to_variants(variants, window=160):
+        """
+        From a list of variants (each one a dict), adds 'range_around' and
+        'dest_filename' to each one based on their 'chrom', 'pos', and 'id'.
+
+        You can set the *window* around each variant that will be used to
+        define the 'range_around' it.
+
+        Returns a copy of the variants modified in this way.
+        """
+        variants = deepcopy(variants)
+
+        for variant in variants:
             variant['range_around'] = 'chr{}:{}-{}'.format(
                 variant['chrom'],
                 variant['pos'] - window//2,

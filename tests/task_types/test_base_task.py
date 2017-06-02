@@ -74,7 +74,8 @@ def test_output(base_task, monkeypatch):
     base_task.name = 'BaseTask'
     base_task.dir = '/path/to/BaseTask'
 
-    assert base_task.output() is None
+    with pytest.raises(Exception):
+        base_task.output()
 
     base_task.OUTPUT = 'foo'
     assert base_task.output().path.endswith('BaseTask/BaseTask.foo')
@@ -83,6 +84,11 @@ def test_output(base_task, monkeypatch):
     outputs = base_task.output()
     assert outputs[0].path.endswith('BaseTask/BaseTask.foo')
     assert outputs[1].path.endswith('BaseTask/BaseTask.bar')
+
+    base_task.OUTPUT = {'foo': 'foo', 'bar': 'bar'}
+    outputs = base_task.output()
+    assert outputs['foo'].path.endswith('BaseTask/BaseTask.foo')
+    assert outputs['bar'].path.endswith('BaseTask/BaseTask.bar')
 
     base_task.SUBDIR = 'xhmm_run'
     base_task.OUTPUT = 'baz'

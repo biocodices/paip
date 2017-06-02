@@ -55,6 +55,7 @@ load {{ sample_alignment }}
 load {{ sample_all_variants }}
 load {{ sample_reportable_variants }}
 load {{ cohort_variants }}
+squish {{ sample_alignment_trackname }}
 #
 # --------
 # Variants
@@ -69,7 +70,6 @@ goto {{ variant.range_around }}
 sort position
 sort strand
 sort base {{ variant.pos }}
-squish {{ sample_alignment_trackname }}
 snapshot {{ variant.dest_filename }}
 #
 {% endfor %}

@@ -23,7 +23,10 @@ class AnnotateVariants(CohortTask):
     # parameter, as I already did with 'cache' and 'http_proxy' above.
     annotation_kwargs = luigi.Parameter(default='{}')
 
-    OUTPUT = ['rs_variants.json', 'genes.json']
+    OUTPUT = {
+        'variants_json': 'rs_variants.json',
+        'genes_json': 'genes.json',
+    }
 
     def requires(self):
         # Remove the extra parameters that the annotation needs, but that
@@ -47,10 +50,10 @@ class AnnotateVariants(CohortTask):
         annotator.run_from_vcf(self.input().fn)
 
         rs_variants_json = annotator.rs_variants.to_json(orient='split')
-        with open(self.output()[0].fn, 'w') as f:
+        with open(self.output()['variants_json'].fn, 'w') as f:
             f.write(rs_variants_json)
 
         genes_json = annotator.gene_annotations.to_json(orient='split')
-        with open(self.output()[1].fn, 'w') as f:
+        with open(self.output()['genes_json'].fn, 'w') as f:
             f.write(genes_json)
 
