@@ -19,37 +19,38 @@ from paip.helpers import (
 class TakeIGVScreenshots(SampleTask):
     """
     Takes a screenshot of the pile of reads in IGV for each of the variants
-    in a sample VCF.
+    in a JSON file.
     """
-    OUTPUT = 'igv_batch_script'
-
     variants_json = luigi.Parameter()
+
+    OUTPUT = 'igv_batch_script'
 
     def requires(self):
         cohort_params = self.param_kwargs.copy()
         del(cohort_params['sample'])
 
-        return [
-            RecalibrateAlignmentScores(**self.param_kwargs),
-            FilterGenotypes(**cohort_params),
-            ExtractSample(**self.param_kwargs),
-            KeepReportableGenotypes(**self.param_kwargs),
-        ]
+        sample_params = self.param_kwargs.copy()
+        del(sample_params['variants_json'])
+
+        return {
+            'alignment': RecalibrateAlignmentScores(**sample_params),
+            'cohort': FilterGenotypes(**cohort_params),
+            'sample_all': ExtractSample(**sample_params),
+            'sample_reportable': KeepReportableGenotypes(**sample_params),
+        }
 
     def run(self):
         igv_snapshots_dir = join(self.dir, 'igv_snapshots')
         os.makedirs(igv_snapshots_dir, exist_ok=True)
 
-        input_bam = self.input()[0].path
-        input_vcf = self.input()[3].path
-
+        alignment_file = self.input()['alignment'].path
         template_data = {
             'sample_igv_snapshots_dir': igv_snapshots_dir,
-            'sample_alignment': input_bam,
-            'sample_alignment_trackname': basename(input_bam),
-            'cohort_variants': self.input()[1].path,
-            'sample_all_variants': self.input()[2].path,
-            'sample_reportable_variants': input_vcf,
+            'sample_alignment': alignment_file,
+            'sample_alignment_trackname': basename(alignment_file),
+            'cohort_variants': self.input()['cohort'].path,
+            'sample_all_variants': self.input()['sample_all'].path,
+            'sample_reportable_variants': self.input()['sample_reportable'].path,
         }
 
         script_helper = IGVScriptHelper(

@@ -9,7 +9,9 @@ from paip.pipelines.annotation_and_report import TakeIGVScreenshots
 
 @pytest.fixture
 def task(sample_task_factory):
-    return sample_task_factory(TakeIGVScreenshots)
+    json = pytest.helpers.file('Cohort1/Sample1/Sample1_variants.records.json')
+    return sample_task_factory(TakeIGVScreenshots,
+                               extra_params={'variants_json': json})
 
 
 def test_run(task, monkeypatch):
