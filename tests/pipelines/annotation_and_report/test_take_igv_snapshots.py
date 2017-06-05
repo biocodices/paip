@@ -73,7 +73,6 @@ def test_run(task, mock_makedirs, monkeypatch):
         script_path=task.output()['script'].path
     )
 
-    task.run_program
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'igv snapshots'
