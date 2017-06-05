@@ -16,9 +16,9 @@ from paip.helpers import (
 )
 
 
-class TakeIGVScreenshots(SampleTask):
+class TakeIGVSnapshots(SampleTask):
     """
-    Takes a screenshot of the pile of reads in IGV for each of the variants
+    Takes a snapshot of the pile of reads in IGV for each of the variants
     in a JSON file.
     """
     variants_json = luigi.Parameter()

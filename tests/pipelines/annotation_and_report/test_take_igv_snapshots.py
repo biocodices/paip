@@ -4,13 +4,13 @@ import pytest
 
 import paip
 from paip.helpers import IGVScriptHelper
-from paip.pipelines.annotation_and_report import TakeIGVScreenshots
+from paip.pipelines.annotation_and_report import TakeIGVSnapshots
 
 
 @pytest.fixture
 def task(sample_task_factory):
     json = pytest.helpers.file('Cohort1/Sample1/Sample1_variants.records.json')
-    return sample_task_factory(TakeIGVScreenshots,
+    return sample_task_factory(TakeIGVSnapshots,
                                extra_params={'variants_json': json})
 
 
@@ -20,7 +20,7 @@ def test_write_script(task, monkeypatch):
     mock_script_helper_class = Mock(name='IGVScriptHelper',
                                     return_value=mock_script_helper)
 
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.take_igv_screenshots,
+    monkeypatch.setattr(paip.pipelines.annotation_and_report.take_igv_snapshots,
                         'IGVScriptHelper', mock_script_helper_class)
 
     script_path = '/path/to/script.txt'

@@ -9,7 +9,7 @@ from paip.pipelines.annotation_and_report import (
     AnnotateWithSnpeff,
     AnnotateWithVEP,
     AnnotateVariants,
-    TakeIGVScreenshots,
+    TakeIGVSnapshots,
 )
 
 
@@ -116,8 +116,8 @@ class GenerateReports(SampleTask, ReportsTask):
         # It can't be a dependency (i.e. be in the requires) because it
         # needs to happen *after* the ReportsPipeline, since it uses
         # its variants_json output.
-        TakeIGVScreenshots(**self.sample_params,
-                           variants_json=self.output()['variants_json'])
+        TakeIGVSnapshots(**self.sample_params,
+                         variants_json=self.output()['variants_json'])
 
     def output(self):
         report_dir = join(self.dir, 'report_{}'.format(self.sample))

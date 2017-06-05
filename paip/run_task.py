@@ -136,8 +136,8 @@ Options:
                             (default=1)
 
 
-    TakeIGVScreenshots options
-    --------------------------
+    TakeIGVSnapshots options
+    ------------------------
 
     --variants-json PATH    The path to the sample variants in JSON format.
                             Typically, it's the result of GenerateReports
