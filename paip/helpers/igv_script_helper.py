@@ -86,16 +86,17 @@ class IGVScriptHelper:
     def _read_variants_from_json(variants_json):
         """
         Read variants from a *json*, and return them as a dictionary.
-        Variants are expected to have keys 'vcf_chrom', 'vcf_pos', 'vcf_id',
-        but will be returned with keys 'chrom', 'pos', and 'id'.
+
+        Any keys with a "vcf_" prefix will be copied to a new key without
+        that prefix.
         """
         with open(variants_json) as f:
             variants = json.load(f)
 
         for variant in variants:
             for key in list(variant.keys()):
-                variant[key.replace('vcf_', '')] = variant[key]
-                del(variant[key])
+                new_key = key.replace('vcf_', '')
+                variant[new_key] = variant[key]
 
         return variants
 

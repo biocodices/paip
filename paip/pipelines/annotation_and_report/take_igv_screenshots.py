@@ -50,7 +50,9 @@ class TakeIGVScreenshots(SampleTask):
         snapshots_dir = self.output()['snapshots_dir'].path
         os.makedirs(snapshots_dir, exist_ok=True)
 
-        script_path = self.write_script(script_path=self.output()['script'].path)
+        script_path = self.output()['script'].path
+        self.write_script(script_path=script_path)
+
         program_name = 'igv snapshots'
         program_options = {
             'DISPLAY': ':99',  # Assumes a big DISPLAY number won't be in use

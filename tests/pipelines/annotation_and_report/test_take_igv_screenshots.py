@@ -48,7 +48,7 @@ def test_write_script(task, monkeypatch):
 
 
 def test_run(task, mock_makedirs):
-    mock_write_script = Mock()
+    mock_write_script = Mock(return_value=None)
     task.write_script = mock_write_script
 
     task.run()
@@ -67,5 +67,4 @@ def test_run(task, mock_makedirs):
     assert program_name == 'igv snapshots'
     assert program_options['DISPLAY'] == ':99'
     assert program_options['script_path'].endswith('igv_batch_script')
-
 

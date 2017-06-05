@@ -57,8 +57,11 @@ def test_read_variants_from_json():
     variants = IGVScriptHelper._read_variants_from_json(JSON)
     assert len(variants) == 2
     assert variants[0] == {
+        'vcf_chrom': '1',
         'chrom': '1',
+        'vcf_pos': 1000,
         'pos': 1000,
+        'vcf_id': 'rs1',
         'id': 'rs1',
     }
 

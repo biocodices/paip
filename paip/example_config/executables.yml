@@ -25,7 +25,7 @@ bcftools: /home/juan/software/bcftools-1.4.1/bcftools
 samtools: /home/juan/software/samtools-1.4.1/samtools
 featureCounts: /home/juan/software/subread-1.5.1-source/bin/featureCounts
 
-igv: /home/juan/software/IGV_3.0_beta/igv.jar
+igv: java -jar /home/juan/software/IGV_3.0_beta/igv.jar
 
 #
 # CNV Calling
