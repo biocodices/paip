@@ -12,7 +12,7 @@ def task(sample_task_factory):
 
 
 def test_output(task):
-    assert task.output().path.endswith('/report_Sample1/images')
+    assert task.output().path.endswith('/report_Sample1/images/igv')
 
 
 def test_run(task, mock_makedirs, monkeypatch):
@@ -28,7 +28,7 @@ def test_run(task, mock_makedirs, monkeypatch):
     assert first_call[0][0].endswith('/igv_snapshots/img1.png')
     assert second_call[0][0].endswith('/igv_snapshots/img2.png')
 
-    dest_dir = '/report_Sample1/images'
+    dest_dir = '/report_Sample1/images/igv'
     assert first_call[0][1].endswith(dest_dir)
     assert second_call[0][1].endswith(dest_dir)
 
