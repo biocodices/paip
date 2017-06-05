@@ -1,5 +1,6 @@
 import os
 from unittest.mock import Mock
+from contextlib import contextmanager
 
 import pytest
 
@@ -48,11 +49,22 @@ def test_write_script(task, monkeypatch):
     assert out_path == script_path
 
 
-def test_run(task, mock_makedirs):
+def test_run(task, mock_makedirs, monkeypatch):
     mock_write_script = Mock(return_value=None)
     task.write_script = mock_write_script
 
+    # FIXME: This can probably be mocked in a better way
+    @contextmanager
+    def mock_X_server(port_number):
+        mock_X_server.call_arg = port_number
+        yield port_number
+
+    monkeypatch.setattr(paip.pipelines.annotation_and_report.take_igv_snapshots,
+                        'X_server', mock_X_server)
+
     task.run()
+
+    assert mock_X_server.call_arg == os.getpid()
 
     mock_makedirs.assert_called_once()
     mock_makedirs.call_args[0][0].endswith('/igv_snapshots')

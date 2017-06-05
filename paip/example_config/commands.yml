@@ -646,9 +646,7 @@ Rscript make_XHMM_plots:
 
 
 igv snapshots:
-  '(Xvfb {DISPLAY} &);
-   DISPLAY=:{DISPLAY}
+  'DISPLAY=:{DISPLAY}
    {executable}
-   -b {script_path};
-   killall Xvfb'
+   -b {script_path}'
 

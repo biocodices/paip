@@ -13,6 +13,7 @@ from paip.pipelines.variant_calling import (
 from paip.helpers import (
     IGVScriptHelper,
     path_to_resource,
+    X_server,
 )
 
 
@@ -53,13 +54,14 @@ class TakeIGVSnapshots(SampleTask):
         script_path = self.output()['script'].path
         self.write_script(script_path=script_path)
 
-        program_name = 'igv snapshots'
-        program_options = {
-            'DISPLAY': os.getpid(),
-            # ^ Hack: using the PID as a hopefully available DISPLAY number!
-            'script_path': script_path,
-        }
-        self.run_program(program_name, program_options)
+        # I'm using the PID as a hopefully available DISPLAY number!
+        with X_server(os.getpid()) as screen_number:
+            program_name = 'igv snapshots'
+            program_options = {
+                'DISPLAY': screen_number,
+                'script_path': script_path,
+            }
+            self.run_program(program_name, program_options)
 
     def write_script(self, script_path):
         """
