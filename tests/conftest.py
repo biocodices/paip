@@ -1,6 +1,6 @@
 import os
 from os.path import join, dirname
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
 
 pytest_plugins = ['helpers_namespace']
 
@@ -107,6 +107,13 @@ def mock_rename(monkeypatch):
     mock_rename = MagicMock(name='os.rename')
     monkeypatch.setattr(os, 'rename', mock_rename)
     return mock_rename
+
+
+@pytest.fixture(scope='function')
+def mock_makedirs(monkeypatch):
+    mock_makedirs = Mock(name='os.makedirs')
+    monkeypatch.setattr(os, 'makedirs', mock_makedirs)
+    return mock_makedirs
 
 
 @pytest.fixture(scope='function')
