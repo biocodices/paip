@@ -1,5 +1,5 @@
 import os
-from os.path import join, basename, dirname, isfile
+from os.path import join, basename
 
 import luigi
 
@@ -55,7 +55,8 @@ class TakeIGVSnapshots(SampleTask):
 
         program_name = 'igv snapshots'
         program_options = {
-            'DISPLAY': ':99',  # Assumes a big DISPLAY number won't be in use
+            'DISPLAY': os.getpid(),
+            # ^ Hack: using the PID as a hopefully available DISPLAY number!
             'script_path': script_path,
         }
         self.run_program(program_name, program_options)

@@ -1,3 +1,4 @@
+import os
 from unittest.mock import Mock
 
 import pytest
@@ -65,6 +66,6 @@ def test_run(task, mock_makedirs):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'igv snapshots'
-    assert program_options['DISPLAY'] == ':99'
+    assert program_options['DISPLAY'] == os.getpid()
     assert program_options['script_path'].endswith('igv_batch_script')
 
