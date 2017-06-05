@@ -116,8 +116,19 @@ class GenerateReports(SampleTask, ReportsTask):
         # It can't be a dependency (i.e. be in the requires) because it
         # needs to happen *after* the ReportsPipeline, since it uses
         # its variants_json output.
-        TakeIGVSnapshots(**self.sample_params,
-                         variants_json=self.output()['variants_json'])
+
+        # In addition, it would be cumbersome to extact it as a separate
+        # task that depends on GenerateReports, because in that case
+        # we would need to pass all the report-generation parameters
+        # from that new task to this one.
+
+        # This solution seems to be the 'least worse' one ;(
+
+        snapshots_task = TakeIGVSnapshots(
+            **self.sample_params,
+            variants_json=self.output()['variants_records_json'].path,
+        )
+        snapshots_task.run()
 
     def output(self):
         report_dir = join(self.dir, 'report_{}'.format(self.sample))
