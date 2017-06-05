@@ -109,7 +109,7 @@ def test_write_script():
         written_script = f.read()
 
     # This testing is not exhaustive, but will do:
-    assert 'goto chr1:920-1080' in written_script
+    assert 'goto chr1:980-1020' in written_script
     assert 'snapshot 1_1000_rs1_altname.png' in written_script
 
     # Cleanup

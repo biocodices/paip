@@ -111,7 +111,7 @@ class IGVScriptHelper:
         return variants
 
     @staticmethod
-    def _add_fields_to_variants(variants, window=160):
+    def _add_fields_to_variants(variants, window=40):
         """
         From a list of variants (each one a dict), adds 'range_around' and
         'dest_filename' to each one based on their 'chrom', 'pos', and 'id'.
