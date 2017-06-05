@@ -49,3 +49,9 @@ def test_output(sample_task, test_sample_path):
                         test_sample_path('Sample1.foo.baz')]
     assert [out.fn for out in sample_task.output()] == expected_outputs
 
+
+def test_cohort_params(sample_task):
+    params = sample_task.cohort_params()
+    assert 'sample' not in params
+    assert 'basedir' in params
+

@@ -16,27 +16,37 @@ from paip.helpers import (
     X_server,
 )
 
+from paip.helpers.create_cohort_task import create_cohort_task
+
+
+class GenerateReportsDone(SampleTask, luigi.ExternalTask):
+    """
+    Class created to work as a reuquirement of tasks that come after the
+    reports generation, but that don't need all the extra parameters
+    that the report generation needs.
+    """
+    # This seems to be a cleaner solution than passing all of the
+    # report-generation specific parameters around down to GenerateReports.
+    def output(self):
+        fn = join(self.dir, 'report_{}'.format(self.sample),
+                  'report_data', 'variants.records.json')
+        return luigi.LocalTarget(fn)
+
 
 class TakeIGVSnapshots(SampleTask):
     """
     Takes a snapshot of the pile of reads in IGV for each of the variants
     in a JSON file.
     """
-    variants_json = luigi.Parameter()
-
     def requires(self):
-        cohort_params = self.param_kwargs.copy()
-        del(cohort_params['sample'])
-        del(cohort_params['variants_json'])
-
-        sample_params = self.param_kwargs.copy()
-        del(sample_params['variants_json'])
-
         return {
-            'alignment': RecalibrateAlignmentScores(**sample_params),
-            'cohort': FilterGenotypes(**cohort_params),
-            'sample_all': ExtractSample(**sample_params),
-            'sample_reportable': KeepReportableGenotypes(**sample_params),
+            'report_generation': GenerateReportsDone(**self.param_kwargs),
+            'alignment': RecalibrateAlignmentScores(**self.param_kwargs),
+            'sample_all': ExtractSample(**self.param_kwargs),
+            'sample_reportable': KeepReportableGenotypes(**self.param_kwargs),
+
+            # The cohort required task needs a reduced version of the params:
+            'cohort': FilterGenotypes(**self.cohort_params()),
         }
 
     def output(self):
@@ -69,9 +79,11 @@ class TakeIGVSnapshots(SampleTask):
         the pile of reads for each variant in the variants JSON of the sample.
         """
         alignment_file = self.input()['alignment'].path
+        variants_json = \
+            self.input()['report_generation'].path
 
         script_helper = IGVScriptHelper(
-            variants_json=self.variants_json,
+            variants_json=variants_json,
             template_path=path_to_resource('igv_batch_template'),
             template_data={
                 'sample_igv_snapshots_dir': self.output()['snapshots_dir'].path,
@@ -85,4 +97,7 @@ class TakeIGVSnapshots(SampleTask):
         )
 
         script_helper.write_script(out_path=script_path)
+
+
+TakeIGVSnapshotsCohort = create_cohort_task(TakeIGVSnapshots)
 

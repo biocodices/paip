@@ -4,34 +4,15 @@ import json
 import luigi
 from reports_generation import ReportsPipeline
 
-from paip.task_types import SampleTask, CohortTask
+from paip.task_types import SampleTask, CohortTask, ReportsTask
 from paip.pipelines.annotation_and_report import (
     AnnotateWithSnpeff,
     AnnotateWithVEP,
     AnnotateVariants,
-    TakeIGVSnapshots,
 )
 
 
-class ReportsTask:
-    """
-    Abstract class to provide common parameters to GenerateReports and
-    GenerateReportsCohort. See the former class for a full explanation of
-    each parameter.
-    """
-    # Directories
-    templates_dir = luigi.Parameter()
-    translations_dir = luigi.Parameter()
-
-    # Reportable variants settings
-    min_odds_ratio = luigi.FloatParameter(default=1)  # All by default
-    max_frequency = luigi.FloatParameter(default=1)  # All by default
-    min_reportable_category = luigi.Parameter(default='DRUG')
-    phenos_regex_list = luigi.Parameter(default=None)
-    phenos_regex_file = luigi.Parameter(default=None)
-
-
-class GenerateReports(SampleTask, ReportsTask):
+class GenerateReports(ReportsTask, SampleTask):
     """
     Makes an HTML and a CSV report of the sample reportable variants.
 
@@ -62,27 +43,10 @@ class GenerateReports(SampleTask, ReportsTask):
     def requires(self):
         # Remove the extra parameters that the report generation needs, but
         # that are not needed nor expected by the tasks upstream:
-        self.sample_params = self.param_kwargs.copy()
-
-        extra_params = [
-            'templates_dir',
-            'translations_dir',
-            'min_odds_ratio',
-            'max_frequency',
-            'min_reportable_category',
-            'phenos_regex_list',
-            'phenos_regex_file',
-        ]
-        for param_name in extra_params:
-            del(self.sample_params[param_name])
-
-        self.cohort_params = self.sample_params.copy()
-        del(self.cohort_params['sample'])
-
         return {
-            'vep': AnnotateWithVEP(**self.cohort_params),
-            'annotate': AnnotateVariants(**self.cohort_params),
-            'snpeff': AnnotateWithSnpeff(**self.sample_params),
+            'vep': AnnotateWithVEP(**self.cohort_params()),
+            'annotate': AnnotateVariants(**self.cohort_params()),
+            'snpeff': AnnotateWithSnpeff(**self.sample_params()),
         }
 
     def run(self):
@@ -111,24 +75,6 @@ class GenerateReports(SampleTask, ReportsTask):
         )
 
         reports_pipeline.run(samples=self.sample)
-
-        # This is an extra tasks that is triggered by GenerateReports.
-        # It can't be a dependency (i.e. be in the requires) because it
-        # needs to happen *after* the ReportsPipeline, since it uses
-        # its variants_json output.
-
-        # In addition, it would be cumbersome to extact it as a separate
-        # task that depends on GenerateReports, because in that case
-        # we would need to pass all the report-generation parameters
-        # from that new task to this one.
-
-        # This solution seems to be the 'least worse' one ;(
-
-        snapshots_task = TakeIGVSnapshots(
-            **self.sample_params,
-            variants_json=self.output()['variants_records_json'].path,
-        )
-        snapshots_task.run()
 
     def output(self):
         report_dir = join(self.dir, 'report_{}'.format(self.sample))

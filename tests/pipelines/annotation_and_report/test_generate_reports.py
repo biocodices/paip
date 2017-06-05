@@ -3,7 +3,6 @@ from unittest.mock import mock_open, patch, Mock
 import pytest
 
 from paip.pipelines.annotation_and_report.generate_reports import GenerateReports
-from paip.pipelines.annotation_and_report import TakeIGVSnapshots
 import paip.pipelines.annotation_and_report.generate_reports
 
 
@@ -32,20 +31,9 @@ def test_run(task, monkeypatch):
     monkeypatch.setattr(paip.pipelines.annotation_and_report.generate_reports,
                         'ReportsPipeline', ReportsPipeline)
 
-    mock_TakeIGVSnapshots_instance = Mock(spec=TakeIGVSnapshots)
-    mock_TakeIGVSnapshots = Mock(return_value=mock_TakeIGVSnapshots_instance)
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.generate_reports,
-                        'TakeIGVSnapshots', mock_TakeIGVSnapshots)
-
     open_ = mock_open()
     with patch('paip.pipelines.annotation_and_report.generate_reports.open', open_):
         task.run()
-
-    mock_TakeIGVSnapshots.assert_called_once()
-    json_file = mock_TakeIGVSnapshots.call_args[1]['variants_json']
-    assert json_file.endswith('variants.records.json')
-
-    mock_TakeIGVSnapshots_instance.run.assert_called_once_with()
 
     # Check the reports generator has been called with the correct arguments
 

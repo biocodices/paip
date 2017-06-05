@@ -26,17 +26,11 @@ class SampleTask(BaseTask):
         for key in sequencing_data.keys():
             setattr(self, key, sequencing_data[key])
 
-    #  def sample_path(self, filename):
-        #  """
-        #  Generate a path to the given *filename* under self.sample's
-        #  directory, using self.sample as a prefix. Example:
-
-            #  > sample_path('foo.txt')  # => SampleX/SampleX.foo.txt
-
-        #  """
-        #  return self.path(filename)
-
-    #  def sample_paths(self, filenames):
-        #  """Alias of self.paths"""
-        #  return self.paths(filenames)
+    def cohort_params(self):
+        """
+        Return a copy of self.param_kwargs but without the 'sample' parameter.
+        """
+        params = self.param_kwargs.copy()
+        del(params['sample'])
+        return params
 

@@ -9,11 +9,10 @@ from paip.helpers import IGVScriptHelper
 from paip.pipelines.annotation_and_report import TakeIGVSnapshots
 
 
+
 @pytest.fixture
 def task(sample_task_factory):
-    json = pytest.helpers.file('Cohort1/Sample1/Sample1_variants.records.json')
-    return sample_task_factory(TakeIGVSnapshots,
-                               extra_params={'variants_json': json})
+    return sample_task_factory(TakeIGVSnapshots)
 
 
 def test_write_script(task, monkeypatch):
