@@ -1,3 +1,5 @@
+import os
+
 from paip.helpers import available_resources
 from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import TrimAdapters
@@ -30,7 +32,8 @@ class MultiQC(CohortTask):
 
         # Some pipelines might not have a VCF of panel variants
         # (e.g. exomes, exon panels like Trusight Cardio)
-        if 'panel_variants' in available_resources():
+        panel_variants_path = available_resources().get('panel_variants')
+        if panel_variants_path and os.path.isfile(panel_variants_path):
             sample_tasks.append(PanelMetrics)
 
         sample_tasks = [task(sample=sample, **self.param_kwargs)
