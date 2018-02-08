@@ -8,7 +8,7 @@ def task(cohort_task_factory):
     return cohort_task_factory(AnnotateWithVEP)
 
 
-def test_run(task, test_cohort_path):
+def test_run(task):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
@@ -18,6 +18,5 @@ def test_run(task, test_cohort_path):
     assert 'luigi-tmp' in program_options['output_vcf']
 
 
-def test_output(task, test_cohort_path):
+def test_output(task):
     assert task.output().fn.endswith('.vep.tsv')
-

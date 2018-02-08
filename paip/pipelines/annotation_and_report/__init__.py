@@ -4,4 +4,5 @@ from .annotate_variants import AnnotateVariants
 from .generate_reports import GenerateReports
 from .take_igv_snapshots import TakeIGVSnapshots
 from .copy_igv_shots import CopyIGVShots
+from .annotate_with_clinvar import AnnotateWithClinvar
 
