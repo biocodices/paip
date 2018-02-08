@@ -73,12 +73,11 @@ def test_read_panel_from_bed(ca):
 
 def test_read_coverage_files(ca):
     intervals = ca._read_coverage_files(coverage_files)
-    from numpy import int64, float64
-    assert all(isinstance(val, int64) for val in intervals['LL'])
-    assert all(isinstance(val, int64) for val in intervals['ZL'])
-    assert all(isinstance(val, float64) for val in intervals['IDP'])
+    assert all(isinstance(val, int) for val in intervals['LL'])
+    assert all(isinstance(val, int) for val in intervals['ZL'])
+    assert all(isinstance(val, float) for val in intervals['IDP'])
     assert 'end_pos' in intervals
-    assert all(isinstance(val, int64) for val in intervals['end_pos'])
+    assert all(isinstance(val, int) for val in intervals['end_pos'])
     assert 'length' in intervals
     assert list(intervals['length']) == [201] * 10
     assert list(intervals['sample_id']) == ['Sample2'] * 5 + ['Sample3'] * 5
