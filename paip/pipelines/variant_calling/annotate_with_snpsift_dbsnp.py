@@ -4,7 +4,7 @@ from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import JointGenotyping, MergeVCFs
 
 
-class AnnotateWithDbSNP(CohortTask):
+class AnnotateWithSnpsiftDbSNP(CohortTask):
     """
     Take a cohort VCF and add IDs from a dbSNP VCF file.
 
@@ -32,6 +32,6 @@ class AnnotateWithDbSNP(CohortTask):
                 f.write(stdout)
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.dbsnp.vcf')
+        fn = self.input().fn.replace('.vcf', '.snpsift_dbsnp.vcf')
         return luigi.LocalTarget(fn)
 
