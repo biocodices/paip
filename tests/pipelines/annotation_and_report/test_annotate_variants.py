@@ -10,7 +10,7 @@ def task(cohort_task_factory):
     extra_params = {
         'cache': 'cache_name',
         'http_proxy': 'some_proxy',
-        'annotation_kwargs': '{"extra_param": "extra_param_value"}'
+        'extra_annotation_kwargs': '{"extra_param": "extra_param_value"}'
     }
     return cohort_task_factory(AnnotateVariants, extra_params=extra_params)
 
@@ -25,6 +25,10 @@ def test_run(task, monkeypatch):
     # Mock the open built-in function to test the output is written
     open_ = mock_open()
     with patch('paip.pipelines.annotation_and_report.annotate_variants.open', open_):
+        task.requires()
+        # ^ Simulate that requires() is called, which happens in the actual
+        # pipeline. Without it, some args parsing is not done and the test
+        # breaks.
         task.run()
 
     assert AnnotationPipeline.call_count == 1

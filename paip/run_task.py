@@ -80,12 +80,12 @@ Options:
 
                             (default='socks5://localhost:9050')
 
-    --annotation-kwargs JSON  Extra keyword arguments for AnnotateVariants,
-                              which will be passed to `anotamela`'s
-                              AnnotationPipeline. Pass them as a JSON
-                              dictionary.
+    --extra-annotation-kwargs JSON  Extra keyword arguments for AnnotateVariants,
+                                    which will be passed to `anotamela`'s
+                                    AnnotationPipeline. Pass them as a JSON
+                                    dictionary.
 
-                              (default='{}')
+                                    (default='{}')
 
 
     GenerateReports options
