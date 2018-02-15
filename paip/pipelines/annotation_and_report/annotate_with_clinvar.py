@@ -6,7 +6,7 @@ from paip.pipelines.variant_calling import FilterGenotypes
 
 class AnnotateWithClinvar(CohortAnnotationTask):
     """
-    Takes a VCF and generates a .json file with annotations for all the
+    Takes a VCF and generates a .json file with ClinVar annotations for all the
     rs IDs found.
     """
     REQUIRES = FilterGenotypes

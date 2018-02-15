@@ -35,5 +35,10 @@ def test_requires(task):
     assert task.annotation_kwargs['proxies'] == {'http': 'Proxy-1'}
 
 
+def test_run(task):
+    # Implement This!
+    assert 0
+
+
 def test_output(task):
     assert task.output().fn.endswith('.clinvar_variants.json')
