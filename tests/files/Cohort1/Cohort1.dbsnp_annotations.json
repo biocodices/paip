@@ -1,0 +1,10 @@
+[
+    {
+        "GRCh37.p13_gene_entrez_ids": [2],
+        "GRCh38.p7_gene_entrez_ids": [3]
+    },
+    {
+        "GRCh37.p13_gene_entrez_ids": [3],
+        "GRCh38.p7_gene_entrez_ids": [1]
+    }
+]
