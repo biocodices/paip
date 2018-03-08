@@ -16,6 +16,7 @@ class AnnotateVariants(CohortAnnotationTask):
     OUTPUT = {
         'variants_json': 'rs_variants.json',
         'genes_json': 'genes.json',
+        'other_variants_json': 'other_variants.json',
     }
 
     def run(self):
@@ -25,6 +26,10 @@ class AnnotateVariants(CohortAnnotationTask):
         rs_variants_json = annotator.rs_variants.to_json(orient='split')
         with open(self.output()['variants_json'].fn, 'w') as f:
             f.write(rs_variants_json)
+
+        other_variants_json = annotator.other_variants.to_json(orient='split')
+        with open(self.output()['other_variants_json'].fn, 'w') as f:
+            f.write(other_variants_json)
 
         genes_json = annotator.gene_annotations.to_json(orient='split')
         with open(self.output()['genes_json'].fn, 'w') as f:

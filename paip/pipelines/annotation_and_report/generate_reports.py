@@ -79,16 +79,12 @@ class GenerateReports(ReportsTask, SampleTask):
     def output(self):
         report_dir = join(self.dir, 'report_{}'.format(self.sample))
         report_html = join(report_dir, 'index.html')
-        variants_json = join(report_dir, 'report_data', 'variants.split.json')
-        variants_records_json = join(report_dir, 'report_data',
-                                     'variants.records.json')
+        report_json = join(report_dir, 'report_data_full.html')
         return {
             'report_html': luigi.LocalTarget(report_html),
-            'variants_json': luigi.LocalTarget(variants_json),
-            'variants_records_json': luigi.LocalTarget(variants_records_json),
+            'report_json': luigi.LocalTarget(report_json),
         }
 
 
 class GenerateReportsCohort(CohortTask, ReportsTask, luigi.WrapperTask):
     SAMPLE_REQUIRES = GenerateReports
-

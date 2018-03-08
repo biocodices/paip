@@ -64,4 +64,3 @@ def test_run(task, monkeypatch):
 
     assert pipeline_instance.run.call_count == 1
     assert pipeline_instance.run.call_args[1] == {'samples': task.sample}
-
