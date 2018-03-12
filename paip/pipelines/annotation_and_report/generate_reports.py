@@ -79,7 +79,7 @@ class GenerateReports(ReportsTask, SampleTask):
     def output(self):
         report_dir = join(self.dir, 'report_{}'.format(self.sample))
         #  report_html = join(report_dir, 'index.html')
-        report_json = join(report_dir, 'report_data_full.html')
+        report_json = join(report_dir, 'report_data_full.json')
         return {
             #  'report_html': luigi.LocalTarget(report_html),
             'report_json': luigi.LocalTarget(report_json),
