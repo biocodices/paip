@@ -74,14 +74,14 @@ class GenerateReports(ReportsTask, SampleTask):
             phenos_regex_file=self.phenos_regex_file,
         )
 
-        reports_pipeline.run(samples=self.sample)
+        reports_pipeline.run(samples=self.sample, write_html_report=False)
 
     def output(self):
         report_dir = join(self.dir, 'report_{}'.format(self.sample))
-        report_html = join(report_dir, 'index.html')
+        #  report_html = join(report_dir, 'index.html')
         report_json = join(report_dir, 'report_data_full.html')
         return {
-            'report_html': luigi.LocalTarget(report_html),
+            #  'report_html': luigi.LocalTarget(report_html),
             'report_json': luigi.LocalTarget(report_json),
         }
 

@@ -8,8 +8,8 @@ class ReportsTask:
     each parameter.
     """
     # Directories
-    templates_dir = luigi.Parameter()
-    translations_dir = luigi.Parameter()
+    templates_dir = luigi.Parameter(default=None)
+    translations_dir = luigi.Parameter(default=None)
 
     # Reportable variants settings
     min_odds_ratio = luigi.FloatParameter(default=1)  # All by default
