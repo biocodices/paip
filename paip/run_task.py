@@ -165,6 +165,7 @@ import logging
 from paip import software_name
 from paip.helpers import set_luigi_logging
 from paip.helpers.list_tasks import list_tasks
+from paip.task_types.cohort_task import EmptyCohortException
 
 
 logger = logging.getLogger('paip')
@@ -217,6 +218,9 @@ def run_task():
         logger.info('No task found with name "{}". '
                     'Run paip --tasks to list the available tasks'
                     .format(arguments['TASK']))
+    except EmptyCohortException as error:
+        print(error)
+        sys.exit()
 
 
 def logo():

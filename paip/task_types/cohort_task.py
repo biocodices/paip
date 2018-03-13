@@ -21,8 +21,12 @@ class CohortTask(BaseTask):
         self.sample_list = self._find_samples(self.samples)
 
         if not self.sample_list:
-            raise EmptyCohortException('No samples found in: {}'
-                                       .format(self.dir))
+            samples = ''.join(f' * {sample}\n'
+                              for sample in self.sequencing_data.keys())
+            message = 'None of these samples:\n\n' + \
+                      f'{samples}' + \
+                      f'\nwere found in: {self.dir}'
+            raise EmptyCohortException(message)
 
         known_pipes = ['all_sites', 'variant_sites', 'target_sites']
         if self.pipeline_type not in known_pipes:
