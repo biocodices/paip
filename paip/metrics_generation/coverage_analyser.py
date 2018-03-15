@@ -40,7 +40,7 @@ class CoverageAnalyser:
 
     """
 
-    COLOR_PALETTE = ('Vega10', 10)  # Name, number of colors to take
+    COLOR_PALETTE = ('hls', 10)  # Name, number of colors to take
     MARKERS = 'xo*pshHP^v<>d'
 
     def __init__(self, coverage_files, panel=None, reads_threshold=30):

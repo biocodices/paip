@@ -1,3 +1,24 @@
+# Typical Use
+
+- Make sure the `panel_regions` variable is correctly set to the
+  intended panel in ~/.paip/resources.yml
+
+- `cd` to the sequencing directory and run the variant calling:
+
+```bash
+paip VariantCalling --pipeline-type variant_sites --min-dp 20 --min-gq 40 --workers 2 && paip QualityControl --pipeline-type variant_sites --min-dp 20 --min-gq 40 --workers 4
+```
+
+- Check that the variant calling went well with a quick look at `<Cohort>.coverage_report.html` and `<Cohort>.multiqc_report.html`.
+
+- If the calling looks OK, proceed to annotate and report:
+
+```bash
+paip AnnotateVariants --cache mysql --http-proxy 'socks5://caladan.local:9050' && paip GenerateReportsCohort --min-reportable-category CONFL --workers 4 && paip TakeIGVSnapshotsCohort --workers 4
+```
+
+- The data for each sample is at `<Cohort>/<Sample>/report_<Sample>/report_data_full.json`. Upload that file to `PanelsApp` to generate a PDF report.
+
 # Installation
 
 ```

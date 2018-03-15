@@ -14,4 +14,3 @@ class ResetPipeline(luigi.Task):
     def run(self):
         reseter = PipelineReseter(self.basedir)
         reseter.reset_pipeline(dry_run=bool(int(self.dry_run)))
-

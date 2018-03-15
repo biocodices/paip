@@ -65,4 +65,3 @@ class PipelineReseter:
                            .format(len(self.removable_files), self.basedir))
         else:
             logger.warning('Deleted {} files.'.format(del_count))
-
