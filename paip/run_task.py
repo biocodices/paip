@@ -111,8 +111,6 @@ Options:
                                         annotation as reportable. E.g. DRUG,
                                         ASSOC, LPAT, PAT.
 
-                                        (default=DRUG)
-
     --phenos-regex-list PHENOS  Optional JSON string with the list of phenotype
                                 patterns to keep in the report (removes any
                                 allele info that is about a non-matching
@@ -143,7 +141,6 @@ Options:
                             Typically, it's the result of GenerateReports
                             and would be under the sample report /report_data
                             subdirectory.
-
 
     General options
     ---------------------

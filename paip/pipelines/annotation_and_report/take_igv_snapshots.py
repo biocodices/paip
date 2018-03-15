@@ -1,10 +1,9 @@
 import os
 from os.path import join, basename
-from copy import deepcopy
 
 import luigi
 
-from paip.task_types import SampleTask
+from paip.task_types import SampleTask, ReportsTask, CohortTask
 from paip.pipelines.variant_calling import (
     RecalibrateAlignmentScores,
     FilterGenotypes,
@@ -17,17 +16,13 @@ from paip.helpers import (
     X_server,
 )
 
-from paip.helpers.create_cohort_task import create_cohort_task
 
-
-class GenerateReportsDone(SampleTask, luigi.ExternalTask):
+class GenerateReportsDone(ReportsTask, SampleTask, luigi.ExternalTask):
     """
     Class created to work as a reuquirement of tasks that come after the
     reports generation, but that don't need all the extra parameters
     that the report generation needs.
     """
-    min_reportable_category = luigi.Parameter()
-
     # This seems to be a cleaner solution than passing all of the
     # report-generation specific parameters around down to GenerateReports.
     def output(self):
@@ -36,32 +31,23 @@ class GenerateReportsDone(SampleTask, luigi.ExternalTask):
         return luigi.LocalTarget(fn)
 
 
-class TakeIGVSnapshots(SampleTask):
+class TakeIGVSnapshots(ReportsTask, SampleTask):
     """
     Takes a snapshot of the pile of reads in IGV for each of the variants
     in a JSON file.
     """
-    min_reportable_category = luigi.Parameter()
-
     def requires(self):
-        # The min_reportable_category parameter is not used upstream,
-        # so we need to remove it:
-        upstream_params = deepcopy(self.param_kwargs)
-        del(upstream_params['min_reportable_category'])
-        upstream_params_cohort = self.cohort_params()
-        del(upstream_params_cohort['min_reportable_category'])
-
         return {
             # GenerateReportsDone "fake" task needs the same params as TakeIGVSnapshots:
             'report_generation': GenerateReportsDone(**self.param_kwargs),
 
-            # Other "real" upstream tasks don't need the min_reportable_category:
-            'alignment': RecalibrateAlignmentScores(**upstream_params),
-            'sample_all': ExtractSample(**upstream_params),
-            'sample_reportable': KeepReportableGenotypes(**upstream_params),
+            # Other upstream tasks don't need the report-related params:
+            'alignment': RecalibrateAlignmentScores(**self.sample_params()),
+            'sample_all': ExtractSample(**self.sample_params()),
+            'sample_reportable': KeepReportableGenotypes(**self.sample_params()),
 
             # The cohort required task needs a reduced version of the params:
-            'cohort': FilterGenotypes(**upstream_params_cohort),
+            'cohort': FilterGenotypes(**self.cohort_params()),
         }
 
     def output(self):
@@ -115,5 +101,5 @@ class TakeIGVSnapshots(SampleTask):
         script_helper.write_script(out_path=script_path)
 
 
-TakeIGVSnapshotsCohort = create_cohort_task(TakeIGVSnapshots)
-
+class TakeIGVSnapshotsCohort(CohortTask, ReportsTask, luigi.WrapperTask):
+    SAMPLE_REQUIRES = TakeIGVSnapshots

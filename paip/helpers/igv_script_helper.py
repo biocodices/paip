@@ -91,7 +91,7 @@ class IGVScriptHelper:
         that prefix.
         """
         with open(variants_json) as f:
-            variants = json.load(f)
+            variants = json.load(f)['variants']
 
         for variant in variants:
             for key in list(variant.keys()):

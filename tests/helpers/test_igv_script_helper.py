@@ -6,7 +6,7 @@ import pytest
 from paip.helpers import IGVScriptHelper
 
 
-JSON = pytest.helpers.file('Cohort1/Sample1/Sample1_variants.records.json')
+JSON = pytest.helpers.file('Cohort1/Sample1/report_data__threshold_LPAT.json')
 VCF = pytest.helpers.file('Cohort1/Sample1/Sample1_genos.vcf')
 TEMPLATE_PATH = join(dirname(dirname(dirname(__file__))),
                      'paip', 'example_config', 'igv_batch_template')
