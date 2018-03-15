@@ -68,6 +68,11 @@ def test_load_sample_data_from_yaml(base_task):
     other_data = base_task.load_sample_data_from_yaml('other_seq_data.yml')
     assert other_data['foo'] == 'bar'
 
+    # If the YAML file is empty, return an empty dict, not None
+    base_task.basedir = base_task.basedir.replace('Cohort1', 'EmptyCohort')
+    empty_seq_data = base_task.load_sample_data_from_yaml('sequencing_data.yml')
+    assert empty_seq_data == {}
+
 
 def test_output(base_task, monkeypatch):
     # These are defined in CohortTask and SampleTask

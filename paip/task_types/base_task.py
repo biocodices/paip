@@ -209,7 +209,7 @@ class BaseTask(luigi.Task):
 
         try:
             with open(fp) as f:
-                data = yaml.load(f)
+                data = yaml.load(f) or {}
         except IOError:
             msg = ("I couldn't find this YAML file:\n\n{}\n\n"
                    'Make sure you are in the base directory of the Cohort\n'
