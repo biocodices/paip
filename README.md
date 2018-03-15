@@ -17,12 +17,12 @@ paip VariantCalling --pipeline-type variant_sites --min-dp 20 --min-gq 40 --work
 - If the calling looks OK, proceed to annotate and report:
 
 ```bash
-paip AnnotateVariants --cache mysql --http-proxy 'socks5://caladan.local:9050' && paip GenerateReportsCohort --min-reportable-category CONFL --workers 4 && paip TakeIGVSnapshotsCohort --workers 4
+paip AnnotateVariants --cache mysql --http-proxy 'socks5://caladan.local:9050' && paip GenerateReportsCohort --min-reportable-category CONFL --workers 4 && paip TakeIGVSnapshotsCohort --workers 4 --min-reportable-category CONFL
 ```
 
 - The data for each sample is at `<Cohort>/<Sample>/report_<Sample>/report_data__threshold_CONFL.json`. Upload that file to `PanelsApp` to generate a PDF report.
 
-- If you want to run the reports generation with different threshold, do it (e.g. change `LPAT` for `CONFL` in the last `GenerateReportsCohort` command) and there will be a new `json` file alongside the previous one, with the corresponding filename (e.g. `report_data__threshold_LPAT.json`).
+- If you want to run the reports generation with different threshold, do it (e.g. change `LPAT` for `CONFL` in the last `GenerateReportsCohort` command and `TakeIGVSnapshotsCohort`, and run both). There will be a new `json` file alongside the previous one, with the corresponding filename (e.g. `report_data__threshold_LPAT.json`), and new IGV snapshots in a different directory.
 
 # Installation
 
