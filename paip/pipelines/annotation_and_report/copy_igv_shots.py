@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 class CopyIGVShots(SampleTask):
     REQUIRES = TakeIGVSnapshots
 
+    min_reportable_category = luigi.Parameter()
+
     def output(self):
         img_dir = self.path('report_{}/images/igv'.format(self.sample),
                             prefix=False)
@@ -36,4 +38,3 @@ class CopyIGVShots(SampleTask):
 
 
 CopyIGVShotsCohort = create_cohort_task(CopyIGVShots)
-

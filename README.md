@@ -5,7 +5,8 @@
 - Make sure the `panel_regions` variable is correctly set to the
   intended panel in ~/.paip/resources.yml
 
-- `cd` to the sequencing directory and run the variant calling:
+- `cd` to the sequencing directory and run the variant calling. This will
+  take some time, maybe hours, depending on the number of samples:
 
 ```bash
 paip VariantCalling --pipeline-type variant_sites --min-dp 20 --min-gq 40 --workers 2 && paip QualityControl --pipeline-type variant_sites --min-dp 20 --min-gq 40 --workers 4

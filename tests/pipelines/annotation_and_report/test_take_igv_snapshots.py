@@ -12,7 +12,8 @@ from paip.pipelines.annotation_and_report import TakeIGVSnapshots
 
 @pytest.fixture
 def task(sample_task_factory):
-    return sample_task_factory(TakeIGVSnapshots)
+    return sample_task_factory(TakeIGVSnapshots,
+                               extra_params={'min_reportable_category': 'PAT'})
 
 
 def test_write_script(task, monkeypatch):
@@ -32,7 +33,7 @@ def test_write_script(task, monkeypatch):
     mock_script_helper_class.assert_called_once()
     init = mock_script_helper_class.call_args[1]
     init_tpl = init['template_data']
-    assert init_tpl['sample_igv_snapshots_dir'].endswith('/igv_snapshots')
+    assert init_tpl['sample_igv_snapshots_dir'].endswith('/igv_snapshots_PAT')
     assert init_tpl['cohort_variants'].endswith('.filt.geno_filt.vcf')
     assert init_tpl['sample_alignment'].endswith('.realignment_recalibrated.bam')
     assert init_tpl['sample_alignment_trackname'].endswith('.realignment_recalibrated.bam')
@@ -40,7 +41,7 @@ def test_write_script(task, monkeypatch):
     assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
     assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
     assert init['template_path'].endswith('igv_batch_template')
-    assert init['variants_json'].endswith('variants.records.json')
+    assert init['variants_json'].endswith('report_data__threshold_PAT.json')
 
     # Test how the script helper was used to write the IGV script
     mock_script_helper.write_script.assert_called_once()
@@ -66,7 +67,7 @@ def test_run(task, mock_makedirs, monkeypatch):
     assert mock_X_server.call_arg == os.getpid()
 
     mock_makedirs.assert_called_once()
-    mock_makedirs.call_args[0][0].endswith('/igv_snapshots')
+    mock_makedirs.call_args[0][0].endswith('/igv_snapshots_PAT')
     assert mock_makedirs.call_args[1]['exist_ok']
 
     mock_write_script.assert_called_once_with(

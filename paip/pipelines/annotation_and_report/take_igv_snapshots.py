@@ -1,5 +1,6 @@
 import os
 from os.path import join, basename
+from copy import deepcopy
 
 import luigi
 
@@ -25,11 +26,13 @@ class GenerateReportsDone(SampleTask, luigi.ExternalTask):
     reports generation, but that don't need all the extra parameters
     that the report generation needs.
     """
+    min_reportable_category = luigi.Parameter()
+
     # This seems to be a cleaner solution than passing all of the
     # report-generation specific parameters around down to GenerateReports.
     def output(self):
         fn = join(self.dir, 'report_{}'.format(self.sample),
-                  'report_data', 'variants.records.json')
+                  f'report_data__threshold_{self.min_reportable_category}.json')
         return luigi.LocalTarget(fn)
 
 
@@ -38,20 +41,33 @@ class TakeIGVSnapshots(SampleTask):
     Takes a snapshot of the pile of reads in IGV for each of the variants
     in a JSON file.
     """
+    min_reportable_category = luigi.Parameter()
+
     def requires(self):
+        # The min_reportable_category parameter is not used upstream,
+        # so we need to remove it:
+        upstream_params = deepcopy(self.param_kwargs)
+        del(upstream_params['min_reportable_category'])
+        upstream_params_cohort = self.cohort_params()
+        del(upstream_params_cohort['min_reportable_category'])
+
         return {
+            # GenerateReportsDone "fake" task needs the same params as TakeIGVSnapshots:
             'report_generation': GenerateReportsDone(**self.param_kwargs),
-            'alignment': RecalibrateAlignmentScores(**self.param_kwargs),
-            'sample_all': ExtractSample(**self.param_kwargs),
-            'sample_reportable': KeepReportableGenotypes(**self.param_kwargs),
+
+            # Other "real" upstream tasks don't need the min_reportable_category:
+            'alignment': RecalibrateAlignmentScores(**upstream_params),
+            'sample_all': ExtractSample(**upstream_params),
+            'sample_reportable': KeepReportableGenotypes(**upstream_params),
 
             # The cohort required task needs a reduced version of the params:
-            'cohort': FilterGenotypes(**self.cohort_params()),
+            'cohort': FilterGenotypes(**upstream_params_cohort),
         }
 
     def output(self):
         script = self.path('igv_batch_script')
-        snapshots_dir = join(self.dir, 'igv_snapshots')
+        snapshots_dir = join(self.dir,
+                             f'igv_snapshots_{self.min_reportable_category}')
         return {
             'script': luigi.LocalTarget(script),
             'snapshots_dir': luigi.LocalTarget(snapshots_dir),

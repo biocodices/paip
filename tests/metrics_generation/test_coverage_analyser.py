@@ -144,8 +144,7 @@ def test_add_panel_data_to_intervals(ca):
 
 @pytest.mark.skip(reason="Write this test!")
 def test_add_panel_data_to_intervals_from_bed():
-    ca = CoverageAnalyser(coverage_files, panel=panel_bed)
-    assert 0
+    CoverageAnalyser(coverage_files, panel=panel_bed)
 
 
 def test_make_coverage_matrix(ca):
@@ -159,8 +158,8 @@ def test_define_sample_colors_and_markers(ca):
     ca._define_sample_colors_and_markers()
 
     assert ca.sample_colors == {
-        'Sample2': (0.12156862745098039, 0.4666666666666667, 0.7058823529411765),
-        'Sample3': (1.0, 0.4980392156862745, 0.054901960784313725),
+        'Sample2': (0.86, 0.3712, 0.33999999999999997),
+        'Sample3': (0.86, 0.6832, 0.33999999999999997),
     }
     assert ca.sample_markers == {
         'Sample2': 'x',

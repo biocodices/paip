@@ -8,7 +8,8 @@ from paip.pipelines.annotation_and_report import CopyIGVShots
 
 @pytest.fixture
 def task(sample_task_factory):
-    return sample_task_factory(CopyIGVShots)
+    return sample_task_factory(CopyIGVShots,
+                               extra_params={'min_reportable_category': 'PAT'})
 
 
 def test_output(task):
@@ -25,8 +26,8 @@ def test_run(task, mock_makedirs, monkeypatch):
     first_call = mock_copy2.call_args_list[1]
     second_call = mock_copy2.call_args_list[0]
 
-    assert first_call[0][0].endswith('/igv_snapshots/img1.png')
-    assert second_call[0][0].endswith('/igv_snapshots/img2.png')
+    assert first_call[0][0].endswith('/igv_snapshots_PAT/img1.png')
+    assert second_call[0][0].endswith('/igv_snapshots_PAT/img2.png')
 
     dest_dir = '/report_Sample1/images/igv'
     assert first_call[0][1].endswith(dest_dir)
