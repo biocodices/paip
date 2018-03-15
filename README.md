@@ -1,5 +1,7 @@
 # Typical Use
 
+- Set the directories as specified [below](#Setting) and make sure the `luigi` server is running.
+
 - Make sure the `panel_regions` variable is correctly set to the
   intended panel in ~/.paip/resources.yml
 
@@ -159,7 +161,7 @@ want to tune them for your needs.
 
 # Recipes
 
-## Feed `paip` with the `fastq` files
+## <a name="Setting"></a> Feed `paip` with the `fastq` files
 
 Create a directory for a given sequencer run with a subdirectory
 for each sample. Put the sample `fastq` files in their sample directory, and
