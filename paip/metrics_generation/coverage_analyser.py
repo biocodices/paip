@@ -26,7 +26,7 @@ class CoverageAnalyser:
 
         > cov_an = CoverageAnalyser(
               panel='path/to/..',  # BED of regions or VCF of target variants
-              coverage_files=['path/to/..', 'path/to/..']
+              coverage_files=['path/to/..', 'path/to/..']  # coverage diagnosis VCFs
           )
         > cov_an.report('Report Title', 'path/to/out.html')
           # => will create an HTML report with plots for all chromosomes.
@@ -315,7 +315,13 @@ class CoverageAnalyser:
                            rotation=45 if len(samples) > 10 else 0)
 
         ax.tick_params(axis='both', color='Silver')
-        ax.set_ylim([-10, self.intervals['IDP'].max()])
+
+        # Reads over 800 distort the plot, so we limit the Y axis max value
+        # shown. In addition, we're more interested in the detail of low
+        # coverage samples than very-high coverage samples.
+        max_y_value = min(self.intervals['IDP'].max(), 800)
+        ax.set_ylim([-10, max_y_value])
+
         ax.set_xlabel('Sample', labelpad=20)
         ax.set_ylabel('Read Depth', labelpad=20)
 
