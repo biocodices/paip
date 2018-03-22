@@ -26,9 +26,8 @@ class GenerateReportsDone(ReportsTask, SampleTask, luigi.ExternalTask):
     # This seems to be a cleaner solution than passing all of the
     # report-generation specific parameters around down to GenerateReports.
     def output(self):
-        fn = join(self.dir, 'report_{}'.format(self.sample),
-                  f'report_data__threshold_{self.min_reportable_category}.json')
-        return luigi.LocalTarget(fn)
+        fn = f'report_data__threshold_{self.min_reportable_category}.json'
+        return luigi.LocalTarget(join(self.dir, fn))
 
 
 class TakeIGVSnapshots(ReportsTask, SampleTask):

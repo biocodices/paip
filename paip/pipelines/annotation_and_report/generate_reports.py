@@ -78,10 +78,11 @@ class GenerateReports(ReportsTask, SampleTask):
                              write_html_report=False)
 
     def output(self):
-        report_dir = join(self.dir, 'report_{}'.format(self.sample))
-        #  report_html = join(report_dir, 'index.html')
+        # HTML Reports are DEPRECATED
+        # report_dir = join(self.dir, 'report_{}'.format(self.sample))
+        # report_html = join(report_dir, 'index.html')
         fn = f'report_data__threshold_{self.min_reportable_category}.json'
-        report_json = join(report_dir, fn)
+        report_json = join(self.dir, fn)
         return {
             #  'report_html': luigi.LocalTarget(report_html),
             'report_json': luigi.LocalTarget(report_json),
