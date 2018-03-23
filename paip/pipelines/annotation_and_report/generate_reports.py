@@ -77,12 +77,8 @@ class GenerateReports(ReportsTask, SampleTask):
         reports_pipeline.run(samples=self.sample)
 
     def output(self):
-        # HTML Reports are DEPRECATED
-        # report_dir = join(self.dir, 'report_{}'.format(self.sample))
-        # report_html = join(report_dir, 'index.html')
         fn = f'{self.sample}.report_data_threshold_{self.min_reportable_category}.json'
         return {
-            #  'report_html': luigi.LocalTarget(report_html),
             'report_json': luigi.LocalTarget(join(self.dir, fn)),
         }
 
