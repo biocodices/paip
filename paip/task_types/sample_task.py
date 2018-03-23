@@ -22,7 +22,14 @@ class SampleTask(BaseTask):
         self.name = self.sample
         self.dir = join(self.basedir, self.sample)
 
-        sequencing_data = self.sequencing_data[self.sample]
+        try:
+            sequencing_data = self.sequencing_data[self.sample]
+        except KeyError:
+            available_samples = ', '.join(self.sequencing_data.keys())
+            message = (f'Sample "{self.sample}" not found! '
+                       f'Available samples are: {available_samples}.')
+            raise SampleNotFoundError(message)
+
         for key in sequencing_data.keys():
             setattr(self, key, sequencing_data[key])
 
@@ -34,3 +41,6 @@ class SampleTask(BaseTask):
         del(params['sample'])
         return params
 
+
+class SampleNotFoundError(Exception):
+    pass

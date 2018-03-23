@@ -163,6 +163,7 @@ from paip import software_name
 from paip.helpers import set_luigi_logging
 from paip.helpers.list_tasks import list_tasks
 from paip.task_types.cohort_task import EmptyCohortException
+from paip.task_types.sample_task import SampleNotFoundError
 
 
 logger = logging.getLogger('paip')
@@ -189,25 +190,9 @@ logger = logging.getLogger('paip')
 
 
 def run_task():
-    arguments = docopt(__doc__, version=software_name)
     set_luigi_logging()
-
-    if arguments['--tasks']:
-        for task_group_name, tasks in list_tasks().items():
-            print('--- {} ---\n'.format(task_group_name))
-            for task_name in tasks:
-                print('  *  {}'.format(task_name))
-            print()
-        sys.exit()
-
-    logger.info('\n' + logo())
-    logger.info('Welcome to {}! Starting the pipeline...'
-                .format(software_name))
-
-    logger.info('Options in effect:')
-    for k, v in arguments.items():
-        if v:
-            logger.info(' {:<20} -> {:20} '.format(k, v))
+    log_welcome_message()
+    arguments = parse_and_print_arguments()
 
     try:
         luigi.run()
@@ -216,8 +201,45 @@ def run_task():
                     'Run paip --tasks to list the available tasks'
                     .format(arguments['TASK']))
     except EmptyCohortException as error:
-        print(error)
+        logger.error(error)
         sys.exit()
+    except SampleNotFoundError as error:
+        logger.error(error)
+        sys.exit()
+    except luigi.parameter.MissingParameterException as error:
+        logger.error(error)
+        sys.exit()
+    except KeyboardInterrupt:
+        logger.warning('Execution was interrupted by the user. Bye!')
+        sys.exit()
+
+def parse_and_print_arguments():
+    arguments = docopt(__doc__, version=software_name)
+
+    if arguments['--tasks']:
+        display_available_tasks()
+        sys.exit()
+
+    logger.info('Options in effect:')
+    for option, value in arguments.items():
+        if value:
+            logger.info(' {:<20} -> {:20} '.format(option, value))
+
+    return arguments
+
+
+def log_welcome_message():
+    logger.info('\n' + logo())
+    logger.info('Welcome to {}! Starting the pipeline...'
+                .format(software_name))
+
+
+def display_available_tasks():
+    for task_group_name, tasks in list_tasks().items():
+        print('--- {} ---\n'.format(task_group_name))
+        for task_name in tasks:
+            print('  *  {}'.format(task_name))
+        print()
 
 
 def logo():
