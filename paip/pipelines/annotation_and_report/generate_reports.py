@@ -74,18 +74,16 @@ class GenerateReports(ReportsTask, SampleTask):
             phenos_regex_file=self.phenos_regex_file,
         )
 
-        reports_pipeline.run(samples=self.sample,
-                             write_html_report=False)
+        reports_pipeline.run(samples=self.sample)
 
     def output(self):
         # HTML Reports are DEPRECATED
         # report_dir = join(self.dir, 'report_{}'.format(self.sample))
         # report_html = join(report_dir, 'index.html')
-        fn = f'report_data__threshold_{self.min_reportable_category}.json'
-        report_json = join(self.dir, fn)
+        fn = f'{self.sample}.report_data_threshold_{self.min_reportable_category}.json'
         return {
             #  'report_html': luigi.LocalTarget(report_html),
-            'report_json': luigi.LocalTarget(report_json),
+            'report_json': luigi.LocalTarget(join(self.dir, fn)),
         }
 
 
