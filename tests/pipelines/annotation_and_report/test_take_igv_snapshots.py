@@ -41,7 +41,7 @@ def test_write_script(task, monkeypatch):
     assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
     assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
     assert init['template_path'].endswith('igv_batch_template')
-    assert init['variants_json'].endswith('report_data__threshold_PAT.json')
+    assert init['variants_json'].endswith('report_data_threshold_PAT.json')
 
     # Test how the script helper was used to write the IGV script
     mock_script_helper.write_script.assert_called_once()

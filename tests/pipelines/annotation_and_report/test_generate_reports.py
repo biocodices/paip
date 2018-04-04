@@ -63,5 +63,4 @@ def test_run(task, monkeypatch):
         pytest.helpers.file('Cohort1/Sample1')
 
     assert pipeline_instance.run.call_count == 1
-    assert pipeline_instance.run.call_args[1] == {'samples': task.sample,
-                                                  'write_html_report': False}
+    assert pipeline_instance.run.call_args[1] == {'samples': task.sample}
