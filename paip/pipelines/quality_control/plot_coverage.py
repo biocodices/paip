@@ -1,3 +1,5 @@
+import luigi
+
 from paip.task_types import CohortTask
 from paip.pipelines.quality_control import DiagnoseTargets
 from paip.metrics_generation import CoverageAnalyser
@@ -10,7 +12,10 @@ class PlotCoverage(CohortTask):
     coverage plots.
     """
     SAMPLE_REQUIRES = DiagnoseTargets
-    OUTPUT = 'coverage_report.html'
+
+    def output(self):
+        fn = f'coverage_report.DP_{self.min_dp}.html'
+        return luigi.LocalTarget(self.path(fn))
 
     def run(self):
         try:
@@ -27,5 +32,3 @@ class PlotCoverage(CohortTask):
         report_title = self.name.replace('_', ' ').title()
         coverage_analyser.report(report_title=report_title,
                                  destination_path=self.output().fn)
-
-
