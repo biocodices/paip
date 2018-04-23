@@ -18,10 +18,7 @@ class PlotCoverage(CohortTask):
         return luigi.LocalTarget(self.path(fn))
 
     def run(self):
-        try:
-            panel_variants = path_to_resource('panel_variants')
-        except KeyError:  # variant_sites pipelines might not have a panel VCF
-            panel_variants = None
+        panel_variants = path_to_resource('panel_file_for_coverage_report')
 
         coverage_analyser = CoverageAnalyser(
             coverage_files=[input_.fn for input_ in self.input()],

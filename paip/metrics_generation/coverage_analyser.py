@@ -25,7 +25,7 @@ class CoverageAnalyser:
     Usage to generate an HTML report with all the plots:
 
         > cov_an = CoverageAnalyser(
-              panel='path/to/..',  # BED of regions or VCF of target variants
+              panel='path/to/..',  # VCF of target variants
               coverage_files=['path/to/..', 'path/to/..']  # coverage diagnosis VCFs
           )
         > cov_an.report('Report Title', 'path/to/out.html')
@@ -57,23 +57,29 @@ class CoverageAnalyser:
         self.reads_threshold = reads_threshold
 
         self.has_panel = panel is not None
-
-        if self.has_panel:
-            self.panel = self._read_panel(panel)
-            self._add_panel_data_to_intervals()
+        self.panel_type = None
 
         self._generate_interval_names()
 
+        if self.has_panel:
+            self._read_panel(panel)
+            self._add_interval_names_with_info()
+
     def _read_panel(self, panel):
         if panel.endswith('.vcf'):
-            panel = self._read_panel_from_vcf(panel)
+            self.panel_type = 'vcf'
+            self.panel = self._read_panel_from_vcf(panel)
+            self._add_panel_vcf_data_to_intervals()
         elif panel.endswith('.bed'):
-            panel = self._read_panel_from_bed(panel)
+            self.panel_type = 'bed'
+            self.panel = self._read_panel_from_bed(panel)
+        elif panel.endswith('.csv'):
+            self.panel_type = 'csv'
+            self.panel = self._read_panel_from_csv(panel)
+            self._add_panel_csv_data_to_intervals()
         else:
-            msg = 'Please provide a ".bed" or ".vcf" panel file'
+            msg = 'Please provide a .bed, .csv or .vcf panel file'
             raise UnsupportedPanelFiletype(msg)
-
-        return panel
 
     def _read_panel_from_vcf(self, panel_vcf):
         """Read and parse the VCF with the panel variants."""
@@ -91,6 +97,29 @@ class CoverageAnalyser:
                               names=['chrom', 'start', 'stop', 'genes'])
         panel['chrom'] = panel['chrom'].astype(str)
         return panel
+
+    def _read_panel_from_csv(self, panel_csv):
+        """
+        Read and parse a CSV with the panel regions. The expected columns are
+        *exactly* these:
+            - chrom
+            - start pos
+            - end pos
+            - variants (a string, not a list)
+            - genes merged with (a string)
+            - sources/phenotypes (a string)
+        These data will be used to generate nice xtick labels for the heatmap.
+        """
+        panel = pd.read_csv(panel_csv)
+        # These unique interval names MUST EXACTLY MATCH the interval names
+        # at _generate_interval_names(self):
+        panel['interval_name'] = (
+            panel['chrom'].astype(str) + ': ' +
+            panel['start'].astype(str).map(format_number) + '–' +
+            panel['stop'].astype(str).map(format_number)
+        )
+        return panel
+
 
     def _read_coverage_files(self, coverage_files):
         """Read, parse and merge the VCFs of coverage per interval."""
@@ -111,8 +140,8 @@ class CoverageAnalyser:
 
         return intervals
 
-    def _add_panel_data_to_intervals(self):
-        """Merge data from self.panel into self.intervals."""
+    def _add_panel_vcf_data_to_intervals(self):
+        """Merge data from the VCF self.panel into self.intervals."""
         opts = dict(panel_variants=self.panel, axis=1, reduce=True)
 
         self.intervals['genes'] = \
@@ -121,30 +150,26 @@ class CoverageAnalyser:
             self.intervals.apply(self._find_variant_ids, **opts).map(tuple)
         self.intervals['variants_count'] = self.intervals['variants'].map(len)
 
+    def _add_panel_csv_data_to_intervals(self):
+        """Merge data from the CSV self.panel into self.intervals."""
+        per_interval = {}  # Temporary dictionaries to make the mapping fast
+        keys = ['variants', 'genes', 'variants_count', 'sources']
+        for key in keys:
+            per_interval[key] = dict(zip(self.panel['interval_name'],
+                                         self.panel[key]))
+        for key in keys:
+            self.intervals[key] = \
+                self.intervals['interval_name'].map(per_interval[key])
+
     def _generate_interval_names(self):
         """
         Give each interval a unique ID, name, and short name for the plots.
         """
-
-        def lines_of_n(variants, n):
-            """List variants in groups of n per line."""
-            in_groups = grouper(7, variants)
-            return '\n'.join(', '.join(group) for group in in_groups)
-
         self.intervals['interval_name'] = (
-            self.intervals['chrom'].astype(str) + ' : ' +
-            self.intervals['pos'].astype(str).map(format_number) + ' – ' +
+            self.intervals['chrom'].astype(str) + ': ' +
+            self.intervals['pos'].astype(str).map(format_number) + '–' +
             self.intervals['end_pos'].astype(str).map(format_number)
         )
-
-        if self.has_panel:
-            # If there's a panel of variants, we have extra info to add
-            # to the interval names.
-            self.intervals['interval_name'] = (
-                self.intervals['interval_name'] + ' | ' +
-                self.intervals['genes'].str.join(', ') + '\n' +
-                self.intervals['variants'].apply(lines_of_n, n=7)
-            )
 
         interval_names = self.intervals['interval_name'].unique()
         interval_ids = dict(zip(interval_names, range(len(interval_names))))
@@ -155,12 +180,35 @@ class CoverageAnalyser:
         padded_indices = (self.intervals['interval_id'] + 1).map(
             lambda ix: '{:04}'.format(ix)
         )
-        self.intervals['interval_short_name'] = (
+        self.intervals['interval_name_with_index'] = (
             '[' + padded_indices + '] ' +
             self.intervals['chrom'].astype(str) + ': ' +
             self.intervals['pos'].astype(str).map(format_number) + '–' +
             self.intervals['end_pos'].astype(str).map(format_number)
         )
+
+    def _add_interval_names_with_info(self):
+        """
+        If there's a panel of variants, we have extra info to add
+        to the interval names.
+        """
+        if self.panel_type == 'csv':
+            self.intervals['interval_name_with_info'] = (
+                self.intervals['sources'].fillna('') + ' | ' +
+                self.intervals['genes'].fillna('') + ' | ' +
+                self.intervals['interval_name']
+            )
+        elif self.panel_type == 'vcf':
+            def lines_of_n(variants, n):
+                """List variants in groups of n per line."""
+                in_groups = grouper(7, variants)
+                return '\n'.join(', '.join(group) for group in in_groups)
+
+            self.intervals['interval_name_with_info'] = (
+                self.intervals['interval_name'] + ' | ' +
+                self.intervals['genes'].str.join(', ') + '\n' +
+                self.intervals['variants'].apply(lines_of_n, n=7)
+            )
 
     def _extract_genes(self, info):
         """
@@ -214,8 +262,13 @@ class CoverageAnalyser:
         Return a coverage matrix of samples vs. intervals with the data from
         self.intervals.
         """
+        if 'interval_name_with_info' in self.intervals:
+            interval_names_key = 'interval_name_with_info'
+        else:
+            interval_names_key = 'interval_name_with_index'
+
         return self.intervals.pivot(index='sample_id',
-                                    columns='interval_short_name',
+                                    columns=interval_names_key,
                                     values='IDP')
 
     def plot_heatmap(self, max_value, colormap='Reds_r', dest_dir=None, **kwargs):
@@ -239,7 +292,7 @@ class CoverageAnalyser:
 
         sns.set(style='ticks', context='notebook')
 
-        fig = plt.figure(figsize=(25, 4))
+        fig = plt.figure(figsize=(35, 4))
         ax = fig.add_subplot(1, 1, 1)
         ax = sns.heatmap(coverage_matrix, ax=ax,
                          cbar_kws={'pad': 0.045, 'label': 'Read Depth'},
@@ -249,29 +302,22 @@ class CoverageAnalyser:
         ax.set_title('Low Coverage Targets (Read Depth < {})'
                      .format(max_value), y=1.08, fontsize=13)
 
-        #  # Keep the target labels where at least 10% of the samples have less
-        #  # than *max_value* read depth:
-        #  Q10_per_interval = coverage_matrix.quantile(0.10)
-        #  subthreshold = Q10_per_interval < max_value
-        #  problematic_intervals = Q10_per_interval[subthreshold].index
+        # Draw xticks and xticklabels only for problematic regions:
+        problematic_regions = (coverage_matrix < max_value).apply(all)
+        xtick_positions = []
+        xtick_labels = []
+        for ix, (interval_name, is_problematic) in enumerate(problematic_regions.items()):
+            if is_problematic:
+                xtick_positions.append(ix + 0.5) # 0.5 centers the label
+                xtick_labels.append(interval_name)
+        ax.set_xticks(xtick_positions)
+        ax.set_xticklabels(xtick_labels, fontdict={'size': 10})
 
-        #  xticks = ax.get_xticks()
-        #  xtick_labels = [label.get_text() for label in ax.get_xticklabels()]
-        #  xtick_labels = [(label if label in problematic_intervals else '')
-                        #  for label in xtick_labels]
-        #  xlabels = [lab.get_text() for lab in ax.get_xticklabels()]
-        #  xticks_labels = {label: xval for xval, label in zip(xticks, xlabels)
-                         #  if label in problematic_intervals}
-
-        #  ax.set_xticks(xticks)
-        #  ax.set_xticklabels(problematic_intervals, rotation='vertical', fontsize=7)
-
-        #  interval_names = list(coverage_matrix.columns)
-        #  ax.set_xticklabels(range(1, len(interval_names)))
-
-        ax.tick_params(axis='y', right='on', labelright='on')
+        # Sample names on the Y axis:
+        ax.tick_params(axis='y', right=True, labelright=True)
         ax.set_yticklabels(ax.get_yticklabels(), rotation='horizontal')
 
+        # Separation between samples (horizontal lines):
         ax.hlines(ax.get_yticks() + 0.5, *ax.get_xlim(), color='Silver',
                   linewidth=0.5)
 
@@ -367,7 +413,7 @@ class CoverageAnalyser:
 
         if dest_dir:
             preposition = 'with' if include_outliers else 'without'
-            fn = f'coverage_plot_{preposition}_outliers.png'
+            fn = f'coverage_boxplot_{preposition}_outliers.png'
             filepath = os.path.join(dest_dir,fn)
             plt.savefig(filepath, bbox_inches='tight', dpi=150)
             plt.close()
@@ -537,7 +583,7 @@ class CoverageAnalyser:
         heatmap_path = self.plot_heatmap(dest_dir=plots_dir,
                                          max_value=self.reads_threshold)
         heatmap_only_zero_path = self.plot_heatmap(dest_dir=plots_dir,
-                                                   max_value=1)
+                                                   max_value=0)
 
         #  chrom_plots_basename = join(plots_dir, 'coverage')
         #  chrom_plot_paths = self.plot_coverage_per_chromosome(chrom_plots_basename)
@@ -546,7 +592,7 @@ class CoverageAnalyser:
         if not destination_path.endswith('.html'):
             destination_path += '.html'
 
-        filepaths = {
+        template_data = {
             'report_title': report_title,
             'boxplot_path': boxplot_path,
             'boxplot_no_outliers_path': boxplot_no_outliers_path,
@@ -555,7 +601,7 @@ class CoverageAnalyser:
             # 'chrom_plot_paths': chrom_plots_paths,
         }
         html_file = self.make_html_report(
-            template_data=filepaths,
+            template_data=template_data,
             destination_path=destination_path,
         )
 
@@ -627,4 +673,3 @@ class CoverageAnalyser:
 class UnsupportedPanelFiletype(Exception):
     def __init__(self, message):
         self.message = message
-

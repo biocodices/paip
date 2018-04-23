@@ -14,6 +14,7 @@ from paip.metrics_generation import CoverageAnalyser
 
 panel_vcf = pytest.helpers.file('panel_variants.vcf')
 panel_bed = pytest.helpers.file('panel_regions.bed')
+panel_csv = pytest.helpers.file('panel_regions.csv')
 files = ['Cohort1/Sample2/Sample2.coverage_diagnosis.vcf',
          'Cohort1/Sample3/Sample3.coverage_diagnosis.vcf']
 coverage_files = [pytest.helpers.file(fn) for fn in files]
@@ -23,6 +24,18 @@ coverage_files = [pytest.helpers.file(fn) for fn in files]
 def ca():
     return CoverageAnalyser(panel=panel_vcf,
                             coverage_files=coverage_files,
+                            reads_threshold=20)
+
+@pytest.fixture
+def ca_csv_panel():
+    return CoverageAnalyser(panel=panel_csv,
+                            coverage_files=coverage_files,
+                            reads_threshold=20)
+
+
+@pytest.fixture
+def ca_no_panel():
+    return CoverageAnalyser(coverage_files=coverage_files,
                             reads_threshold=20)
 
 
@@ -46,12 +59,28 @@ def test_extract_genes(ca):
 
 def test_read_panel(ca):
     ca._read_panel_from_vcf = MagicMock()
+    ca._add_panel_vcf_data_to_intervals = MagicMock()
     ca._read_panel(panel_vcf)
     ca._read_panel_from_vcf.assert_called_once
+    ca._add_panel_vcf_data_to_intervals.assert_called_once()
 
     ca._read_panel_from_bed = MagicMock()
     ca._read_panel(panel_bed)
     ca._read_panel_from_bed.assert_called_once
+
+    ca._read_panel_from_csv = MagicMock()
+    ca._add_panel_csv_data_to_intervals = MagicMock()
+    ca._read_panel(panel_csv)
+    ca._read_panel_from_csv.assert_called_once
+    ca._add_panel_csv_data_to_intervals.assert_called_once()
+
+
+def test_read_panel_from_csv(ca):
+    panel = ca._read_panel_from_csv(panel_csv)
+    assert len(panel) == 5
+    assert list(panel['variants'])[:2] == ['rs1a_rs1b', 'rs2a_rs2b']
+    assert list(panel['genes'])[:2] == ['GENE1', 'GENE2']
+    assert list(panel['sources'])[:2] == ['Pheno1', 'Pheno2a_Pheno2b']
 
 
 def test_read_panel_from_vcf(ca):
@@ -130,9 +159,9 @@ def test_find_variant_ids(ca):
     assert variants == []
 
 
-def test_add_panel_data_to_intervals(ca):
-    ca.panel = ca._read_panel(panel_vcf)
-    ca._add_panel_data_to_intervals()
+def test_add_panel_vcf_data_to_intervals(ca):
+    ca.panel = ca._read_panel_from_vcf(panel_vcf)
+    ca._add_panel_vcf_data_to_intervals()
     assert list(ca.intervals['genes']) == [
         ('GENE1',), ('GENE1',), ('GENE1',), ('GENE2',), ('GENE3', 'GENE4')
     ] * 2
@@ -147,11 +176,24 @@ def test_add_panel_data_to_intervals_from_bed():
     CoverageAnalyser(coverage_files, panel=panel_bed)
 
 
-def test_make_coverage_matrix(ca):
-    coverage_matrix = ca._make_coverage_matrix()
+def test_add_panel_csv_data_to_intervals(ca_no_panel):
+    ca = ca_no_panel
+    ca.panel = ca._read_panel_from_csv(panel_csv)
+    ca._add_panel_csv_data_to_intervals()
+    assert list(ca.intervals['genes'])[:2] == ['GENE1', 'GENE2']
+    assert list(ca.intervals['sources'])[:2] == ['Pheno1', 'Pheno2a_Pheno2b']
+    assert list(ca.intervals['variants'])[:2] == ['rs1a_rs1b', 'rs2a_rs2b']
+    assert list(ca.intervals['variants_count'])[:2] == [2, 2]
 
+
+def test_make_coverage_matrix(ca_no_panel, ca_csv_panel):
+    coverage_matrix = ca_no_panel._make_coverage_matrix()
     assert coverage_matrix.shape == (2, 5)  # 5 intervals, 2 samples
     assert coverage_matrix.loc['Sample3', '[0005] X: 900–1,100'] == 2.49
+
+    coverage_matrix = ca_csv_panel._make_coverage_matrix()
+    assert coverage_matrix.shape == (2, 5)  # 5 intervals, 2 samples
+    assert coverage_matrix.loc['Sample3', 'Pheno1 | GENE1 | 1: 900–1,100'] == 407.50
 
 
 def test_define_sample_colors_and_markers(ca):
@@ -167,12 +209,30 @@ def test_define_sample_colors_and_markers(ca):
     }
 
 
-def test_generate_interval_names(ca):
+def test_generate_interval_names(ca, ca_csv_panel):
     ca._generate_interval_names()
     first_row = ca.intervals.iloc[0]
-    assert first_row['interval_name'] == '1 : 900 – 1,100 | GENE1\nrs1;rs1_altname'
-    assert first_row['interval_short_name'] == '[0001] 1: 900–1,100'
+    assert first_row['interval_name'] == '1: 900–1,100'
+    assert first_row['interval_name_with_index'] == '[0001] 1: 900–1,100'
 
+    ca = ca_csv_panel
+    ca._generate_interval_names()
+    first_row = ca.intervals.iloc[0]
+    assert first_row['interval_name'] == '1: 900–1,100'
+    assert first_row['interval_name_with_index'] == '[0001] 1: 900–1,100'
+
+
+def test_add_interval_names_with_info(ca, ca_csv_panel):
+    # The tested method is already called on initialization
+    # This is not pretty, I should rewrite it.
+    first_row = ca.intervals.iloc[0]
+    assert first_row['interval_name_with_info'] == \
+        '1: 900–1,100 | GENE1\nrs1;rs1_altname'
+
+    ca = ca_csv_panel
+    first_row = ca.intervals.iloc[0]
+    assert first_row['interval_name_with_info'] == \
+        'Pheno1 | GENE1 | 1: 900–1,100'
 
 def test_init(ca):
     assert len(ca.panel) == 10  # 10 total panel variants
@@ -251,10 +311,12 @@ def test_make_html_report(ca):
     boxplot = '/path/to/boxplot.png'
 
     ca.make_html_report(
-        report_title='Report Title',
-        boxplot_path=boxplot,
-        heatmap_path=heatmap,
-        chrom_plot_paths=chrom_plots,
+        template_data={
+            'report_title': 'Report Title',
+            'boxplot_path': boxplot,
+            'heatmap_path': heatmap,
+            'chrom_plot_paths': chrom_plots,
+        },
         destination_path=report_filepath,
     )
 
@@ -287,15 +349,17 @@ def test_report(ca):
     plots_dir = os.path.join(os.path.dirname(basename), 'coverage_plots')
     assert os.path.isdir(plots_dir)
 
+    # NOT DRAWING THESE PLOTS FOR NOW:
+
     # Check the plots are saved there
-    cvg_plots = glob(os.path.join(plots_dir, '*coverage_chrom*.png'))
-    assert len(cvg_plots) == 2
+    #  cvg_plots = glob(os.path.join(plots_dir, '*coverage_chrom*.png'))
+    #  assert len(cvg_plots) == 2
 
     heatmap_plots = glob(os.path.join(plots_dir, '*heatmap*.png'))
-    assert len(heatmap_plots) == 1
+    assert len(heatmap_plots) == 2
 
     boxplot_plots = glob(os.path.join(plots_dir, '*boxplot*.png'))
-    assert len(boxplot_plots) == 1
+    assert len(boxplot_plots) == 2
 
     # Remove files after testing
     os.remove(report_path)

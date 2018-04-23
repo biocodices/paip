@@ -1,0 +1,6 @@
+chrom,start,stop,variants,variants_count,genes,sources
+1,900,1100,rs1a_rs1b,2,GENE1,Pheno1
+1,1900,2100,rs2a_rs2b,2,GENE2,Pheno2a_Pheno2b
+1,2900,3100,rs3,1,GENE3,Pheno3
+1,4900,5100,rs4,1,GENE4,
+X,900,1100,rs5,1,,Pheno5
