@@ -194,9 +194,10 @@ class CoverageAnalyser:
         """
         if self.panel_type == 'csv':
             self.intervals['interval_name_with_info'] = (
-                self.intervals['sources'].fillna('') + ' | ' +
+                self.intervals['interval_name'] + ' (x' +
+                self.intervals['variants_count'].astype(str) + ') | ' +
                 self.intervals['genes'].fillna('') + ' | ' +
-                self.intervals['interval_name']
+                self.intervals['sources'].fillna('')
             )
         elif self.panel_type == 'vcf':
             def lines_of_n(variants, n):
@@ -303,7 +304,7 @@ class CoverageAnalyser:
                      .format(max_value), y=1.08, fontsize=13)
 
         # Draw xticks and xticklabels only for problematic regions:
-        problematic_regions = (coverage_matrix < max_value).apply(all)
+        problematic_regions = (coverage_matrix < max_value).apply(any)
         xtick_positions = []
         xtick_labels = []
         for ix, (interval_name, is_problematic) in enumerate(problematic_regions.items()):

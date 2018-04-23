@@ -193,7 +193,7 @@ def test_make_coverage_matrix(ca_no_panel, ca_csv_panel):
 
     coverage_matrix = ca_csv_panel._make_coverage_matrix()
     assert coverage_matrix.shape == (2, 5)  # 5 intervals, 2 samples
-    assert coverage_matrix.loc['Sample3', 'Pheno1 | GENE1 | 1: 900–1,100'] == 407.50
+    assert coverage_matrix.loc['Sample3', '1: 900–1,100 | Pheno1 | GENE1 (x2)'] == 407.50
 
 
 def test_define_sample_colors_and_markers(ca):
@@ -232,7 +232,7 @@ def test_add_interval_names_with_info(ca, ca_csv_panel):
     ca = ca_csv_panel
     first_row = ca.intervals.iloc[0]
     assert first_row['interval_name_with_info'] == \
-        'Pheno1 | GENE1 | 1: 900–1,100'
+        '1: 900–1,100 | GENE1 | Pheno1'
 
 def test_init(ca):
     assert len(ca.panel) == 10  # 10 total panel variants
