@@ -254,12 +254,14 @@ def test_init_without_panel_vcf():
 def test_plots_without_saving(ca):
     heatmap = ca.plot_heatmap(max_value=30)
     boxplot = ca.plot_boxplot()
+    violinplot = ca.plot_violinplot()
     chromosomes = ca.plot_coverage_per_chromosome(plt_show=False)
 
     from matplotlib.axes import Axes
 
     assert isinstance(heatmap, Axes)
     assert isinstance(boxplot, Axes)
+    assert isinstance(violinplot, Axes)
     assert isinstance(chromosomes[0], Axes)
 
 
@@ -355,11 +357,14 @@ def test_report(ca):
     #  cvg_plots = glob(os.path.join(plots_dir, '*coverage_chrom*.png'))
     #  assert len(cvg_plots) == 2
 
-    heatmap_plots = glob(os.path.join(plots_dir, '*heatmap*.png'))
-    assert len(heatmap_plots) == 2
+    heatmaps = glob(os.path.join(plots_dir, '*heatmap*.png'))
+    assert len(heatmaps) == 2
 
-    boxplot_plots = glob(os.path.join(plots_dir, '*boxplot*.png'))
-    assert len(boxplot_plots) == 2
+    boxplots = glob(os.path.join(plots_dir, '*boxplot*.png'))
+    assert len(boxplots) == 2
+
+    violinplots = glob(os.path.join(plots_dir, '*violinplot*.png'))
+    assert len(violinplots) == 1
 
     # Remove files after testing
     os.remove(report_path)

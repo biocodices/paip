@@ -292,7 +292,7 @@ class CoverageAnalyser:
 
         sns.set(style='ticks', context='notebook')
 
-        fig = plt.figure(figsize=(35, 4))
+        fig = plt.figure(figsize=(25, 4))
         ax = fig.add_subplot(1, 1, 1)
         ax = sns.heatmap(coverage_matrix, ax=ax,
                          cbar_kws={'pad': 0.045, 'label': 'Read Depth'},
@@ -314,8 +314,9 @@ class CoverageAnalyser:
         ax.set_xticklabels(xtick_labels, fontdict={'size': 10})
 
         # Sample names on the Y axis:
-        ax.tick_params(axis='y', right=True, labelright=True)
         ax.set_yticklabels(ax.get_yticklabels(), rotation='horizontal')
+        # Uncomment this to get the sample names on the right too:
+        # ax.tick_params(axis='y', right=True, labelright=True)
 
         # Separation between samples (horizontal lines):
         ax.hlines(ax.get_yticks() + 0.5, *ax.get_xlim(), color='Silver',
@@ -341,9 +342,9 @@ class CoverageAnalyser:
         If *dest_dir* is provided, the figure will be saved in that directory.
         Else, the matplotlib axes instance will be returned.
         """
-        sns.set(style='ticks', context='paper', font_scale=1)
+        sns.set(style='darkgrid')
 
-        fig = plt.figure(figsize=(8, 4))
+        fig = plt.figure(figsize=(10, 5))
         ax = fig.add_subplot(1, 1, 1)
 
         medians = self.intervals.groupby('sample_id')['IDP'].median()
@@ -352,21 +353,23 @@ class CoverageAnalyser:
         sns.boxplot(
             ax=ax, data=self.intervals, x='sample_id', y='IDP',
             order=sample_order, color='White',
-
-            # Tufte style options:
-            width=0.1,
-            # showcaps=False,
-            # showbox=False,
+            width=0.25,
             linewidth=1,
-            medianprops={'linestyle': '-', 'color': 'ForestGreen',
-                         'linewidth': 1},
-            flierprops={'markeredgecolor': 'DarkGray', 'marker': '.',
-                        'markersize': 4}
+            medianprops={
+                'linestyle': '-',
+                'color': 'ForestGreen',
+                'linewidth': 1
+            },
+            flierprops={
+                'markeredgecolor': 'DarkGray',
+                'marker': '.',
+                'markersize': 4
+            }
         )
 
         samples = self.intervals['sample_id'].unique()
         ax.set_xticklabels(ax.get_xticklabels(),
-                           rotation=45 if len(samples) > 10 else 0)
+                        rotation=45 if len(samples) > 10 else 0)
 
         ax.tick_params(axis='both', color='Silver')
 
@@ -377,21 +380,20 @@ class CoverageAnalyser:
                 .groupby('sample_id')['IDP']\
                 .quantile(.75)\
                 .max()
-            max_lim = int(max_lim) * 1.05
-            title = f'Coverage per Sample (zoom on 0:{max_lim} range)'
-            ax.set_ylim(0, max_lim)
+            max_lim = int(max_lim * 1.05)
+            title = 'Coverage per Sample (trim $> {:,}$)'.format(max_lim)
+            ax.set_ylim(-5, max_lim)
+        else:
+            ax.set_ylim(-5, ax.get_ylim()[1])
 
         ax.set_xlabel('Sample', labelpad=20)
         ax.set_ylabel('Read Depth', labelpad=20)
-
-        # We want to discriminate the low values in a more granular way, so:
-        ax.set_yticks([100, 200, 300, 400], minor=True)
 
         # Draw the global median
         sequencing_median = self.intervals['IDP'].median()
         seq_median_pretty = format_number(sequencing_median, num_decimals=0)
         ax.axhline(y=sequencing_median, color='DodgerBlue', linewidth=1,
-                   linestyle='dotted')
+                linestyle='dotted')
         ax.text(x=max(ax.get_xticks()) + 0.6, color='DodgerBlue',
                 y=sequencing_median, s='$median={}$'.format(seq_median_pretty),
                 verticalalignment='center', horizontalalignment='left')
@@ -400,20 +402,44 @@ class CoverageAnalyser:
         sequencing_mean = self.intervals['IDP'].mean()
         seq_mean_pretty = format_number(sequencing_mean, num_decimals=0)
         ax.axhline(y=sequencing_mean, color='DodgerBlue', linewidth=1,
-                   linestyle='dotted')
+                linestyle='dotted')
         ax.text(x=max(ax.get_xticks()) + 0.6, color='DodgerBlue',
                 y=sequencing_mean, s='$mean={}$'.format(seq_mean_pretty),
                 verticalalignment='center', horizontalalignment='left')
 
-        ax.set_title(title, y=1.08)
-
-        sns.despine()
-        ax.spines['left'].set_color('Silver')
-        ax.spines['bottom'].set_color('Silver')
+        ax.set_title(title, y=1.02)
 
         if dest_dir:
             preposition = 'with' if include_outliers else 'without'
             fn = f'coverage_boxplot_{preposition}_outliers.png'
+            filepath = os.path.join(dest_dir,fn)
+            plt.savefig(filepath, bbox_inches='tight', dpi=150)
+            plt.close()
+            return filepath
+
+        return ax
+
+    def plot_violinplot(self, dest_dir=None):
+        sns.set(style='whitegrid')
+
+        fig = plt.figure(figsize=(10, 5))
+        ax = fig.add_subplot(1, 1, 1)
+
+        medians = self.intervals.groupby('sample_id')['IDP'].median()
+        sample_order = medians.sort_values().index
+
+        ax = sns.violinplot(
+            ax=ax, data=self.intervals, x='sample_id', y='IDP',
+            order=sample_order,
+            # color='Black',
+            width=0.25,
+            linewidth=1,
+        )
+        ax.set_ylim(-5, ax.get_ylim()[1])
+        ax.set_title('Coverage per Sample', y=1.02)
+
+        if dest_dir:
+            fn = 'coverage_violinplot.png'
             filepath = os.path.join(dest_dir,fn)
             plt.savefig(filepath, bbox_inches='tight', dpi=150)
             plt.close()
@@ -580,10 +606,11 @@ class CoverageAnalyser:
         boxplot_path = self.plot_boxplot(dest_dir=plots_dir)
         boxplot_no_outliers_path = self.plot_boxplot(dest_dir=plots_dir,
                                                      include_outliers=False)
+        violinplot_path = self.plot_violinplot(dest_dir=plots_dir)
         heatmap_path = self.plot_heatmap(dest_dir=plots_dir,
                                          max_value=self.reads_threshold)
         heatmap_only_zero_path = self.plot_heatmap(dest_dir=plots_dir,
-                                                   max_value=0)
+                                                   max_value=0.001)
 
         #  chrom_plots_basename = join(plots_dir, 'coverage')
         #  chrom_plot_paths = self.plot_coverage_per_chromosome(chrom_plots_basename)
@@ -596,6 +623,7 @@ class CoverageAnalyser:
             'report_title': report_title,
             'boxplot_path': boxplot_path,
             'boxplot_no_outliers_path': boxplot_no_outliers_path,
+            'violinplot': violinplot_path,
             'heatmap_path': heatmap_path,
             'heatmap_only_zero_path': heatmap_only_zero_path,
             # 'chrom_plot_paths': chrom_plots_paths,
