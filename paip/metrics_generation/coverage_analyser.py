@@ -343,9 +343,9 @@ class CoverageAnalyser:
         If *dest_dir* is provided, the figure will be saved in that directory.
         Else, the matplotlib axes instance will be returned.
         """
-        sns.set(style='darkgrid')
+        sns.set(style='darkgrid', context='paper')
 
-        fig = plt.figure(figsize=(10, 5))
+        fig = plt.figure(figsize=(6, 3))
         ax = fig.add_subplot(1, 1, 1)
 
         medians = self.intervals.groupby('sample_id')['IDP'].median()
