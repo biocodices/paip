@@ -22,10 +22,10 @@ def path_to_resource(label):
     this method will join them and return the path, like:
 
         > path_to_resource('reference_genome')
-            # => /home/jdoe/resources/human_genome.fasta
+            # => /home/juan/resources/human_genome.fasta
 
         > path_to_resource('illumina_adapters')
-            # => /home/jdoe/resources/illumina_adps.fasta
+            # => /home/juan/resources/illumina_adps.fasta
 
     You can query a deep key from the YAML by separating nested keys with a ':',
     for instance:
@@ -45,4 +45,3 @@ def path_to_resource(label):
         value = value[key]  # Gets one level deeper each time
 
     return join(base_dir, value)
-

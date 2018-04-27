@@ -4,7 +4,7 @@ from os.path import join, expanduser
 
 class Config:
     """
-    This class is not meant to be initialized. Check the usage:
+    This class is not meant to be instantiated. Check its usage:
 
     Example:
 
@@ -51,4 +51,3 @@ class Config:
     def commands(cls, key=None):
         dic = cls.read('commands')
         return dic if key is None else dic[key]
-
