@@ -368,9 +368,8 @@ class CoverageAnalyser:
             }
         )
 
-        samples = self.intervals['sample_id'].unique()
         ax.set_xticklabels(ax.get_xticklabels(),
-                        rotation=45 if len(samples) > 10 else 0)
+                           rotation=45 if len(self.samples) > 10 else 0)
 
         ax.tick_params(axis='both', color='Silver')
 
@@ -420,6 +419,10 @@ class CoverageAnalyser:
 
         return ax
 
+    @property
+    def samples(self):
+        return self.intervals['sample_id'].unique()
+
     def plot_violinplot(self, dest_dir=None):
         sns.set(style='whitegrid')
 
@@ -438,6 +441,9 @@ class CoverageAnalyser:
         )
         ax.set_ylim(-5, ax.get_ylim()[1])
         ax.set_title('Coverage per Sample', y=1.02)
+
+        ax.set_xticklabels(ax.get_xticklabels(),
+                           rotation=45 if len(self.samples) > 10 else 0)
 
         if dest_dir:
             fn = 'coverage_violinplot.png'
@@ -560,11 +566,10 @@ class CoverageAnalyser:
 
     def _define_sample_colors_and_markers(self):
         """Define a unique color & marker for each sample."""
-        samples = self.intervals['sample_id'].unique()
         colors = cycle(sns.color_palette(*self.COLOR_PALETTE))
         markers = cycle(self.MARKERS)
-        self.sample_colors = dict(zip(samples, colors))
-        self.sample_markers = dict(zip(samples, markers))
+        self.sample_colors = dict(zip(self.samples, colors))
+        self.sample_markers = dict(zip(self.samples, markers))
 
     def _plot_file_chrom_index(self, filename):
         """

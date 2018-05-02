@@ -45,7 +45,6 @@ def ca_single_sample():
                             coverage_files=coverage_files[0:1],  # only one!
                             reads_threshold=20)
 
-
 def test_extract_genes(ca):
     genes = ca._extract_genes({'GENEINFO': 'Gene_1:1'})
     assert genes == ['Gene_1']
@@ -251,6 +250,10 @@ def test_init_without_panel_vcf():
     assert not ca.has_panel
 
 
+def test_samples_property(ca_no_panel):
+    assert list(ca_no_panel.samples) == ['Sample2', 'Sample3']
+
+
 def test_plots_without_saving(ca):
     heatmap = ca.plot_heatmap(max_value=30)
     boxplot = ca.plot_boxplot()
@@ -390,4 +393,3 @@ def test_json_coverage_summary_for_multiqc(ca_single_sample):
     assert 'id' in data
     assert 'data' in data
     assert 'SampleFoo' in data['data']
-

@@ -18,7 +18,10 @@ class PlotCoverage(CohortTask):
         return luigi.LocalTarget(self.path(fn))
 
     def run(self):
-        panel_variants = path_to_resource('panel_file_for_coverage_report')
+        try:
+            panel_variants = path_to_resource('panel_file_for_coverage_report')
+        except KeyError:
+            panel_variants = None
 
         coverage_analyser = CoverageAnalyser(
             coverage_files=[input_.fn for input_ in self.input()],
