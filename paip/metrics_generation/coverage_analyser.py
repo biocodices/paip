@@ -436,7 +436,7 @@ class CoverageAnalyser:
             ax=ax, data=self.intervals, x='sample_id', y='IDP',
             order=sample_order,
             # color='Black',
-            width=0.25,
+            # width=0.25,
             linewidth=1,
         )
         ax.set_ylim(-5, ax.get_ylim()[1])
