@@ -369,7 +369,7 @@ class CoverageAnalyser:
         )
 
         ax.set_xticklabels(ax.get_xticklabels(),
-                           rotation=45 if len(self.samples) > 10 else 0)
+                           rotation=90 if len(self.samples) > 10 else 0)
 
         ax.tick_params(axis='both', color='Silver')
 
@@ -443,7 +443,7 @@ class CoverageAnalyser:
         ax.set_title('Coverage per Sample', y=1.02)
 
         ax.set_xticklabels(ax.get_xticklabels(),
-                           rotation=45 if len(self.samples) > 10 else 0)
+                           rotation=90 if len(self.samples) > 10 else 0)
 
         if dest_dir:
             fn = 'coverage_violinplot.png'
