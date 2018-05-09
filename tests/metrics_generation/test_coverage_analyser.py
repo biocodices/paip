@@ -1,4 +1,5 @@
 import os
+from os import getpid
 from tempfile import gettempdir
 import pandas as pd
 import pytest
@@ -156,6 +157,27 @@ def test_find_variant_ids(ca):
     interval['chrom'] = '19'
     variants = ca._find_variant_ids(interval, ca.panel)
     assert variants == []
+
+
+def test_coverage_summary(ca_csv_panel):
+    result = ca_csv_panel.coverage_summary()
+    assert '[Intergenic]' in result['Gene'].values
+    first_entry = result.iloc[0]
+    assert first_entry['Gene'] == 'GENE1'
+    assert first_entry['Interval Length'] == 201
+    assert first_entry['Interval Variants'] == 'rs1a, rs1b'
+    assert first_entry['Interval Status'] == 'PASS'
+    assert first_entry['Interval Mean Coverage'] == 407.5
+    assert first_entry['Associated Conditions'] == 'Pheno1'
+
+    fp = os.path.join(gettempdir(), f'test__{getpid()}.csv')
+    result = ca_csv_panel.coverage_summary(target_csv_path=fp)
+
+    assert os.path.isfile(fp)
+    assert os.path.getsize(fp)
+
+    os.remove(fp)
+    assert not os.path.isfile(fp)
 
 
 def test_add_panel_vcf_data_to_intervals(ca):
@@ -377,8 +399,8 @@ def test_report(ca):
     assert not os.path.isdir(plots_dir)
 
 
-def test_summarize_coverage(ca_single_sample):
-    data = ca_single_sample.summarize_coverage()
+def test_summarize_coverage_for_multiqc(ca_single_sample):
+    data = ca_single_sample.summarize_coverage_for_multiqc()
     assert data['NO_READS intervals'] == 1
     assert data['% bases with LOW DP'] == 40.9
     assert data['mean_DP'] == 1003.28
