@@ -10,7 +10,10 @@ class SummarizeCoverage(SampleTask):
     a JSON summary of the coverage metrics for MultiQC.
     """
     REQUIRES = DiagnoseTargets
-    OUTPUT = 'coverage_summary_mqc.json'
+    OUTPUT = {
+        'for_multiqc': 'coverage_summary_mqc.json',
+        'for_reports': 'coverage_summary.csv',
+    }
 
     def run(self):
         try:
@@ -29,6 +32,9 @@ class SummarizeCoverage(SampleTask):
             module_name='coverage_summary',
         )
 
-        with open(self.output().fn, 'w') as f:
+        with open(self.output()['for_multiqc'].fn, 'w') as f:
             f.write(json_data)
 
+        coverage_analyser.coverage_summary(
+            target_csv_path=self.output()['for_reports'].fn
+        )
