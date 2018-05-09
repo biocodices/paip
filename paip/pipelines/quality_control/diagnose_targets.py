@@ -25,4 +25,3 @@ class DiagnoseTargets(SampleTask):
 
 
 DiagnoseTargetsCohort = create_cohort_task(DiagnoseTargets)
-

@@ -2,6 +2,7 @@ from paip.task_types import SampleTask
 from paip.pipelines.quality_control import DiagnoseTargets
 from paip.metrics_generation import CoverageAnalyser
 from paip.helpers import path_to_resource
+from paip.helpers.create_cohort_task import create_cohort_task
 
 
 class SummarizeCoverage(SampleTask):
@@ -38,3 +39,6 @@ class SummarizeCoverage(SampleTask):
         coverage_analyser.coverage_summary(
             target_csv_path=self.output()['for_reports'].fn
         )
+
+
+SummarizeCoverageCohort = create_cohort_task(SummarizeCoverage)
