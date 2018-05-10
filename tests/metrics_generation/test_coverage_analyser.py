@@ -184,7 +184,7 @@ def test_coverage_summary_per_gene(ca_csv_panel):
     result = ca_csv_panel.coverage_summary_per_gene()
     first_entry = result.iloc[0]
     assert first_entry['Gene'] == 'GENE1'
-    assert first_entry['Variant Count'] == 1
+    assert first_entry['Variant Count'] == 2
     assert first_entry['Coverage Average'] == 407.5
     assert first_entry['Associated Conditions'] == 'Pheno1'
     assert first_entry['Min Coverage'] == 406.5

@@ -637,7 +637,11 @@ class CoverageAnalyser:
 
             weighted_mean = np.average(gene_intervals['Interval Mean Coverage'],
                                        weights=gene_intervals['Interval Length'])
-            variant_count = len(set(collapse(gene_intervals['Interval Variants'])))
+
+            # entries like "rs1, rs2"
+            variants_str = ', '.join(collapse(gene_intervals['Interval Variants']))
+            variants = set(variants_str.split(', '))
+            variant_count = len(set(variants))
 
             # The join is cautionary. It will always be a single sample:
             unique_sample = ', '.join(gene_intervals['Sample ID'].unique())
