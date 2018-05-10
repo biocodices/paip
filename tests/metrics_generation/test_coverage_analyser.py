@@ -167,10 +167,32 @@ def test_coverage_summary(ca_csv_panel):
     assert first_entry['Interval Length'] == 201
     assert first_entry['Interval Variants'] == 'rs1a, rs1b'
     assert first_entry['Interval Status'] == 'PASS'
-    assert first_entry['Interval Mean Coverage'] == 407.5
+    assert first_entry['Interval Mean Coverage'] == 406.5
     assert first_entry['Associated Conditions'] == 'Pheno1'
 
-    fp = os.path.join(gettempdir(), f'test__{getpid()}.csv')
+    fp = os.path.join(gettempdir(), f'test__coverage_summary_{getpid()}.csv')
+    result = ca_csv_panel.coverage_summary(target_csv_path=fp)
+
+    assert os.path.isfile(fp)
+    assert os.path.getsize(fp)
+
+    os.remove(fp)
+    assert not os.path.isfile(fp)
+
+
+def test_coverage_summary_per_gene(ca_csv_panel):
+    result = ca_csv_panel.coverage_summary_per_gene()
+    first_entry = result.iloc[0]
+    assert first_entry['Gene'] == 'GENE1'
+    assert first_entry['Variant Count'] == 1
+    assert first_entry['Coverage Average'] == 407.5
+    assert first_entry['Associated Conditions'] == 'Pheno1'
+    assert first_entry['Min Coverage'] == 406.5
+    assert first_entry['Max Coverage'] == 408.5
+    assert first_entry['Filters'] == None
+
+    fp = os.path.join(gettempdir(),
+                      f'test__coverage_summary_per_gene_{getpid()}.csv')
     result = ca_csv_panel.coverage_summary(target_csv_path=fp)
 
     assert os.path.isfile(fp)
@@ -214,7 +236,7 @@ def test_make_coverage_matrix(ca_no_panel, ca_csv_panel):
 
     coverage_matrix = ca_csv_panel._make_coverage_matrix()
     assert coverage_matrix.shape == (2, 5)  # 5 intervals, 2 samples
-    assert coverage_matrix.loc['Sample3', '1: 900–1,100 (x2) | GENE1 | Pheno1'] == 407.50
+    assert coverage_matrix.loc['Sample3', '1: 900–1,100 (x2) | GENE1 | Pheno1'] == 408.50
 
 
 def test_define_sample_colors_and_markers(ca):
@@ -403,8 +425,8 @@ def test_summarize_coverage_for_multiqc(ca_single_sample):
     data = ca_single_sample.summarize_coverage_for_multiqc()
     assert data['NO_READS intervals'] == 1
     assert data['% bases with LOW DP'] == 40.9
-    assert data['mean_DP'] == 1003.28
-    assert data['std_DP'] == 1062.02
+    assert data['mean_DP'] == 1003.08
+    assert data['std_DP'] == 1062.13
 
 
 def test_json_coverage_summary_for_multiqc(ca_single_sample):

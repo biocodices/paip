@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from humanfriendly import format_number
 import jinja2
+from more_itertools import collapse
 from vcf_to_dataframe import vcf_to_dataframe
 
 from paip.helpers import grouper, percentage
@@ -39,7 +40,6 @@ class CoverageAnalyser:
         > ca.plot_heatmap()
 
     """
-
     COLOR_PALETTE = ('hls', 10)  # Name, number of colors to take
     MARKERS = 'xo*pshHP^v<>d'
 
@@ -620,6 +620,59 @@ class CoverageAnalyser:
             coverage_table.to_csv(target_csv_path, index=False)
 
         return coverage_table
+
+
+    def coverage_summary_per_gene(self, target_csv_path=None):
+        coverage_summary = self.coverage_summary()
+        gene_coverage_records = []
+
+        for gene, gene_intervals in coverage_summary.groupby('Gene'):
+            # entries like "LOW_COVERAGE;READS"
+            statuses = ';'.join(gene_intervals['Interval Status'])
+            unique_statuses = ', '.join(set(statuses.split(';')) - {'PASS'})
+
+            # entries like "Alz, Park"
+            conditions = ', '.join(gene_intervals['Associated Conditions'])
+            unique_conditions = ', '.join(set(conditions.split(', ')) - {''})
+
+            weighted_mean = np.average(gene_intervals['Interval Mean Coverage'],
+                                       weights=gene_intervals['Interval Length'])
+            variant_count = len(set(collapse(gene_intervals['Interval Variants'])))
+
+            # The join is cautionary. It will always be a single sample:
+            unique_sample = ', '.join(gene_intervals['Sample ID'].unique())
+
+            gene_record = {
+                'Gene': gene,
+                'Sample ID': unique_sample,
+                'Filters': unique_statuses or None,
+                'Variant Count': variant_count,
+                'Coverage Average': round(weighted_mean, 2),
+                'Associated Conditions': unique_conditions,
+            }
+            if len(gene_intervals) > 1:
+                gene_record.update({
+                    'Min Coverage': gene_intervals['Interval Mean Coverage'].min(),
+                    'Max Coverage': gene_intervals['Interval Mean Coverage'].max(),
+                })
+
+            gene_coverage_records.append(gene_record)
+            col_order = [
+                'Sample ID',
+                'Gene',
+                'Variant Count',
+                'Coverage Average',
+                'Associated Conditions',
+                'Min Coverage',
+                'Max Coverage',
+                'Filters',
+            ]
+            gene_coverage_table = pd.DataFrame(gene_coverage_records)[col_order]
+
+        if target_csv_path:
+            gene_coverage_table.to_csv(target_csv_path, index=False)
+
+        return gene_coverage_table
 
     def _define_sample_colors_and_markers(self):
         """Define a unique color & marker for each sample."""

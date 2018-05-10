@@ -14,16 +14,19 @@ class SummarizeCoverage(SampleTask):
     OUTPUT = {
         'for_multiqc': 'coverage_summary_mqc.json',
         'for_reports': 'coverage_summary.csv',
+        'for_reports_per_gene': 'coverage_summary_per_gene.csv',
     }
 
     def run(self):
         try:
-            panel_variants = path_to_resource('panel_variants')
+            panel = path_to_resource('panel_variants')
         except KeyError:  # variant_sites pipelines might not have a panel VCF
-            panel_variants = None
+            panel = path_to_resource('panel_file_for_coverage_report')
+        except KeyError:
+            panel = None
 
         coverage_analyser = CoverageAnalyser(
-            panel=panel_variants,
+            panel=panel,
             coverage_files=[self.input().fn],
             reads_threshold=self.min_dp,
         )
@@ -38,6 +41,9 @@ class SummarizeCoverage(SampleTask):
 
         coverage_analyser.coverage_summary(
             target_csv_path=self.output()['for_reports'].fn
+        )
+        coverage_analyser.coverage_summary_per_gene(
+            target_csv_path=self.output()['for_reports_per_gene'].fn
         )
 
 

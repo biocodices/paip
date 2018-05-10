@@ -29,3 +29,4 @@ def test_run(task, monkeypatch):
 
     assert ca_instance.json_coverage_summary_for_multiqc.call_count == 1
     assert ca_instance.coverage_summary.call_count == 1
+    assert ca_instance.coverage_summary_per_gene.call_count == 1
