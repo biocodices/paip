@@ -303,6 +303,7 @@ def test_plots_without_saving(ca):
     boxplot = ca.plot_boxplot()
     violinplot = ca.plot_violinplot()
     chromosomes = ca.plot_coverage_per_chromosome(plt_show=False)
+    coverage_dist = ca.plot_coverage_distribution()
 
     from matplotlib.axes import Axes
 
@@ -310,6 +311,7 @@ def test_plots_without_saving(ca):
     assert isinstance(boxplot, Axes)
     assert isinstance(violinplot, Axes)
     assert isinstance(chromosomes[0], Axes)
+    assert isinstance(coverage_dist, Axes)
 
 
 def test_plot_heatmap(ca):
@@ -332,6 +334,7 @@ def test_plot_boxplot(ca):
     os.remove(plot_file)
     assert not os.path.isfile(plot_file)
 
+
 def test_plot_coverage_per_chromosome(ca):
     basename = os.path.join(gettempdir(), 'test_paip-cvg_plots')
     plot_files = ca.plot_coverage_per_chromosome(basename)
@@ -349,6 +352,16 @@ def test_plot_file_chrom_index(ca):
     filename = '/path/to/plot_chrom_X.png'
     index = ca._plot_file_chrom_index(filename)
     assert index == 22
+
+
+def test_plot_coverage_distribution(ca):
+    plot_file = ca.plot_coverage_distribution(dest_dir=gettempdir())
+
+    assert os.path.isfile(plot_file)
+    assert os.path.getsize(plot_file)
+
+    os.remove(plot_file)
+    assert not os.path.isfile(plot_file)
 
 
 def test_make_html_report(ca):

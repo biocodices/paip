@@ -678,6 +678,46 @@ class CoverageAnalyser:
 
         return gene_coverage_table
 
+    def plot_coverage_distribution(self, dest_dir=None):
+        """
+        Plot an histogram + KDE for the distribution of coverage.
+        """
+        sns.set_style('whitegrid')
+
+        distribution = self.intervals['IDP']
+        sample_ids = self.intervals['sample_id'].unique()
+        q = {str(n): int(distribution.quantile(n/100))
+             for n in [10, 25, 50, 75, 90, 99.5]}
+        q_formatted = {n: format_number(v) for n, v in q.items()}
+
+        ax, fig = plt.subplots(figsize=(10, 3))
+        ax = sns.distplot(distribution)
+        ax.set_yticks([])
+        ax.set_ylabel('# Regiones')
+        ax.set_xlabel('Cobertura')
+        title = (
+            f'Cobertura observada en las regiones del panel ' +
+            f'({", ".join(sample_ids)})\n' +
+            f'$Q_{{10}} = {q_formatted["10"]}$ | ' +
+            f'$Q_{{25}} = {q_formatted["25"]}$ | ' +
+            f'$\\bf{{ Q_{{50}} = {q_formatted["50"]} }}$ | ' +
+            f'$Q_{{75}} = {q_formatted["75"]}$ | ' +
+            f'$Q_{{90}} = {q_formatted["90"]}$'
+        )
+        ax.set_title(title, y=1.05)
+        ax.axvline(x=q['50'], linestyle='dotted')
+        ax.set_xticks(np.arange(0, self.intervals['IDP'].max(), step=500))
+        ax.set_xlim(0, q['99.5'])
+
+        if dest_dir:
+            fn = f'{"_".join(sample_ids)}.coverage_distribution.png'
+            filepath = os.path.join(dest_dir,fn)
+            plt.savefig(filepath, bbox_inches='tight', dpi=150)
+            plt.close()
+            return filepath
+
+        return ax
+
     def _define_sample_colors_and_markers(self):
         """Define a unique color & marker for each sample."""
         colors = cycle(sns.color_palette(*self.COLOR_PALETTE))

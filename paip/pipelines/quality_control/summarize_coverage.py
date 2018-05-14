@@ -15,6 +15,7 @@ class SummarizeCoverage(SampleTask):
         'for_multiqc': 'coverage_summary_mqc.json',
         'for_reports': 'coverage_summary.csv',
         'for_reports_per_gene': 'coverage_summary_per_gene.csv',
+        'plot_for_reports': 'coverage_distribution.png',
     }
 
     def run(self):
@@ -45,6 +46,7 @@ class SummarizeCoverage(SampleTask):
         coverage_analyser.coverage_summary_per_gene(
             target_csv_path=self.output()['for_reports_per_gene'].fn
         )
+        coverage_analyser.plot_coverage_distribution(dest_dir=self.dir)
 
 
 SummarizeCoverageCohort = create_cohort_task(SummarizeCoverage)
