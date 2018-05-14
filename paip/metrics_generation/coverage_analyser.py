@@ -688,7 +688,10 @@ class CoverageAnalyser:
         sample_ids = self.intervals['sample_id'].unique()
         q = {str(n): int(distribution.quantile(n/100))
              for n in [10, 25, 50, 75, 90, 99.5]}
-        q_formatted = {n: format_number(v) for n, v in q.items()}
+        # format_number doesn't take a delimiter or locale option and we
+        # need the thousand separators to be in Spanish, i.e. ".", not ","
+        q_formatted = {n: format_number(v).replace(',', '.')
+                       for n, v in q.items()}
 
         ax, fig = plt.subplots(figsize=(10, 3))
         ax = sns.distplot(distribution)
