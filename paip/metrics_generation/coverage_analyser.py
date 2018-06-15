@@ -399,25 +399,9 @@ class CoverageAnalyser:
         ax.set_xlabel('Sample', labelpad=20)
         ax.set_ylabel('Read Depth', labelpad=20)
 
-        # Draw the global median
-        sequencing_median = self.intervals['IDP'].median()
-        seq_median_pretty = format_number(sequencing_median, num_decimals=0)
-        ax.axhline(y=sequencing_median, color='DodgerBlue', linewidth=1,
-                linestyle='dotted')
-        ax.text(x=max(ax.get_xticks()) + 0.6, color='DodgerBlue',
-                y=sequencing_median, s='$median={}$'.format(seq_median_pretty),
-                verticalalignment='center', horizontalalignment='left')
-
-        # Draw the global mean
-        sequencing_mean = self.intervals['IDP'].mean()
-        seq_mean_pretty = format_number(sequencing_mean, num_decimals=0)
-        ax.axhline(y=sequencing_mean, color='DodgerBlue', linewidth=1,
-                linestyle='dotted')
-        ax.text(x=max(ax.get_xticks()) + 0.6, color='DodgerBlue',
-                y=sequencing_mean, s='$mean={}$'.format(seq_mean_pretty),
-                verticalalignment='center', horizontalalignment='left')
-
         ax.set_title(title, y=1.02)
+
+        self._add_global_IDP_mean_and_median_lines(ax)
 
         if dest_dir:
             preposition = 'with' if include_outliers else 'without'
@@ -428,6 +412,27 @@ class CoverageAnalyser:
             return filepath
 
         return ax
+
+    def _add_global_IDP_mean_and_median_lines(self, ax):
+        """
+        Given a matplolib axis, add the global mean and median taken from
+        self.intervals['IDP'].
+        """
+        sequencing_mean = self.intervals['IDP'].mean()
+        seq_mean_pretty = format_number(sequencing_mean, num_decimals=0)
+        sequencing_median = self.intervals['IDP'].median()
+        seq_median_pretty = format_number(sequencing_median, num_decimals=0)
+
+        line_opts = dict(linewidth=1, linestyle='dotted')
+        ax.axhline(y=sequencing_mean, color='DodgerBlue', **line_opts)
+        ax.axhline(y=sequencing_median, color='Navy', **line_opts)
+
+        text_opts = dict(x=max(ax.get_xticks()) + 0.6,
+                         verticalalignment='center', horizontalalignment='left')
+        ax.text(color='DodgerBlue', y=sequencing_mean,
+                s=f'$mean={seq_mean_pretty}$', **text_opts)
+        ax.text(color='Navy', y=sequencing_median,
+                s=f'$median={seq_median_pretty}$', ** text_opts)
 
     @property
     def samples(self):
@@ -454,6 +459,8 @@ class CoverageAnalyser:
 
         ax.set_xticklabels(ax.get_xticklabels(),
                            rotation=90 if len(self.samples) > 10 else 0)
+
+        self._add_global_IDP_mean_and_median_lines(ax)
 
         if dest_dir:
             fn = 'coverage_violinplot.png'
