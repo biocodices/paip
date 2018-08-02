@@ -1,4 +1,5 @@
-from unittest.mock import mock_open, patch, MagicMock
+from collections import defaultdict
+from unittest.mock import mock_open, patch, MagicMock, PropertyMock
 
 import pytest
 
@@ -13,20 +14,21 @@ def task(sample_task_factory):
 
 def test_run(task, monkeypatch):
     # This one is tricky to test. I need to mock the 'open' built-in,
-    # but that breaks path_to_resource, so I need to mock that as well.
+    # but that breaks resources, so I need to mock that as well.
     # And then I need to mock the PMGenerator to check the init args.
     pmg_instance = MagicMock()
     PanelMetricsGenerator = MagicMock(return_value=pmg_instance)
     monkeypatch.setattr(paip.pipelines.quality_control.panel_metrics,
                         'PanelMetricsGenerator', PanelMetricsGenerator)
-    monkeypatch.setattr(paip.pipelines.quality_control.panel_metrics,
-                        'path_to_resource', MagicMock(return_value='foo'))
-
+    mock_resources = patch('paip.helpers.config.Config.resources',
+                           new_callable=PropertyMock)
     open_ = mock_open()
+    #  mock_open_context = patch('paip.pipelines.quality_control.summarize_coverage.open',
+                              #  open_)
 
-    # FIXME: this whole 'path' to the module hardcoding is ugly, there must
-    # be a better way:
-    with patch('paip.pipelines.quality_control.panel_metrics.open', open_):
+    with patch('paip.pipelines.quality_control.panel_metrics.open', open_),\
+         mock_resources as mock_resources:
+        mock_resources.return_value = defaultdict(lambda: 'foo')
         task.run()
 
     assert PanelMetricsGenerator.call_count == 2

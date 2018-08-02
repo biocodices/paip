@@ -1,4 +1,3 @@
 program-1: value-1
-program-2: '{executable} --foo {foo_option} --bar {bar_option}'
-program-2 subcommand: '{executable} --foo {foo_option} --bar {bar_option}'
+program-2: '{executable} --foo {foo_option} --bar {bar_option} --resource {resource-1}'
 

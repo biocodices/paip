@@ -1,4 +1,5 @@
-from unittest.mock import mock_open, patch, MagicMock
+from collections import defaultdict
+from unittest.mock import mock_open, patch, MagicMock, PropertyMock
 
 import pytest
 
@@ -17,12 +18,14 @@ def test_run(task, monkeypatch):
 
     monkeypatch.setattr(paip.pipelines.quality_control.summarize_coverage,
                         'CoverageAnalyser', CoverageAnalyser)
-    monkeypatch.setattr(paip.pipelines.quality_control.summarize_coverage,
-                        'path_to_resource', MagicMock(return_value='foo'))
-
+    mock_resources = patch('paip.helpers.config.Config.resources',
+                           new_callable=PropertyMock)
     open_ = mock_open()
+    mock_open_context = patch('paip.pipelines.quality_control.summarize_coverage.open',
+                              open_)
 
-    with patch('paip.pipelines.quality_control.summarize_coverage.open', open_):
+    with mock_open_context, mock_resources as mock_resources:
+        mock_resources.return_value = defaultdict(lambda: 'foo')
         task.run()
 
     assert open_().write.call_count == 1

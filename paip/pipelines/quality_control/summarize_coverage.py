@@ -1,7 +1,6 @@
 from paip.task_types import SampleTask
 from paip.pipelines.quality_control import DiagnoseTargets
 from paip.metrics_generation import CoverageAnalyser
-from paip.helpers import path_to_resource
 from paip.helpers.create_cohort_task import create_cohort_task
 
 
@@ -20,9 +19,9 @@ class SummarizeCoverage(SampleTask):
 
     def run(self):
         try:
-            panel = path_to_resource('panel_variants')
+            panel = self.config.resources['panel_variants']
         except KeyError:  # variant_sites pipelines might not have a panel VCF
-            panel = path_to_resource('panel_file_for_coverage_report')
+            panel = self.config.resources['panel_file_for_coverage_report']
         except KeyError:
             panel = None
 

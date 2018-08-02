@@ -3,7 +3,6 @@ import luigi
 from paip.task_types import CohortTask
 from paip.pipelines.quality_control import DiagnoseTargets
 from paip.metrics_generation import CoverageAnalyser
-from paip.helpers import path_to_resource
 
 
 class PlotCoverage(CohortTask):
@@ -19,7 +18,7 @@ class PlotCoverage(CohortTask):
 
     def run(self):
         try:
-            panel_variants = path_to_resource('panel_file_for_coverage_report')
+            panel_variants = self.config.resources['panel_file_for_coverage_report']
         except KeyError:
             panel_variants = None
 

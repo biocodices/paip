@@ -4,7 +4,6 @@ from os.path import basename
 import luigi
 
 from paip.pipelines.cnv_calling import DiscoverCNVs
-from paip.helpers import path_to_resource
 from paip.task_types import CohortTask
 
 
@@ -39,7 +38,7 @@ class VisualizeCNVs(CohortTask):
         xhmm run subdirectory and edit its definitions of PLOT_PATH,
         JOB_PREFICES, and JOB_TARGETS_TO_GENES.
         """
-        xhmm_R_script = path_to_resource('xhmm_R_script')
+        xhmm_R_script = self.config.resources['xhmm_R_script']
 
         with open(xhmm_R_script) as f:
             script_lines = [line for line in f]
@@ -47,7 +46,7 @@ class VisualizeCNVs(CohortTask):
         variables_to_change = {
             'PLOT_PATH': self.plot_path,
             'JOB_PREFICES': self.path('DATA'),
-            'JOB_TARGETS_TO_GENES': path_to_resource('panel_annotated_intervals'),
+            'JOB_TARGETS_TO_GENES': self.config.resources['panel_annotated_intervals'],
         }
 
         edited_script_lines = []

@@ -4,15 +4,13 @@ import json
 import jinja2
 from vcf_to_dataframe import vcf_to_dataframe
 
-from paip.helpers import available_resources
-
 
 class IGVScriptHelper:
     """
     Helper class to write a batch script for IGV from the variants
     present in a VCF and a script template.
     """
-    def __init__(self, template_path, vcf=None, variants_json=None,
+    def __init__(self, template_path, config, vcf=None, variants_json=None,
                  template_data={}):
         """
         Provide:
@@ -47,6 +45,7 @@ class IGVScriptHelper:
           > igv_helper.write_script(out_path='/path/to/out_script')
 
         """
+        self.config = config
         self.variants_file = vcf or variants_json
 
         if not self.variants_file:
@@ -139,7 +138,7 @@ class IGVScriptHelper:
         Merge the available resources with the user-provided data
         located in self.template_data. Returns a dictionary.
         """
-        data = available_resources()
+        data = self.config.resources
         data.update(self.template_data)
         data['variants'] = self._read_variants_file()
         return data

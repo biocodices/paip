@@ -3,7 +3,6 @@ import luigi
 from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import KeepReportableGenotypes, ExtractSample
 from paip.metrics_generation import PanelMetricsGenerator
-from paip.helpers import path_to_resource
 from paip.helpers.create_cohort_task import create_cohort_task
 
 
@@ -30,7 +29,7 @@ class PanelMetrics(SampleTask):
             pmg = PanelMetricsGenerator(
                 sample_name=self.sample,
                 sample_vcf=input_vcf.fn,
-                panel_vcf=path_to_resource('panel_variants'),
+                panel_vcf=self.config.resources['panel_variants'],
                 min_gq=self.min_gq,
                 min_dp=self.min_dp,
             )

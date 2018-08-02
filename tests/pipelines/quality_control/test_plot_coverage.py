@@ -1,4 +1,5 @@
-from unittest.mock import MagicMock
+from collections import defaultdict
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -18,10 +19,12 @@ def test_run(task, monkeypatch):
 
     monkeypatch.setattr(paip.pipelines.quality_control.plot_coverage,
                         'CoverageAnalyser', CoverageAnalyser)
-    monkeypatch.setattr(paip.pipelines.quality_control.plot_coverage,
-                        'path_to_resource', MagicMock(return_value='foo'))
+    mock_resources = patch('paip.helpers.config.Config.resources',
+                           new_callable=PropertyMock)
 
-    task.run()
+    with mock_resources as mock_resources:
+        mock_resources.return_value = defaultdict(lambda: 'foo')
+        task.run()
 
     assert CoverageAnalyser.call_count == 1
     assert CoverageAnalyser.call_args[1]['panel'] == 'foo'

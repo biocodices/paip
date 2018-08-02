@@ -6,6 +6,7 @@ import yaml
 import luigi
 
 from paip.helpers import (
+    Config,
     generate_command,
     run_command,
     get_running_tasks,
@@ -44,6 +45,7 @@ class BaseTask(luigi.Task):
         super().__init__(**kwargs)
         self.basedir = abspath(expanduser(self.basedir))
         self.sequencing_data = self.load_sample_data_from_yaml()
+        self.config = Config(custom_config_dir=self.basedir)
 
         if self.SUBDIR:
             os.makedirs(join(self.basedir, self.SUBDIR), exist_ok=True)
@@ -134,7 +136,7 @@ class BaseTask(luigi.Task):
         Returns the ouptut from run_command(), namely a tuple with
         (STDOUT, STDERR).
         """
-        command = generate_command(program_name, program_options)
+        command = generate_command(program_name, program_options, self.config)
         logfile = self.log_path(self.__class__.__name__)
         # TODO: implement this correctly:
         # self.sleep_until_available_to_run()

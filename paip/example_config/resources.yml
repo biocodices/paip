@@ -1,4 +1,4 @@
-base_dir: /home/juan/paip_resources
+resources_dir: /home/juan/paip_resources
 
 snpeff_datadir: snpeff_data
 vep_datadir: vep_data

@@ -20,14 +20,14 @@ def file(filename):
 def config_example_files(monkeypatch):
     # Read the Config files from paip/example_config:
     app_root_directory = dirname(dirname(__file__))
-    monkeypatch.setattr(Config, 'BASE_DIR',
+    monkeypatch.setattr(Config, 'CONFIG_DIR',
                         join(app_root_directory, 'paip/example_config'))
 
 
 @pytest.fixture
 def config_test_files(monkeypatch):
     # Read the Config files from tests/files/config_dir:
-    monkeypatch.setattr(Config, 'BASE_DIR',
+    monkeypatch.setattr(Config, 'CONFIG_DIR',
                         pytest.helpers.file('config_dir'))
 
 
@@ -74,10 +74,13 @@ def task_factory(monkeypatch):
     are defined in the example config files, so we keep them updated.
     """
 
+    # This takes the same arguments as BaseTask.run_program
+    # and performs some extra checks:
     def extra_checks(program_name, program_options, **kwargs):
         # Test the command is generated correctly with the options passed
         # using the example_config YAML files as models.
-        generate_command(program_name, program_options)
+        config = Config()
+        generate_command(program_name, program_options, config)
 
         return_value = []
 

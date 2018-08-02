@@ -322,7 +322,7 @@ class CoverageAnalyser:
                 xtick_positions.append(ix + 0.5) # 0.5 centers the label
                 xtick_labels.append(interval_name)
         ax.set_xticks(xtick_positions)
-        ax.set_xticklabels(xtick_labels, fontdict={'size': 10})
+        ax.set_xticklabels(xtick_labels, fontdict={'size': 7})
 
         # Sample names on the Y axis:
         ax.set_yticklabels(ax.get_yticklabels(), rotation='horizontal')
@@ -330,7 +330,7 @@ class CoverageAnalyser:
         # ax.tick_params(axis='y', right=True, labelright=True)
 
         # Separation between samples (horizontal lines):
-        ax.hlines(ax.get_yticks() + 0.5, *ax.get_xlim(), color='Silver',
+        ax.hlines(ax.get_yticks() + 0.5, *ax.get_xlim(), color='DarkGray',
                   linewidth=0.5)
 
         if dest_dir:

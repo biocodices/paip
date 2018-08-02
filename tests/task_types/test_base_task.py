@@ -31,10 +31,12 @@ def test_init(test_cohort_basedir, monkeypatch):
     mock_makedirs = MagicMock()
     monkeypatch.setattr(os, 'makedirs', mock_makedirs)
 
-    SomeCohortTask(basedir=test_cohort_basedir)
+    task = SomeCohortTask(basedir=test_cohort_basedir)
 
     assert mock_makedirs.call_count == 1
     assert mock_makedirs.call_args[0][0].endswith('foo')
+
+    assert task.config.custom_config_dir == test_cohort_basedir
 
 
 def test_path(base_task):
@@ -108,7 +110,7 @@ def test_output(base_task, monkeypatch):
 def test_run_program(base_task, monkeypatch):
     # run_program uses generate_command, but we test the latter elsewhere,
     # so we just mock it here:
-    def fake_generate_command(program_name, options):
+    def fake_generate_command(program_name, options, config):
         opts = list(options.items())[0]
         return '{} --{} {}'.format(program_name, opts[0], opts[1])
 

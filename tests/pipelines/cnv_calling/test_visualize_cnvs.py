@@ -1,10 +1,9 @@
 import os
 from os.path import isfile
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, PropertyMock
 
 import pytest
 
-import paip
 from paip.pipelines.cnv_calling import VisualizeCNVs
 
 
@@ -29,20 +28,14 @@ def test_run(task, monkeypatch):
 
 
 def test_copy_and_edit_R_script(task, monkeypatch):
-
-    def test_resources(label):
-        if label == 'panel_annotated_intervals':
-            return '/path/to/panel_annotated_intervals'
-        elif label == 'xhmm_R_script':
-            return pytest.helpers.file('example_make_XHMM_plots.R')
-        else:
-            raise ValueError('Resource "{}" not mocked in this test'
-                             .format(label))
-
-    monkeypatch.setattr(paip.pipelines.cnv_calling.visualize_cnvs,
-                        'path_to_resource', test_resources)
-
-    task.copy_and_edit_R_script()
+    mock_resources = patch('paip.helpers.config.Config.resources',
+                           new_callable=PropertyMock)
+    with mock_resources as mock_resources:
+        mock_resources.return_value = {
+            'panel_annotated_intervals': '/path/to/panel_annotated_intervals',
+            'xhmm_R_script': pytest.helpers.file('example_make_XHMM_plots.R'),
+        }
+        task.copy_and_edit_R_script()
 
     # Check that a new file with edited variables has been generated
     edited_R_script = pytest.helpers.file('Cohort1/xhmm_run/make_XHMM_plots.R')

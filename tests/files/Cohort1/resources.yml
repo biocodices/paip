@@ -1,0 +1,5 @@
+resources_dir: /other/path/to
+resource-1: resource-1-modified.txt
+category:
+  category-2:
+    very-nested-resource: very-nested-resource.txt

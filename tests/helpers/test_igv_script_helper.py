@@ -3,7 +3,7 @@ from os.path import join, dirname, isfile
 from tempfile import gettempdir
 import pytest
 
-from paip.helpers import IGVScriptHelper
+from paip.helpers import IGVScriptHelper, Config
 
 
 JSON = pytest.helpers.file('Cohort1/Sample1/report_data__threshold_LPAT.json')
@@ -16,6 +16,7 @@ TEMPLATE_PATH = join(dirname(dirname(dirname(__file__))),
 def helper():
     return IGVScriptHelper(
         vcf=VCF,
+        config=Config(),
         template_path=TEMPLATE_PATH,
         template_data={'foo': 'bar'}
     )
@@ -98,6 +99,7 @@ def test_write_script():
     }
 
     helper = IGVScriptHelper(
+        config=Config(),
         vcf=VCF,
         template_path=TEMPLATE_PATH,
         template_data=template_data

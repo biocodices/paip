@@ -1,5 +1,5 @@
-base_dir: /path/to
-
-resource-1: &resource_1 resource-1
-resource-1b: *resource_1
-
+resources_dir: /path/to
+resource-1: resource-1.txt
+resource-2: resource-2.txt
+category:
+  nested-resource: nested-resource.txt

@@ -12,7 +12,6 @@ from paip.pipelines.variant_calling import (
 )
 from paip.helpers import (
     IGVScriptHelper,
-    path_to_resource,
     X_server,
 )
 
@@ -84,8 +83,9 @@ class TakeIGVSnapshots(ReportsTask, SampleTask):
             self.input()['report_generation'].path
 
         script_helper = IGVScriptHelper(
+            template_path=self.config.resources['igv_batch_template'],
+            config=self.config,
             variants_json=variants_json,
-            template_path=path_to_resource('igv_batch_template'),
             template_data={
                 'sample_igv_snapshots_dir': self.output()['snapshots_dir'].path,
                 'sample_alignment': alignment_file,
@@ -94,7 +94,7 @@ class TakeIGVSnapshots(ReportsTask, SampleTask):
                     self.input()['sample_reportable'].path,
                 'sample_all_variants': self.input()['sample_all'].path,
                 'cohort_variants': self.input()['cohort'].path,
-            }
+            },
         )
 
         script_helper.write_script(out_path=script_path)
