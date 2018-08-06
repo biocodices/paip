@@ -54,11 +54,12 @@ class CoverageAnalyser:
         and end positions must exactly match the intervals in the coverage files:
 
             - chrom
-            - start pos
-            - end pos
-            - variants (a string, not a list)
-            - genes (a string)
-            - sources/phenotypes (a string)
+            - start
+            - stop
+            - variants (a string, merged with a "_")
+            - variants_count
+            - genes (a string, merged with a "_")
+            - sources (a string, merged with a "_")
 
         You can optionally specify where the coverage threshold will be
         drawn later in the plot with *reads_threshold*.
@@ -113,11 +114,12 @@ class CoverageAnalyser:
         Read and parse a CSV with the panel regions. The expected columns are
         *exactly* these:
             - chrom
-            - start pos
-            - end pos
-            - variants (a string, not a list)
-            - genes merged with (a string)
-            - sources/phenotypes (a string)
+            - start
+            - stop
+            - variants (a string, merged with a "_")
+            - variants_count
+            - genes (a string, merged with a "_")
+            - sources (a string, merged with a "_")
         These data will be used to generate nice xtick labels for the heatmap.
         """
         panel = pd.read_csv(panel_csv)

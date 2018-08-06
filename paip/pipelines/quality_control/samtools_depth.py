@@ -15,7 +15,6 @@ class SamtoolsDepth(SampleTask):
         program_options = {
             'input_bam': self.input().fn,
         }
-
         stdout, _ = self.run_program(program_name, program_options,
                                      log_stdout=False)
 
@@ -24,4 +23,3 @@ class SamtoolsDepth(SampleTask):
 
 
 SamtoolsDepthCohort = create_cohort_task(SamtoolsDepth)
-
