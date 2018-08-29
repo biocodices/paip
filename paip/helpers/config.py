@@ -14,7 +14,9 @@ class Config:
 
         Config files are three YAMLs:
             - `resources.yml` describing location of resources, like the
-              human genome or dbsnp files.
+              human genome or dbsnp files. This file MUST have a special
+              key named "resources_dir" poiting to the directory with the
+              resources.
             - `commands.yml` with the templates for commands to run in each
               step of the pipeline.
             - `executables` with full paths to each of the program executable

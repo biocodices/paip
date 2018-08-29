@@ -185,6 +185,10 @@ You don't need to include the three files, just the ones with keys you want
 to "manually" override. Inside each YAML, you only have to include the keys
 to be overriden --the rest will be read from the default config files.
 
+NOTE: If you create a `resources.yml` under your cohort path, make sure
+you add a `resources_dir` key in there, even if you repeat the path to the
+resources directory that you specified in `~/.paip/resources.yml`.
+
 # Recipes
 
 ## <a name="Setting"></a> Feed `paip` with the `fastq` files
