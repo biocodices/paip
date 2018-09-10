@@ -1,5 +1,5 @@
 import os
-from os.path import join, dirname
+from os.path import join, dirname, basename
 import re
 from itertools import chain, cycle
 from operator import itemgetter
@@ -773,32 +773,36 @@ class CoverageAnalyser:
         "coverage_plots".
         """
         # Make the plots, get their filepaths
-        plots_dir = join(dirname(destination_path), 'coverage_plots')
-        os.makedirs(plots_dir, exist_ok=True)
-        boxplot_path = self.plot_boxplot(dest_dir=plots_dir)
-        boxplot_no_outliers_path = self.plot_boxplot(dest_dir=plots_dir,
+        plots_dir = 'coverage_plots'
+        plots_dir_path = join(dirname(destination_path), plots_dir)
+        os.makedirs(plots_dir_path, exist_ok=True)
+        boxplot_path = self.plot_boxplot(dest_dir=plots_dir_path)
+        boxplot_no_outliers_path = self.plot_boxplot(dest_dir=plots_dir_path,
                                                      include_outliers=False)
-        violinplot_path = self.plot_violinplot(dest_dir=plots_dir)
-        heatmap_path = self.plot_heatmap(dest_dir=plots_dir,
+        violinplot_path = self.plot_violinplot(dest_dir=plots_dir_path)
+        heatmap_path = self.plot_heatmap(dest_dir=plots_dir_path,
                                          max_value=self.reads_threshold)
-        heatmap_only_zero_path = self.plot_heatmap(dest_dir=plots_dir,
+        heatmap_only_zero_path = self.plot_heatmap(dest_dir=plots_dir_path,
                                                    max_value=0.001)
 
-        #  chrom_plots_basename = join(plots_dir, 'coverage')
+        #  chrom_plots_basename = join(plots_dir_path, 'coverage')
         #  chrom_plot_paths = self.plot_coverage_per_chromosome(chrom_plots_basename)
 
         # Put the plots in the HTML
         if not destination_path.endswith('.html'):
             destination_path += '.html'
 
+        def relative_path(full_path):
+            return join(plots_dir, basename(full_path))
+
         template_data = {
             'report_title': report_title,
-            'boxplot_path': boxplot_path,
-            'boxplot_no_outliers_path': boxplot_no_outliers_path,
-            'violinplot': violinplot_path,
-            'heatmap_path': heatmap_path,
-            'heatmap_only_zero_path': heatmap_only_zero_path,
-            # 'chrom_plot_paths': chrom_plots_paths,
+            'boxplot_path': relative_path(boxplot_path),
+            'boxplot_no_outliers_path': relative_path(boxplot_no_outliers_path),
+            'violinplot': relative_path(violinplot_path),
+            'heatmap_path': relative_path(heatmap_path),
+            'heatmap_only_zero_path': relative_path(heatmap_only_zero_path),
+            # 'chrom_plot_paths': relative_path(chrom_plots_paths),
         }
         html_file = self.make_html_report(
             template_data=template_data,

@@ -43,7 +43,7 @@ preference SAM.SHOW_DUPLICATES true
 genome hg19
 load {{ dbsnp_GRCh37 }}
 load {{ exac_GRCh37  }}
-load {{ clinvar_GRCh37 }}
+load {{ clinvar_GRCh37_VCF }}
 load {{ indels_1000G }}
 load {{ indels_mills }}
 #
