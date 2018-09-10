@@ -1,8 +1,6 @@
 import re
 from inspect import signature
 
-import pandas as pd
-
 from anotamela.pipeline import annotate_entrez_gene_ids
 
 from paip.task_types import CohortAnnotationTask
@@ -37,5 +35,6 @@ def extract_entrez_gene_ids_from_vep_tsv(tsv_path):
     file. Removes any Ensemble gene IDs found.
     """
     vep_annotations = read_vep_tsv(tsv_path)
-    gene_ids = vep_annotations['gene'].unique()
+    gene_ids = vep_annotations['gene'].dropna().unique()
+    print([g for g in gene_ids if not isinstance(g, str)])
     return [gene_id for gene_id in gene_ids if re.search(r'^[0-9]+$', gene_id)]
