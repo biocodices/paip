@@ -150,7 +150,14 @@ directory for the resources. I recommend locating it at `~/paip_resources`:
 `mkdir -p ~/paip_resources`. Put the resources you downloaded from the
 web in there.
 
-Create a `~/.paip/resources.yml` with the path to the resources directory and 
+```
+~/.paip
+ |_ resources.yml
+ |_ commands.yml
+ |_ executables.yml
+```
+
+Create a `~/.paip/resources.yml` with the path to the resources directory and
 the filenames of the resources. Use a comple filepath, no tilde `~`. I recommend
 using the example YAML at `example_config/resources.yml` as a guide.
 
@@ -158,9 +165,29 @@ Create also the file `~/.paip/executables.yml` with paths to every executable
 needed in the pipeline. Avoid tildes (`~`) again. You can use `example_config/executables.yml`
 as a guide.
 
-Finally, you can copy the `example_config/commands.yml` file to your `~/.paip`
+You can copy the `example_config/commands.yml` file to your `~/.paip`
 folder. The exact commands run in each step are specified there, and you might
 want to tune them for your needs.
+
+## Custom configurations for a particular NGS run
+
+You can override any of the settings of the default config files in the
+base directory of a given cohort:
+
+```
+/path/to/some/cohort
+ |_ resources.yml
+ |_ commands.yml
+ |_ executables.yml
+```
+
+You don't need to include the three files, just the ones with keys you want
+to "manually" override. Inside each YAML, you only have to include the keys
+to be overriden --the rest will be read from the default config files.
+
+NOTE: If you create a `resources.yml` under your cohort path, make sure
+you add a `resources_dir` key in there, even if you repeat the path to the
+resources directory that you specified in `~/.paip/resources.yml`.
 
 # Recipes
 
@@ -205,7 +232,7 @@ Sample2:
   lane_number: 1
 ```
 
-Most of these data will be used to give a name to the read groups, and later to extract the sample from the multisample VCF. 
+Most of these data will be used to give a name to the read groups, and later to extract the sample from the multisample VCF.
 
 The data about `flowcell_id` and `lane_number` is usually found in the
 read IDs of the `fastq` files. Their format is

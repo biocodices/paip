@@ -12,6 +12,16 @@ class Config:
         in the CONFIG_DIR files will be merged with the definitions in the custom
         config files, with priority for custom configs.
 
+        Config files are three YAMLs:
+            - `resources.yml` describing location of resources, like the
+              human genome or dbsnp files. This file MUST have a special
+              key named "resources_dir" poiting to the directory with the
+              resources.
+            - `commands.yml` with the templates for commands to run in each
+              step of the pipeline.
+            - `executables` with full paths to each of the program executable
+              files to be used in the commands.
+
         Example:
 
             > config = Config(custom_config_dir="~/NGS-RUN-1")
