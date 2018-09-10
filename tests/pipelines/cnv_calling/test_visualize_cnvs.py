@@ -1,9 +1,10 @@
 import os
 from os.path import isfile
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import Mock, patch, PropertyMock
 
 import pytest
 
+import paip
 from paip.pipelines.cnv_calling import VisualizeCNVs
 
 
@@ -13,8 +14,10 @@ def task(cohort_task_factory):
 
 
 def test_run(task, monkeypatch):
-    mock_makedirs = MagicMock(name='makedirs')
+    mock_makedirs = Mock(name='makedirs')
     monkeypatch.setattr(os, 'makedirs', mock_makedirs)
+    monkeypatch.setattr(paip.pipelines.cnv_calling.VisualizeCNVs,
+                        'copy_and_edit_R_script', Mock())
 
     task.run()
 

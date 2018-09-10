@@ -45,11 +45,13 @@ def test_run(task, monkeypatch):
     assert pipeline_instance.rs_variants.to_json.call_count == 1
     assert pipeline_instance.rs_variants.to_json.call_args[1] == \
         {'orient': 'split'}
-    assert pipeline_instance.gene_annotations.to_json.call_count == 1
-    assert pipeline_instance.gene_annotations.to_json.call_args[1] == \
-        {'orient': 'split'}
     assert pipeline_instance.other_variants.to_json.call_count == 1
     assert pipeline_instance.other_variants.to_json.call_args[1] == \
         {'orient': 'split'}
 
-    assert open_().write.call_count == 3
+    # I don't write genes.json in this task anymore:
+    #  assert pipeline_instance.gene_annotations.to_json.call_count == 1
+    #  assert pipeline_instance.gene_annotations.to_json.call_args[1] == \
+        #  {'orient': 'split'}
+
+    assert open_().write.call_count == 2

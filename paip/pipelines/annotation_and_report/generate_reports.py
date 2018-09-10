@@ -9,6 +9,7 @@ from paip.pipelines.annotation_and_report import (
     AnnotateWithSnpeff,
     AnnotateWithVEP,
     AnnotateVariants,
+    AnnotateGenes,
 )
 
 
@@ -45,7 +46,8 @@ class GenerateReports(ReportsTask, SampleTask):
         # that are not needed nor expected by the tasks upstream:
         return {
             'vep': AnnotateWithVEP(**self.cohort_params()),
-            'annotate': AnnotateVariants(**self.cohort_params()),
+            'annotate_variants': AnnotateVariants(**self.cohort_params()),
+            'annotate_genes': AnnotateGenes(**self.cohort_params()),
             'snpeff': AnnotateWithSnpeff(**self.sample_params()),
         }
 
@@ -60,8 +62,8 @@ class GenerateReports(ReportsTask, SampleTask):
         reports_pipeline = ReportsPipeline(
             vep_tsv=self.input()['vep'].fn,
             genotypes_vcf=self.input()['snpeff'].fn,
-            variants_json=self.input()['annotate']['variants_json'].fn,
-            genes_json=self.input()['annotate']['genes_json'].fn,
+            variants_json=self.input()['annotate_variants']['variants_json'].fn,
+            genes_json=self.input()['annotate_genes'].fn,
 
             templates_dir=self.templates_dir,
             translations_dir=self.translations_dir,

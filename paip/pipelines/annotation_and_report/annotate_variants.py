@@ -15,8 +15,8 @@ class AnnotateVariants(CohortAnnotationTask):
     REQUIRES = FilterGenotypes
     OUTPUT = {
         'variants_json': 'rs_variants.json',
-        'genes_json': 'genes.json',
         'other_variants_json': 'other_variants.json',
+        # 'genes_json': 'genes.json',
     }
 
     def run(self):
@@ -31,7 +31,8 @@ class AnnotateVariants(CohortAnnotationTask):
         with open(self.output()['other_variants_json'].fn, 'w') as f:
             f.write(other_variants_json)
 
-        genes_json = annotator.gene_annotations.to_json(orient='split')
-        with open(self.output()['genes_json'].fn, 'w') as f:
-            f.write(genes_json)
-
+        ## We now use a separate task to annotate the genes, not from the
+        ## rs_ids annotations, but from VEP annotations!
+        #  genes_json = annotator.gene_annotations.to_json(orient='split')
+        #  with open(self.output()['genes_json'].fn, 'w') as f:
+            #  f.write(genes_json)

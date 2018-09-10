@@ -1,9 +1,9 @@
 from .annotate_with_vep import AnnotateWithVEP
 from .annotate_with_snpeff import AnnotateWithSnpeff
 from .annotate_variants import AnnotateVariants
+from .annotate_genes import AnnotateGenes, extract_entrez_gene_ids_from_vep_tsv
 from .generate_reports import GenerateReports
 from .take_igv_snapshots import TakeIGVSnapshots
-from .copy_igv_shots import CopyIGVShots
 from .annotate_with_clinvar import AnnotateWithClinvar
 from .annotate_with_dbsnp_web import AnnotateWithDbsnpWeb
 from .annotate_with_gene_entrez import AnnotateWithGeneEntrez
