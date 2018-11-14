@@ -21,15 +21,15 @@ class GenotypeCNVs(CohortTask):
         program_name = 'xhmm genotype'
         program_options = {
             # XhmmZscores first output
-            'zscores_matrix': self.input()[0][0].fn,
+            'zscores_matrix': self.input()[0][0].path,
 
             # FilterPrenormalizedMatrix only output
-            'read_depth_matrix': self.input()[1].fn,
+            'read_depth_matrix': self.input()[1].path,
 
             # DiscoverCNVs first output
-            'cnvs_file': self.input()[2][0].fn,
+            'cnvs_file': self.input()[2][0].path,
 
-            'output_vcf': self.output().fn,
+            'output_vcf': self.output().path,
         }
 
         self.run_program(program_name, program_options)

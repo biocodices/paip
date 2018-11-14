@@ -60,10 +60,10 @@ class GenerateReports(ReportsTask, SampleTask):
             self.phenos_regex_list = json.loads(self.phenos_regex_list)
 
         reports_pipeline = ReportsPipeline(
-            vep_tsv=self.input()['vep'].fn,
-            genotypes_vcf=self.input()['snpeff'].fn,
-            variants_json=self.input()['annotate_variants']['variants_json'].fn,
-            genes_json=self.input()['annotate_genes'].fn,
+            vep_tsv=self.input()['vep'].path,
+            genotypes_vcf=self.input()['snpeff'].path,
+            variants_json=self.input()['annotate_variants']['variants_json'].path,
+            genes_json=self.input()['annotate_genes'].path,
 
             templates_dir=self.templates_dir,
             translations_dir=self.translations_dir,

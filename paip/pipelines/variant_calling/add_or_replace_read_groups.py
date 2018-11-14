@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import AlignToReference
+from paip.pipelines.variant_calling import CompressAlignment
 
 
 class AddOrReplaceReadGroups(SampleTask):
@@ -8,14 +8,14 @@ class AddOrReplaceReadGroups(SampleTask):
     working directory and runs a command that adds (or replaces) read groups
     to each read. The result is written to a BAM file.
     """
-    REQUIRES = AlignToReference
+    REQUIRES = CompressAlignment
     OUTPUT = 'raw_alignment_with_read_groups.bam'
 
     def run(self):
         with self.output().temporary_path() as self.temp_bam:
             program_name = 'picard AddOrReplaceReadGroups'
             program_options = {
-                'input_sam': self.input().fn,
+                'input_bam': self.input().path,
                 'library_id': self.library_id,
                 'platform': self.platform,
                 'flowcell_id': self.flowcell_id,

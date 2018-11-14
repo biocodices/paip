@@ -47,7 +47,9 @@ human_features: Homo_sapiens.GRCh37.87.gtf
 #                                                                #
 ##################################################################
 
-clinvar_GRCh37: clinvar_common_and_clinical_20170501.vcf.gz
+clinvar_GRCh37_VCF: &clinvar_GRCh37_VCF clinvar_20180729.grch37.vcf.gz
+clinvar_GRCh37: *clinvar_GRCh37_VCF
+clinvar_VCF: *clinvar_GRCh37_VCF
 # ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/
 
 exac_GRCh37: ExAC.r1.sites.vep.vcf.gz

@@ -21,7 +21,7 @@ class SelectIndels(CohortTask):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk SelectVariants indels'
             program_options = {
-                'input_vcf': self.input().fn,
+                'input_vcf': self.input().path,
                 'output_vcf': self.temp_vcf,
             }
 

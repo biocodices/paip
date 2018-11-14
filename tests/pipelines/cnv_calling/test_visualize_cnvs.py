@@ -1,4 +1,18 @@
 import os
+from os import remove
+# NOTE: I need to remove files after testing in these tests, so i'm importing
+# remove directly, since os.remove is mocked in conftest.py and set to autouse.
+# If you change this here and do something like:
+#
+#   import os
+#
+# and then:
+#
+#   os.remove(fn)
+#
+# You wil used the mocked version (which is useful in other tests of this
+# package, that's why it's set this way.)
+
 from os.path import isfile
 from unittest.mock import Mock, patch, PropertyMock
 
@@ -61,6 +75,6 @@ def test_copy_and_edit_R_script(task, monkeypatch):
             assert script_line.endswith('original-value"')
 
     # Clean afterwards
-    os.remove(edited_R_script)
+    remove(edited_R_script)
     assert not isfile(edited_R_script)
 

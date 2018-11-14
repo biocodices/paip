@@ -104,8 +104,8 @@ class CoverageAnalyser:
 
     def _read_panel_from_bed(self, panel_bed):
         """Read and parse the BED with the panel regions and features."""
-        panel = pd.read_table(panel_bed, sep='\s+',
-                              names=['chrom', 'start', 'stop', 'genes'])
+        panel = pd.read_csv(panel_bed, sep=r'\s+',
+                            names=['chrom', 'start', 'stop', 'genes'])
         panel['chrom'] = panel['chrom'].astype(str)
         return panel
 
@@ -154,7 +154,7 @@ class CoverageAnalyser:
 
     def _add_panel_vcf_data_to_intervals(self):
         """Merge data from the VCF self.panel into self.intervals."""
-        opts = dict(panel_variants=self.panel, axis=1, reduce=True)
+        opts = dict(panel_variants=self.panel, axis=1, result_type='reduce')
 
         self.intervals['genes'] = \
             self.intervals.apply(self._find_genes, **opts).map(tuple)

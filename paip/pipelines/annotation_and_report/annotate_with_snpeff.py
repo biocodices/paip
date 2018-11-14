@@ -14,7 +14,7 @@ class AnnotateWithSnpeff(SampleTask):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'snpeff annotate'
             program_options = {
-                'input_vcf': self.input().fn,
+                'input_vcf': self.input().path,
                 'output_summary_csv': self.path('snpEff.summary.csv'),
             }
 
@@ -26,6 +26,6 @@ class AnnotateWithSnpeff(SampleTask):
                 f.write(stdout)
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.eff.vcf')
+        fn = self.input().path.replace('.vcf', '.eff.vcf')
         return luigi.LocalTarget(fn)
 

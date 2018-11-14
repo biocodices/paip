@@ -14,11 +14,11 @@ def task(cohort_task_factory):
 
 
 def test_output(task):
-    assert task.output().fn.endswith('.gene_entrez_annotations.json')
+    assert task.output().path.endswith('.gene_entrez_annotations.json')
 
 
 def test_extract_gene_entrez_ids_from_dbsnp_annotations(task):
-    fn = task.input().fn # Cohort1/Cohort1.dbsnp_annotations.json
+    fn = task.input().path # Cohort1/Cohort1.dbsnp_annotations.json
     result = AnnotateWithGeneEntrez._extract_gene_entrez_ids_from_dbsnp_annotations(fn)
     assert result == [1, 2, 3]
 

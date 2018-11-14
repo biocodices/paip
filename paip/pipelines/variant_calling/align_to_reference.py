@@ -17,18 +17,13 @@ class AlignToReference(SampleTask):
     def run(self):
         program_name = 'bwa'
         program_options = {
-            'forward_reads': self.input()[0].fn,
-            'reverse_reads': self.input()[1].fn,
+            'forward_reads': self.input()[0].path,
+            'reverse_reads': self.input()[1].path,
         }
 
-        # BWA writes the aligned reads to STDOUT, so we capture that:
-        stdout, _ = self.run_program(program_name, program_options,
-                                     log_stdout=False)
-
-        # And then we write it to the output file:
-        with open(self.output().fn, 'wb') as f:
-            f.write(stdout)
+        with self.output().temporary_path() as temp_sam:
+            self.run_program(program_name, program_options,
+                             redirect_stdout_to_path=temp_sam)
 
 
 AlignToReferenceCohort = create_cohort_task(AlignToReference)
-

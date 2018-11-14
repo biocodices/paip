@@ -18,8 +18,8 @@ class RealignAroundIndels(SampleTask):
         with self.output().temporary_path() as self.temp_bam:
             program_name = 'gatk IndelRealigner'
             program_options = {
-                'input_bam': self.input()[0].fn,
-                'targets_file': self.input()[1].fn,
+                'input_bam': self.input()[0].path,
+                'targets_file': self.input()[1].path,
                 'output_bam': self.temp_bam,
             }
 

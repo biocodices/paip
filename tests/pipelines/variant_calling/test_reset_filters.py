@@ -13,6 +13,6 @@ def test_run(task):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'bcftools reset_filters'
-    assert program_options['input_vcf'] == task.input()[0].fn
-    assert program_options['output_vcf'] == task.output().fn
+    assert program_options['input_vcf'] == task.input()[0].path
+    assert program_options['output_vcf'] == task.output().path
 

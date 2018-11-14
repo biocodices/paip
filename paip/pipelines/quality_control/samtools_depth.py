@@ -13,13 +13,10 @@ class SamtoolsDepth(SampleTask):
     def run(self):
         program_name = 'samtools depth'
         program_options = {
-            'input_bam': self.input().fn,
+            'input_bam': self.input().path,
         }
-        stdout, _ = self.run_program(program_name, program_options,
-                                     log_stdout=False)
-
-        with open(self.output().fn, 'wb') as f:
-            f.write(stdout)
+        self.run_program(program_name, program_options,
+                         redirect_stdout_to_path=self.output().path)
 
 
 SamtoolsDepthCohort = create_cohort_task(SamtoolsDepth)

@@ -13,6 +13,6 @@ def test_run(task):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'gatk RealignerTargetCreator'
-    assert program_options['input_bam'] == task.input().fn
+    assert program_options['input_bam'] == task.input().path
     assert 'realignment.intervals-luigi-tmp' in program_options['outfile']
 

@@ -12,12 +12,8 @@ class BcftoolsStats(SampleTask):
     def run(self):
         program_name = 'bcftools stats'
         program_options = {
-            'input_vcf': self.input().fn,
+            'input_vcf': self.input().path,
         }
 
-        stdout, _ = self.run_program(program_name, program_options,
-                                     log_stdout=False)
-
-        with open(self.output().fn, 'wb') as f:
-            f.write(stdout)
-
+        self.run_program(program_name, program_options,
+                         redirect_stdout_to_path=self.output().path)

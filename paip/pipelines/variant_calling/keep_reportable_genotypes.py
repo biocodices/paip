@@ -17,7 +17,7 @@ class KeepReportableGenotypes(SampleTask):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk SelectVariants reportable'
             program_options = {
-                'input_vcf': self.input().fn,
+                'input_vcf': self.input().path,
                 'sample': self.sample,
                 'min_GQ': self.min_gq,
                 'min_DP': self.min_dp,

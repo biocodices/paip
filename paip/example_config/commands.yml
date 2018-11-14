@@ -44,11 +44,16 @@ bwa:
      {forward_reads}
      {reverse_reads}'
 
+samtools SAM to BAM:
+  '{executable} view
+   {input_sam}
+   -bT {reference_genome}'
+
 picard AddOrReplaceReadGroups:
     # SO = SortOrder for the output
     '{executable}
      AddOrReplaceReadGroups
-     I={input_sam}
+     I={input_bam}
      RGID={flowcell_id}.{lane_number}.{sample_id}
      RGSM={sample_id}
      RGLB={library_id}

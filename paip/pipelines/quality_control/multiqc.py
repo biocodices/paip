@@ -45,7 +45,7 @@ class MultiQC(CohortTask):
         program_name = 'multiqc'
         program_options = {
             'basedir': self.basedir,
-            'report_filename': self.output().fn,
+            'report_filename': self.output().path,
         }
         self.run_program(program_name, program_options)
 

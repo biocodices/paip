@@ -41,4 +41,4 @@ def test_requires(task):
 
 
 def test_output(task):
-    assert task.output().fn.endswith('.clinvar_variants.json')
+    assert task.output().path.endswith('.clinvar_variants.json')

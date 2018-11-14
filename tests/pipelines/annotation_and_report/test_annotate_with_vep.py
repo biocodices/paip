@@ -13,10 +13,10 @@ def test_run(task):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'vep annotate'
-    assert program_options['input_vcf'] == task.input().fn
+    assert program_options['input_vcf'] == task.input().path
     assert program_options['output_stats_html'].endswith('_summary.html')
     assert 'luigi-tmp' in program_options['output_vcf']
 
 
 def test_output(task):
-    assert task.output().fn.endswith('.vep.tsv')
+    assert task.output().path.endswith('.vep.tsv')

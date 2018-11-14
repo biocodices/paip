@@ -27,7 +27,7 @@ class SummarizeCoverage(SampleTask):
 
         coverage_analyser = CoverageAnalyser(
             panel=panel,
-            coverage_files=[self.input().fn],
+            coverage_files=[self.input().path],
             reads_threshold=self.min_dp,
         )
 
@@ -36,14 +36,14 @@ class SummarizeCoverage(SampleTask):
             module_name='coverage_summary',
         )
 
-        with open(self.output()['for_multiqc'].fn, 'w') as f:
+        with open(self.output()['for_multiqc'].path, 'w') as f:
             f.write(json_data)
 
         coverage_analyser.coverage_summary(
-            target_csv_path=self.output()['for_reports'].fn
+            target_csv_path=self.output()['for_reports'].path
         )
         coverage_analyser.coverage_summary_per_gene(
-            target_csv_path=self.output()['for_reports_per_gene'].fn
+            target_csv_path=self.output()['for_reports_per_gene'].path
         )
         coverage_analyser.plot_coverage_distribution(dest_dir=self.dir)
 

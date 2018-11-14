@@ -15,6 +15,6 @@ def test_run(task):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'picard CollectAlignmentSummaryMetrics'
-    assert program_options['input_bam'] == task.input().fn
+    assert program_options['input_bam'] == task.input().path
     assert 'alignment_metrics.txt-luigi-tmp' in program_options['output_txt']
 

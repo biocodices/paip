@@ -23,11 +23,11 @@ class PlotCoverage(CohortTask):
             panel_variants = None
 
         coverage_analyser = CoverageAnalyser(
-            coverage_files=[input_.fn for input_ in self.input()],
+            coverage_files=[input_.path for input_ in self.input()],
             panel=panel_variants,
             reads_threshold=self.min_dp,
         )
 
         report_title = self.name.replace('_', ' ').title()
         coverage_analyser.report(report_title=report_title,
-                                 destination_path=self.output().fn)
+                                 destination_path=self.output().path)

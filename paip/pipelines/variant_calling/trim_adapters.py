@@ -19,8 +19,8 @@ class TrimAdapters(SampleTask):
         with temp_R1() as temp_R1_file, temp_R2() as temp_R2_file:
             program_name = self.trim_software
             program_options = {
-                'forward_reads': self.input()[0].fn,
-                'reverse_reads': self.input()[1].fn,
+                'forward_reads': self.input()[0].path,
+                'reverse_reads': self.input()[1].path,
                 'forward_output': temp_R1_file,
                 'reverse_output': temp_R2_file,
             }

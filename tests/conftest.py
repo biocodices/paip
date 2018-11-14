@@ -85,10 +85,10 @@ def task_factory(monkeypatch):
         return_value = []
 
         if not kwargs.get('log_stdout'):
-            return_value.append('stdout')
+            return_value.append(b'stdout')
 
         if not kwargs.get('log_stderr'):
-            return_value.append('stderr')
+            return_value.append(b'stderr')
 
         return return_value
 
@@ -117,6 +117,13 @@ def mock_makedirs(monkeypatch):
     mock_makedirs = Mock(name='os.makedirs')
     monkeypatch.setattr(os, 'makedirs', mock_makedirs)
     return mock_makedirs
+
+
+@pytest.fixture(scope='function', autouse=True)
+def mock_remove(monkeypatch):
+    mock_remove = MagicMock(name='os.remove')
+    monkeypatch.setattr(os, 'remove', mock_remove)
+    return mock_remove
 
 
 @pytest.fixture(scope='function')

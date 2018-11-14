@@ -21,13 +21,13 @@ def test_run(task):
     (program_name, program_options), kwargs = task.run_program.call_args
 
     assert program_name == 'snpeff annotate'
-    assert program_options['input_vcf'] == task.input().fn
+    assert program_options['input_vcf'] == task.input().path
     # Test the correct ending to snpeff summary is added:
     assert program_options['output_summary_csv'].endswith('snpEff.summary.csv')
     assert kwargs['log_stdout'] is False
-    open_().write.assert_called_once_with('stdout')
+    open_().write.assert_called_once_with(b'stdout')
 
 
 def test_output(task, test_cohort_path):
-    assert task.output().fn.endswith('.eff.vcf')
+    assert task.output().path.endswith('.eff.vcf')
 

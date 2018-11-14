@@ -19,7 +19,7 @@ class ExtractSample(SampleTask):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk SelectVariants sample'
             program_options = {
-                'input_vcf': self.input().fn,
+                'input_vcf': self.input().path,
                 'sample_id': self.sample,
                 'output_vcf': self.temp_vcf,
             }

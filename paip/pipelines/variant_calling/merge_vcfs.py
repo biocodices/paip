@@ -16,7 +16,7 @@ class MergeVCFs(CohortTask):
     def run(self):
         # CallTargets outputs both a VCF and a BAM (in that order).
         # We use the VCFs here:
-        input_vcfs = ['-V {}'.format(input_.fn) for input_ in self.input()]
+        input_vcfs = ['-V {}'.format(input_.path) for input_ in self.input()]
 
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk CombineVariants'

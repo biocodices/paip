@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def run_command(command, logfile=None, log_append=False, log_stdout=True,
-                log_stderr=True):
+                log_stderr=True, redirect_stdout_to_path=None):
     """
     Accepts a *command* and runs it in the shell. Returns (STDOUT, STDERR).
     If the command fails, an Exception will be raised.
@@ -20,7 +20,14 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
 
     If logging to a file, by default the logfile will be truncated. You can
     append to the logfile instead by setting log_append=True.
+
+    If *redirect_stdout_to_path* is set to a path (string), then the STDOUT
+    will be written to a file in the given path (if a file exists, it will
+    be overwritten!). This option is not compatible with *log_stdout*.
     """
+    if redirect_stdout_to_path:
+        log_stdout = False
+
     if logfile:
         start_time = datetime.now()
         with open(logfile, ('a' if log_append else 'w')) as f:
@@ -28,8 +35,18 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
             add_to_log('COMMAND', command, f)
 
     try:
+        if redirect_stdout_to_path:
+            stdout_destination = open(redirect_stdout_to_path, "wb")
+        else:
+            stdout_destination = PIPE
+
         logger.debug('Running: ' + command)
-        result = run(command, shell=True, check=True, stdout=PIPE, stderr=PIPE)
+        result = run(command, shell=True, check=True,
+                     stdout=stdout_destination, stderr=PIPE)
+
+        if redirect_stdout_to_path:
+            stdout_destination.close()
+
     except CalledProcessError as error:
         logger.error('This command failed (return code={}):\n{}'
                      .format(error.returncode, error.cmd))
@@ -66,4 +83,3 @@ def add_to_log(section_name, content, file_handler):
     message = ('{sep} {title}\n\n{content}\n\n'
                .format(sep=separator, title=section_name, content=content))
     file_handler.write(message)
-

@@ -16,7 +16,7 @@ class JointGenotyping(CohortTask):
     def run(self):
         # MakeGVCF outputs both a GVCF and a BAM (in that order).
         # We use the GVCFs here:
-        input_vcfs = ['-V {}'.format(inputs[0].fn) for inputs in self.input()]
+        input_vcfs = ['-V {}'.format(inputs[0].path) for inputs in self.input()]
 
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk GenotypeGVCFs ' + self.pipeline_type

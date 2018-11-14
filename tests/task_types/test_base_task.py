@@ -163,11 +163,11 @@ def test_find_output(base_task):
     output_files = [luigi.LocalTarget(fn) for fn in output_files]
     base_task.output = lambda: output_files
 
-    assert base_task._find_output('baz').fn == 'bar.baz'
+    assert base_task._find_output('baz').path == 'bar.baz'
 
     # Works with only one file in the output:
     base_task.output = lambda: output_files[0]
-    assert base_task._find_output('bar').fn == 'foo.bar'
+    assert base_task._find_output('bar').path == 'foo.bar'
 
     with pytest.raises(ValueError):
         base_task._find_output('nonexistent')

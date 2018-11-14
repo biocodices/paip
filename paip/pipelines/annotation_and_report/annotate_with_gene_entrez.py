@@ -17,14 +17,14 @@ class AnnotateWithGeneEntrez(CohortAnnotationTask):
     def run(self):
         # Extract the gene_entrez_ids from the input file
         gene_entrez_ids = \
-            self._extract_gene_entrez_ids_from_dbsnp_annotations(self.input().fn)
+            self._extract_gene_entrez_ids_from_dbsnp_annotations(self.input().path)
 
         # Annotate those gene ids
         gene_entrez = GeneEntrezAnnotator(**self.annotation_kwargs)
         gene_annotations = list(gene_entrez.annotate(gene_entrez_ids).values())
 
         # Write the annotations to the output file
-        with open(self.output().fn, 'w') as f:
+        with open(self.output().path, 'w') as f:
             json.dump(gene_annotations, f)
 
     @staticmethod

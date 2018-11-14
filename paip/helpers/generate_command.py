@@ -10,7 +10,7 @@ def generate_command(program_name, options, config):
     # Use the first word of *program_name* to get the executable.
     # The reason is that "gatk SelectVariants", "gatk PrintReads", etc.,
     # should all use the same "gatk" executable. This also applies to
-    # the subcommands of picard, for instance.
+    # the subcommands of picard, samtools, etc.
     executable = config.executables[program_name.split(' ')[0]]
     command_template = config.commands[program_name]
     command_options = config.resources

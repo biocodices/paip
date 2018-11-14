@@ -16,7 +16,7 @@ class DepthOfCoverage(SampleTask):
         with self.output().temporary_path() as tempfile:
             program_name = 'gatk DepthOfCoverage'
             program_options = {
-                'input_bam': self.input().fn,
+                'input_bam': self.input().path,
                 'outfile': tempfile,
             }
             self.run_program(program_name, program_options)
@@ -37,7 +37,7 @@ class DepthOfCoverage(SampleTask):
 
         for extra_extension in extra_files:
             generated_file = tempfile + extra_extension
-            intended_file = self.output().fn + extra_extension
+            intended_file = self.output().path + extra_extension
             os.rename(generated_file, intended_file)
 
 

@@ -33,8 +33,8 @@ class XhmmPCA(CohortTask):
         self.run_program(program_name, program_options)
 
         for outfile in self.output():
-            tempfile = outfile.fn.replace('DATA.RD_PCA', temp_basename)
-            os.rename(tempfile, outfile.fn)
+            tempfile = outfile.path.replace('DATA.RD_PCA', temp_basename)
+            os.rename(tempfile, outfile.path)
 
     def check_matrix(self, matrix_file):
         """Check that the input matrix is not (almost) empty."""

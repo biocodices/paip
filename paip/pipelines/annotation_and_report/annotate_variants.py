@@ -21,18 +21,18 @@ class AnnotateVariants(CohortAnnotationTask):
 
     def run(self):
         annotator = AnnotationPipeline(**self.annotation_kwargs)
-        annotator.run_from_vcf(self.input().fn)
+        annotator.run_from_vcf(self.input().path)
 
         rs_variants_json = annotator.rs_variants.to_json(orient='split')
-        with open(self.output()['variants_json'].fn, 'w') as f:
+        with open(self.output()['variants_json'].path, 'w') as f:
             f.write(rs_variants_json)
 
         other_variants_json = annotator.other_variants.to_json(orient='split')
-        with open(self.output()['other_variants_json'].fn, 'w') as f:
+        with open(self.output()['other_variants_json'].path, 'w') as f:
             f.write(other_variants_json)
 
         ## We now use a separate task to annotate the genes, not from the
         ## rs_ids annotations, but from VEP annotations!
         #  genes_json = annotator.gene_annotations.to_json(orient='split')
-        #  with open(self.output()['genes_json'].fn, 'w') as f:
+        #  with open(self.output()['genes_json'].path, 'w') as f:
             #  f.write(genes_json)

@@ -28,7 +28,7 @@ def test_requires_variants_pipeline(variant_sites_task):
 
 
 def test_output(variant_sites_task, test_cohort_path):
-    assert variant_sites_task.output().fn.endswith('.snpsift_dbsnp.vcf')
+    assert variant_sites_task.output().path.endswith('.snpsift_dbsnp.vcf')
 
 
 def test_run(variant_sites_task, test_cohort_path, monkeypatch):
@@ -42,7 +42,7 @@ def test_run(variant_sites_task, test_cohort_path, monkeypatch):
 
     (program_name, program_options), kwargs = task.run_program.call_args
     assert program_name == 'snpsift dbSNP'
-    assert program_options['input_vcf'] == task.input().fn
+    assert program_options['input_vcf'] == task.input().path
     assert kwargs['log_stdout'] is False
-    open_().write.assert_called_once_with('stdout')
+    open_().write.assert_called_once_with(b'stdout')
 

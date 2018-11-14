@@ -18,16 +18,16 @@ class FastQC(SampleTask):
         # Run on raw reads (CheckFastqs output)
         raw_fastqs = self.input()[0]
         program_options = {
-            'forward_reads': raw_fastqs[0].fn,
-            'reverse_reads': raw_fastqs[1].fn,
+            'forward_reads': raw_fastqs[0].path,
+            'reverse_reads': raw_fastqs[1].path,
         }
         self.run_program(program_name, program_options)
 
         # Run on trimmed reads (TrimAdapters output)
         trimmed_fastqs = self.input()[1]
         program_options = {
-            'forward_reads': trimmed_fastqs[0].fn,
-            'reverse_reads': trimmed_fastqs[1].fn,
+            'forward_reads': trimmed_fastqs[0].path,
+            'reverse_reads': trimmed_fastqs[1].path,
         }
         self.run_program(program_name, program_options, log_append=True)
 

@@ -10,8 +10,8 @@ class CombineVariants(CohortTask):
     OUTPUT = 'filt.vcf'
 
     def run(self):
-        input_snps = self.input()[0].fn
-        input_indels = self.input()[1].fn
+        input_snps = self.input()[0].path
+        input_indels = self.input()[1].path
 
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk CombineVariants snps_indels'

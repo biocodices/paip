@@ -16,7 +16,7 @@ class FilterSNPs(CohortTask):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk VariantFiltration snps'
             program_options = {
-                'input_vcf': self.input().fn,
+                'input_vcf': self.input().path,
                 'output_vcf': self.temp_vcf,
             }
 
@@ -25,6 +25,6 @@ class FilterSNPs(CohortTask):
         self.rename_temp_idx()
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.filt.vcf')
+        fn = self.input().path.replace('.vcf', '.filt.vcf')
         return luigi.LocalTarget(fn)
 

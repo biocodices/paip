@@ -22,7 +22,7 @@ def test_run(task, mock_rename):
 
     assert program_name == 'gatk SelectVariants reportable'
     program_input = program_options['input_vcf']
-    assert program_input == task.input().fn
+    assert program_input == task.input().path
     assert 'reportable.vcf-luigi-tmp' in program_options['output_vcf']
     assert program_options['min_GQ'] == 30
     assert program_options['min_DP'] == 30

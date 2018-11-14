@@ -41,13 +41,13 @@ def test_output(sample_task, test_sample_path):
     # As single element
     sample_task.OUTPUT = 'foo.bar'
     expected_output = test_sample_path('Sample1.foo.bar')
-    assert sample_task.output().fn == expected_output
+    assert sample_task.output().path == expected_output
 
     # As list
     sample_task.OUTPUT = ['foo.bar', 'foo.baz']
     expected_outputs = [test_sample_path('Sample1.foo.bar'),
                         test_sample_path('Sample1.foo.baz')]
-    assert [out.fn for out in sample_task.output()] == expected_outputs
+    assert [out.path for out in sample_task.output()] == expected_outputs
 
 
 def test_cohort_params(sample_task):

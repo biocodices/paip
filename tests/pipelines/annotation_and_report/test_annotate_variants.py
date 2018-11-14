@@ -40,7 +40,7 @@ def test_run(task, monkeypatch):
 
     pipe_run = pipeline_instance.run_from_vcf
     assert pipe_run.call_count == 1
-    assert pipe_run.call_args[0][0] == task.input().fn
+    assert pipe_run.call_args[0][0] == task.input().path
 
     assert pipeline_instance.rs_variants.to_json.call_count == 1
     assert pipeline_instance.rs_variants.to_json.call_args[1] == \

@@ -21,7 +21,7 @@ class AnnotateWithSnpsiftDbSNP(CohortTask):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'snpsift dbSNP'
             program_options = {
-                'input_vcf': self.input().fn,
+                'input_vcf': self.input().path,
             }
 
             # Snpsift outputs the annotated VCF to STDOUT
@@ -32,6 +32,6 @@ class AnnotateWithSnpsiftDbSNP(CohortTask):
                 f.write(stdout)
 
     def output(self):
-        fn = self.input().fn.replace('.vcf', '.snpsift_dbsnp.vcf')
+        fn = self.input().path.replace('.vcf', '.snpsift_dbsnp.vcf')
         return luigi.LocalTarget(fn)
 

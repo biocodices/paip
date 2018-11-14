@@ -19,7 +19,7 @@ def test_run(task, mock_rename):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'gatk GenotypeGVCFs variant_sites'
-    expected_inputs = ['-V {}'.format(input_[0].fn) for input_ in task.input()]
+    expected_inputs = ['-V {}'.format(input_[0].path) for input_ in task.input()]
     assert program_options['input_gvcfs'] == ' '.join(expected_inputs)
     assert 'vcf-luigi-tmp' in program_options['output_vcf']
     assert mock_rename.call_count == 2

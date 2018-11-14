@@ -15,7 +15,7 @@ class DiagnoseTargets(SampleTask):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk DiagnoseTargets'
             program_options = {
-                'input_bam': self.input().fn,
+                'input_bam': self.input().path,
                 'min_dp': self.min_dp,
                 'output_vcf': self.temp_vcf,
             }

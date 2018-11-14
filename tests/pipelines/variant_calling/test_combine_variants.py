@@ -13,12 +13,12 @@ def test_run(task, test_cohort_path, mock_rename):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'gatk CombineVariants snps_indels'
-    assert program_options['input_snps'] == task.input()[0].fn
-    assert program_options['input_indels'] == task.input()[1].fn
+    assert program_options['input_snps'] == task.input()[0].path
+    assert program_options['input_indels'] == task.input()[1].path
     assert 'filt.vcf-luigi-tmp' in program_options['output_vcf']
     assert mock_rename.call_count == 2
 
 
 def test_output(task, test_cohort_path):
-    assert task.output().fn.endswith('filt.vcf')
+    assert task.output().path.endswith('filt.vcf')
 

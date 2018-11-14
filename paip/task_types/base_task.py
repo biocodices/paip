@@ -150,7 +150,7 @@ class BaseTask(luigi.Task):
         idx file generated here. Assumes self.temp_vcf has been defined.
         """
         suffix = '.idx'
-        output_vcf = self._find_output('.vcf').fn
+        output_vcf = self._find_output('.vcf').path
         intended_filename = output_vcf + suffix
         temp_filename = self.temp_vcf + suffix
         os.rename(temp_filename, intended_filename)
@@ -164,7 +164,7 @@ class BaseTask(luigi.Task):
         bai file generated here. Assumes self.temp_bam has been defined.
         """
         suffix = '.bai'
-        output_bam = self._find_output('.bam').fn
+        output_bam = self._find_output('.bam').path
         intended_filename = output_bam + suffix
         temp_filename = self.temp_bam + suffix
         os.rename(temp_filename, intended_filename)
@@ -181,7 +181,7 @@ class BaseTask(luigi.Task):
             outfiles = [outfiles]
 
         for outfile in outfiles:
-            if substring in outfile.fn:
+            if substring in outfile.path:
                 return outfile
 
         raise ValueError('No output file found that matches "{}"'

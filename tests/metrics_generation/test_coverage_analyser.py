@@ -1,4 +1,18 @@
 import os
+from os import remove
+# NOTE: I need to remove files after testing in these tests, so i'm importing
+# remove directly, since os.remove is mocked in conftest.py and set to autouse.
+# If you change this here and do something like:
+#
+#   import os
+#
+# and then:
+#
+#   os.remove(fn)
+#
+# You wil used the mocked version (which is useful in other tests of this
+# package, that's why it's set this way.)
+
 from os import getpid
 from tempfile import gettempdir
 import pandas as pd
@@ -176,7 +190,7 @@ def test_coverage_summary(ca_csv_panel):
     assert os.path.isfile(fp)
     assert os.path.getsize(fp)
 
-    os.remove(fp)
+    remove(fp)
     assert not os.path.isfile(fp)
 
 
@@ -198,7 +212,7 @@ def test_coverage_summary_per_gene(ca_csv_panel):
     assert os.path.isfile(fp)
     assert os.path.getsize(fp)
 
-    os.remove(fp)
+    remove(fp)
     assert not os.path.isfile(fp)
 
 
@@ -321,7 +335,7 @@ def test_plot_heatmap(ca):
     assert os.path.isfile(plot_file)
     assert os.path.getsize(plot_file)
 
-    os.remove(plot_file)
+    remove(plot_file)
     assert not os.path.isfile(plot_file)
 
 
@@ -331,7 +345,7 @@ def test_plot_boxplot(ca):
     assert os.path.isfile(plot_file)
     assert os.path.getsize(plot_file)
 
-    os.remove(plot_file)
+    remove(plot_file)
     assert not os.path.isfile(plot_file)
 
 
@@ -344,7 +358,7 @@ def test_plot_coverage_per_chromosome(ca):
         assert os.path.isfile(plot_file)
         assert os.path.getsize(plot_file)
 
-        os.remove(plot_file)
+        remove(plot_file)
         assert not os.path.isfile(plot_file)
 
 
@@ -360,7 +374,7 @@ def test_plot_coverage_distribution(ca):
     assert os.path.isfile(plot_file)
     assert os.path.getsize(plot_file)
 
-    os.remove(plot_file)
+    remove(plot_file)
     assert not os.path.isfile(plot_file)
 
 
@@ -396,7 +410,7 @@ def test_make_html_report(ca):
         found_images = soup.select('img[src="{}"]'.format(plot_filename))
         assert len(found_images) == 1
 
-    os.remove(report_filepath)
+    remove(report_filepath)
     assert not os.path.isfile(report_filepath)
 
 
@@ -427,7 +441,7 @@ def test_report(ca):
     assert len(violinplots) == 1
 
     # Remove files after testing
-    os.remove(report_path)
+    remove(report_path)
     assert not os.path.isfile(report_path)
 
     shutil.rmtree(plots_dir)

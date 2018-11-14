@@ -14,5 +14,5 @@ def test_run(task, test_cohort_path):
 
     assert program_name == 'multiqc'
     assert program_options['basedir'] == task.basedir
-    assert program_options['report_filename'] == task.output().fn
+    assert program_options['report_filename'] == task.output().path
 

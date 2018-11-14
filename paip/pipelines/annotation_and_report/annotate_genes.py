@@ -17,7 +17,7 @@ class AnnotateGenes(CohortAnnotationTask):
     OUTPUT = 'genes.json'
 
     def run(self):
-        entrez_gene_ids = extract_entrez_gene_ids_from_vep_tsv(self.input().fn)
+        entrez_gene_ids = extract_entrez_gene_ids_from_vep_tsv(self.input().path)
         sig = signature(annotate_entrez_gene_ids)
         annotation_params = {k: v for k, v in self.annotation_kwargs.items()
                              if k in sig.parameters.keys()}
@@ -25,7 +25,7 @@ class AnnotateGenes(CohortAnnotationTask):
                                                     **annotation_params)
         genes_json = gene_annotations.to_json(orient='split')
 
-        with open(self.output().fn, 'w') as f:
+        with open(self.output().path, 'w') as f:
             f.write(genes_json)
 
 

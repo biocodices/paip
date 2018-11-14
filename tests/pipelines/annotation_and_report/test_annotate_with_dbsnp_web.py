@@ -9,5 +9,5 @@ def task(cohort_task_factory):
 
 
 def test_output(task):
-    assert task.output().fn.endswith('.dbsnp_annotations.json')
+    assert task.output().path.endswith('.dbsnp_annotations.json')
 

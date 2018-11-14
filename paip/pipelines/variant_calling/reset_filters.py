@@ -17,8 +17,8 @@ class ResetFilters(SampleTask):
 
         program_name = 'bcftools reset_filters'
         program_options = {
-            'input_vcf': input_vcf.fn,
-            'output_vcf': self.output().fn,
+            'input_vcf': input_vcf.path,
+            'output_vcf': self.output().path,
         }
 
         self.run_program(program_name, program_options)

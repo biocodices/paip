@@ -14,8 +14,8 @@ class FeatureCounts(SampleTask):
     def run(self):
         program_name = 'featureCounts'
         program_options = {
-            'input_bam': self.input().fn,
-            'outfile': self.output().fn,
+            'input_bam': self.input().path,
+            'outfile': self.output().path,
         }
         self.run_program(program_name, program_options)
 

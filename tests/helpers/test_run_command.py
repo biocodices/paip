@@ -8,6 +8,12 @@ import pytest
 from paip.helpers import run_command
 
 
+def read_lines_from_file(path):
+    with open(path) as f:
+        lines = [line.strip() for line in f]
+    return lines
+
+
 def test_run_command():
     stdout, stderr = run_command('echo foo')
     assert stdout == b'foo\n'
@@ -33,12 +39,10 @@ def test_log_to_file():
     # Test STDOUT is logged
     run_command('echo foo', logfile=logfile)
 
-    with open(logfile) as f:
-        log_lines = [line.strip() for line in f.readlines()]
-
-    assert 'foo' in log_lines
+    assert 'foo' in read_lines_from_file(logfile)
 
     # Extra checks of command running info
+    log_lines = read_lines_from_file(logfile)
     assert 'echo foo' in log_lines
     assert 'Finished at' in log_lines[-3]
     assert 'Took' in log_lines[-2]
@@ -46,38 +50,34 @@ def test_log_to_file():
     # Test STDERR is logged correctly
     run_command('echo foo >&2', logfile=logfile, log_stderr=True)
 
-    with open(logfile) as f:
-        log_lines = [line.strip() for line in f.readlines()]
-
-    assert 'foo' in log_lines
+    assert 'foo' in read_lines_from_file(logfile)
 
     # Test STDERR is not logged
     run_command('echo foo >&2', logfile=logfile, log_stderr=False)
 
-    with open(logfile) as f:
-        log_lines = [line.strip() for line in f.readlines()]
-
-    assert 'foo' not in log_lines
+    assert 'foo' not in read_lines_from_file(logfile)
 
     # Test STDOUT is not logged
     run_command('echo foo', logfile=logfile, log_stdout=False)
 
-    with open(logfile) as f:
-        log_lines = [line.strip() for line in f.readlines()]
-
-    assert 'foo' not in log_lines
+    assert 'foo' not in read_lines_from_file(logfile)
 
     # Test appending
     run_command('echo foo', logfile=logfile)
     run_command('echo bar', logfile=logfile, log_append=True)
 
-    with open(logfile) as f:
-        log_lines = [line.strip() for line in f.readlines()]
-
-    assert 'foo' in log_lines
-    assert 'bar' in log_lines
+    assert 'foo' in read_lines_from_file(logfile)
+    assert 'bar' in read_lines_from_file(logfile)
 
     # Cleanup
     remove(logfile)
     assert not isfile(logfile)
 
+
+def test_redirect_output_to_file():
+    outfile = join(gettempdir(), 'test_paip_{}.outfile.txt'.format(getpid()))
+    run_command('echo foo', redirect_stdout_to_path=outfile)
+    assert 'foo' in read_lines_from_file(outfile)
+
+    # Cleanup
+    remove(outfile)

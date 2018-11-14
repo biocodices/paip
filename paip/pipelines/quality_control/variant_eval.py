@@ -14,7 +14,7 @@ class VariantEval(SampleTask):
         with self.output().temporary_path() as temp_outfile:
             program_name = 'gatk VariantEval'
             program_options = {
-                'input_vcf': self.input().fn,
+                'input_vcf': self.input().path,
                 'output_file': temp_outfile,
             }
             self.run_program(program_name, program_options)

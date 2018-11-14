@@ -15,12 +15,12 @@ def test_run(task):
     (program_name, program_options), _ = task.run_program.call_args_list[0]
 
     assert program_name == 'fastqc'
-    assert program_options['forward_reads'] == task.input()[0][0].fn
-    assert program_options['reverse_reads'] == task.input()[0][1].fn
+    assert program_options['forward_reads'] == task.input()[0][0].path
+    assert program_options['reverse_reads'] == task.input()[0][1].path
 
     (program_name, program_options), _ = task.run_program.call_args_list[1]
 
     assert program_name == 'fastqc'
-    assert program_options['forward_reads'] == task.input()[1][0].fn
-    assert program_options['reverse_reads'] == task.input()[1][1].fn
+    assert program_options['forward_reads'] == task.input()[1][0].path
+    assert program_options['reverse_reads'] == task.input()[1][1].path
 

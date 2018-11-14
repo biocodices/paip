@@ -28,7 +28,7 @@ class PanelMetrics(SampleTask):
 
             pmg = PanelMetricsGenerator(
                 sample_name=self.sample,
-                sample_vcf=input_vcf.fn,
+                sample_vcf=input_vcf.path,
                 panel_vcf=self.config.resources['panel_variants'],
                 min_gq=self.min_gq,
                 min_dp=self.min_dp,
@@ -38,11 +38,11 @@ class PanelMetrics(SampleTask):
                 module_name=module_name
             )
 
-            with open(output_jsons[0].fn, 'w') as f:
+            with open(output_jsons[0].path, 'w') as f:
                 f.write(json_metrics)
 
             json_data = pmg.json_non_numerical_data()
-            with open(output_jsons[1].fn, 'w') as f:
+            with open(output_jsons[1].path, 'w') as f:
                 f.write(json_data)
 
     def output(self):

@@ -34,14 +34,14 @@ def test_run(task, monkeypatch):
     assert PanelMetricsGenerator.call_count == 2
     assert PanelMetricsGenerator.call_args_list[0][1] == {
         'sample_name': task.sample,
-        'sample_vcf': task.input()[0].fn,
+        'sample_vcf': task.input()[0].path,
         'panel_vcf': 'foo',
         'min_dp': task.min_dp,
         'min_gq': task.min_gq,
     }
     assert PanelMetricsGenerator.call_args_list[1][1] == {
         'sample_name': task.sample,
-        'sample_vcf': task.input()[1].fn,
+        'sample_vcf': task.input()[1].path,
         'panel_vcf': 'foo',
         'min_dp': task.min_dp,
         'min_gq': task.min_gq,
@@ -52,8 +52,8 @@ def test_run(task, monkeypatch):
 
 def test_output(task):
     outs = task.output()
-    assert outs[0].fn.endswith('unfiltered_variants_mqc.json')
-    assert outs[1].fn.endswith('unfiltered_variants_data.json')
-    assert outs[2].fn.endswith('reportable_variants_mqc.json')
-    assert outs[3].fn.endswith('reportable_variants_data.json')
+    assert outs[0].path.endswith('unfiltered_variants_mqc.json')
+    assert outs[1].path.endswith('unfiltered_variants_data.json')
+    assert outs[2].path.endswith('reportable_variants_mqc.json')
+    assert outs[3].path.endswith('reportable_variants_data.json')
 
