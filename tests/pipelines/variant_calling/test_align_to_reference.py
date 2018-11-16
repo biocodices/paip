@@ -13,6 +13,6 @@ def test_run(task):
     (program_name, program_options), kwargs = task.run_program.call_args
 
     assert program_name == 'bwa'
-    assert program_options['forward_reads'] == task.input()[0].path
-    assert program_options['reverse_reads'] == task.input()[1].path
+    assert program_options['forward_reads'] == task.input()['forward_reads'].path
+    assert program_options['reverse_reads'] == task.input()['reverse_reads'].path
     assert task.output().path + '-luigi-tmp' in kwargs['redirect_stdout_to_path']

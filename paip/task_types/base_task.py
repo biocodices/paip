@@ -63,6 +63,10 @@ class BaseTask(luigi.Task):
         if isinstance(self.REQUIRES, list):
             return [require(**self.param_kwargs) for require in self.REQUIRES]
 
+        if isinstance(self.REQUIRES, dict):
+            return {key: require(**self.param_kwargs)
+                    for key, require in self.REQUIRES.items()}
+
         return self.REQUIRES(**self.param_kwargs)
 
     def output(self):

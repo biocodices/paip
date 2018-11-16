@@ -17,8 +17,8 @@ class AlignToReference(SampleTask):
     def run(self):
         program_name = 'bwa'
         program_options = {
-            'forward_reads': self.input()[0].path,
-            'reverse_reads': self.input()[1].path,
+            'forward_reads': self.input()['forward_reads'].path,
+            'reverse_reads': self.input()['reverse_reads'].path,
         }
 
         with self.output().temporary_path() as temp_sam:

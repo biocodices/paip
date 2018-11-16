@@ -10,23 +10,23 @@ class TrimAdapters(SampleTask):
     new fastq files.
     """
     REQUIRES = CheckFastqs
-    OUTPUT = ['R1.trimmed.fastq', 'R2.trimmed.fastq']
+    OUTPUT = {'forward_reads': 'R1.trimmed.fastq.gz',
+              'reverse_reads': 'R2.trimmed.fastq.gz'}
 
     def run(self):
-        temp_R1 = self.output()[0].temporary_path
-        temp_R2 = self.output()[1].temporary_path
+        make_temp_fwd = self.output()['forward_reads'].temporary_path
+        make_temp_rev = self.output()['reverse_reads'].temporary_path
 
-        with temp_R1() as temp_R1_file, temp_R2() as temp_R2_file:
+        with make_temp_fwd() as temp_fwd_file, make_temp_rev() as temp_rev_file:
             program_name = self.trim_software
             program_options = {
-                'forward_reads': self.input()[0].path,
-                'reverse_reads': self.input()[1].path,
-                'forward_output': temp_R1_file,
-                'reverse_output': temp_R2_file,
+                'forward_reads': self.input()['forward_reads'].path,
+                'reverse_reads': self.input()['reverse_reads'].path,
+                'forward_output': temp_fwd_file,
+                'reverse_output': temp_rev_file,
             }
 
             self.run_program(program_name, program_options)
 
 
 TrimAdaptersCohort = create_cohort_task(TrimAdapters)
-

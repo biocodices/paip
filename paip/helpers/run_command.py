@@ -50,7 +50,11 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
     except CalledProcessError as error:
         logger.error('This command failed (return code={}):\n{}'
                      .format(error.returncode, error.cmd))
-        logger.error('STDOUT:\n{}'.format(error.output.decode().strip()))
+        if redirect_stdout_to_path:
+            logger.error('STDOUT:\nRedirected to: {}'
+                         .format(redirect_stdout_to_path))
+        else:
+            logger.error('STDOUT:\n{}'.format(error.output.decode().strip()))
         logger.error('STDERR:\n{}'.format(error.stderr.decode().strip()))
         raise
 
