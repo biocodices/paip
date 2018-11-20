@@ -14,7 +14,7 @@ def test_run(task, mock_rename):
     assert task.run_program.call_count == 1
     (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk VariantFiltration snps'
+    assert program_name == 'gatk3 VariantFiltration snps'
     assert program_options['input_vcf'] == task.input().path
     assert 'snps.filt.vcf-luigi-tmp' in program_options['output_vcf']
 

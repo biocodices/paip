@@ -15,7 +15,7 @@ class CallTargets(SampleTask):
         temp_bam = self._find_output('.bam').temporary_path
 
         with temp_vcf() as self.temp_vcf, temp_bam() as self.temp_bam:
-            program_name = 'gatk HaplotypeCaller target_sites'
+            program_name = 'gatk3 HaplotypeCaller target_sites'
             program_options = {
                 'input_bam': self.input().path,
                 'output_vcf': self.temp_vcf,

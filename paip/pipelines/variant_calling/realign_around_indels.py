@@ -16,7 +16,7 @@ class RealignAroundIndels(SampleTask):
     def run(self):
 
         with self.output().temporary_path() as self.temp_bam:
-            program_name = 'gatk IndelRealigner'
+            program_name = 'gatk3 IndelRealigner'
             program_options = {
                 'input_bam': self.input()[0].path,
                 'targets_file': self.input()[1].path,

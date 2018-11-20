@@ -12,7 +12,7 @@ def test_run(task, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk HaplotypeCaller target_sites'
+    assert program_name == 'gatk3 HaplotypeCaller target_sites'
     assert program_options['input_bam'] == task.input().path
     assert '.vcf-luigi-tmp' in program_options['output_vcf']
     expected_out = '.hc_target_sites_realignment.bam-luigi-tmp'

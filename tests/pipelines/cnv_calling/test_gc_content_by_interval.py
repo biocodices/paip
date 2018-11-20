@@ -12,7 +12,7 @@ def test_run(task):
     task.run()
 
     (program_name, program_options), _ = task.run_program.call_args_list[0]
-    assert program_name == 'gatk GCContentByInterval'
+    assert program_name == 'gatk3 GCContentByInterval'
     assert 'DATA.locus_GC.txt' in program_options['outfile']
 
     (program_name, program_options), _ = task.run_program.call_args_list[1]

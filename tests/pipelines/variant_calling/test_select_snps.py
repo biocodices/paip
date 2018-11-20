@@ -12,7 +12,7 @@ def test_run(task, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk SelectVariants snps'
+    assert program_name == 'gatk3 SelectVariants snps'
     assert program_options['input_vcf'] == task.input().path
     assert 'snps.vcf-luigi-tmp' in program_options['output_vcf']
     assert mock_rename.call_count == 2

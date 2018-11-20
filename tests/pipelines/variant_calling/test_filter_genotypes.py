@@ -17,7 +17,7 @@ def test_run(task, test_cohort_path, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk VariantFiltration genos'
+    assert program_name == 'gatk3 VariantFiltration genos'
     assert program_options['input_vcf'] == task.input().path
     assert program_options['min_gq'] == task.min_gq
     assert program_options['min_dp'] == task.min_dp

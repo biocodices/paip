@@ -15,7 +15,7 @@ class KeepReportableGenotypes(SampleTask):
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk SelectVariants reportable'
+            program_name = 'gatk3 SelectVariants reportable'
             program_options = {
                 'input_vcf': self.input().path,
                 'sample': self.sample,

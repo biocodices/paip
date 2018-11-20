@@ -1,38 +1,30 @@
-#
 # Variant Calling
 # ---------------
-#
 
-cutadapt: /home/juan/.local/bin/cutadapt
-fastq-mcf: /home/juan/repos/paip/software/ea-utils.1.1.2-537/fastq-mcf
-bwa: /home/juan/software/bwa-0.7.15/bwa
-picard: java -jar /home/juan/software/picard-tools-2.9.1.jar
-gatk: java -jar /home/juan/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK-3.7.jar
-# gatk: java -jar /home/juan/repos/paip/software/GenomeAnalysisTK-3.7.jar
-snpeff: java -jar /home/juan/software/snpEff-4.3m/snpEff.jar
-snpsift: java -jar /home/juan/software/snpEff-4.3m/SnpSift.jar
-vep: /home/juan/software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
+cutadapt: /home/juan/miniconda3/bin/cutadapt
+fastq-mcf: /repos/paip/software/ea-utils.1.1.2-537/fastq-mcf
+bwa: /software/bwa-0.7.17/bwa
+picard: java -jar /software/picard-2.18.16.jar
+gatk3: java -jar /software/GenomeAnalysisTK-3.7/GenomeAnalysisTK-3.7.jar
+gatk4: /software/gatk-4.0.8.1/gatk
+snpeff: java -jar /software/snpEff-4.3m/snpEff.jar
+snpsift: java -jar /software/snpEff-4.3m/SnpSift.jar
+vep: /software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
 
-#
 # Quality control
 # ---------------
-#
 
-fastqc: /home/juan/software/FastQC-0.11.15/fastqc
-# multiqc: /home/juan/anaconda3/bin/multiqc  # Py 3.6 version, breaks as of 8-5-2017
-multiqc: /usr/local/bin/multiqc  # Py 2.7 version
-bcftools: /home/juan/software/bcftools-1.4.1/bcftools
-samtools: /home/juan/software/samtools-1.4.1/samtools
-featureCounts: /home/juan/software/subread-1.5.1-source/bin/featureCounts
+fastqc: /software/FastQC-0.11.15/fastqc
+multiqc: /usr/local/bin/multiqc
+bcftools: /software/bcftools-1.4.1/bcftools
+samtools: /software/samtools-1.9/samtools
+featureCounts: /software/subread-1.5.1-source/bin/featureCounts
+igv: java -jar /software/IGV_3.0_beta/igv.jar
 
-igv: java -jar /home/juan/software/IGV_3.0_beta/igv.jar
-
-#
 # CNV Calling
 # ---------------
-#
 
-xhmm: /home/juan/software/xhmm/bin/xhmm
+xhmm: /software/xhmm/bin/xhmm
 awk: /usr/bin/awk
 Rscript: /usr/bin/Rscript
 

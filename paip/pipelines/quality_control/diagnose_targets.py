@@ -13,7 +13,7 @@ class DiagnoseTargets(SampleTask):
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk DiagnoseTargets'
+            program_name = 'gatk3 DiagnoseTargets'
             program_options = {
                 'input_bam': self.input().path,
                 'min_dp': self.min_dp,

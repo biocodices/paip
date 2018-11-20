@@ -14,7 +14,7 @@ class FilterIndels(CohortTask):
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk VariantFiltration indels'
+            program_name = 'gatk3 VariantFiltration indels'
             program_options = {
                 'input_vcf': self.input().path,
                 'output_vcf': self.temp_vcf,

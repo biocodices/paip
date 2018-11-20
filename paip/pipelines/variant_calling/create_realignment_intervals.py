@@ -14,7 +14,7 @@ class CreateRealignmentIntervals(SampleTask):
     def run(self):
 
         with self.output().temporary_path() as temp_out:
-            program_name = 'gatk RealignerTargetCreator'
+            program_name = 'gatk3 RealignerTargetCreator'
             program_options = {
                 'input_bam': self.input().path,
                 'outfile': temp_out,

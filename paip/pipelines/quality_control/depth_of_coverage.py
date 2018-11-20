@@ -14,7 +14,7 @@ class DepthOfCoverage(SampleTask):
 
     def run(self):
         with self.output().temporary_path() as tempfile:
-            program_name = 'gatk DepthOfCoverage'
+            program_name = 'gatk3 DepthOfCoverage'
             program_options = {
                 'input_bam': self.input().path,
                 'outfile': tempfile,

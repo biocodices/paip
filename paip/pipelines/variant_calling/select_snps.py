@@ -19,7 +19,7 @@ class SelectSNPs(CohortTask):
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk SelectVariants snps'
+            program_name = 'gatk3 SelectVariants snps'
             program_options = {
                 'input_vcf': self.input().path,
                 'output_vcf': self.temp_vcf,

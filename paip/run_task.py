@@ -15,7 +15,8 @@ Usage:
     paip (-h | --help)
 
 Examples:
-    paip VariantCalling --basedir . --pipeline-type all_sites --min-dp 100
+    paip VariantCalling
+    paip VariantCalling --pipeline-type all_sites --min-dp 100
     paip VariantCalling --basedir Seq1 --pipeline-type target_sites --min-gq 30
     paip VariantCalling --pipeline-type target_sites --trim-software fastq-mcf
     paip QualityControl --basedir . --pipeline-type target_sites

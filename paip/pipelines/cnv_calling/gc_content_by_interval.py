@@ -14,7 +14,7 @@ class GCContentByInterval(CohortTask):
         gc_by_interval_file = self.output()[0].path
 
         # First step: run GATK and produce a 'GC content by interval' file
-        program_name = 'gatk GCContentByInterval'
+        program_name = 'gatk3 GCContentByInterval'
         program_options = {'outfile': gc_by_interval_file}
         self.run_program(program_name, program_options)
 

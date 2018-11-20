@@ -64,7 +64,7 @@ picard AddOrReplaceReadGroups:
      CREATE_INDEX=True
      VALIDATION_STRINGENCY=LENIENT'
 
-gatk RealignerTargetCreator:
+gatk3 RealignerTargetCreator:
     '{executable}
      -T RealignerTargetCreator
      -I {input_bam}
@@ -75,7 +75,7 @@ gatk RealignerTargetCreator:
      --logging_level INFO
      -o {outfile}'
 
-gatk IndelRealigner:
+gatk3 IndelRealigner:
     '{executable}
      -T IndelRealigner
      -I {input_bam}
@@ -84,7 +84,7 @@ gatk IndelRealigner:
      --logging_level INFO
      -o {output_bam}'
 
-gatk BaseRecalibrator:
+gatk3 BaseRecalibrator:
     '{executable}
      -T BaseRecalibrator
      -nct 1
@@ -96,7 +96,7 @@ gatk BaseRecalibrator:
      --logging_level INFO
      -o {outfile}'
 
-gatk PrintReads:
+gatk3 PrintReads:
     '{executable}
      -T PrintReads
      -nct 1
@@ -106,7 +106,7 @@ gatk PrintReads:
      --logging_level INFO
      -o {output_bam}'
 
-# gatk HaplotypeCaller variant_sites for_exomes:
+# gatk3 HaplotypeCaller variant_sites for_exomes:
     # # https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_engine_CommandLineGATK.php#--interval_padding
     # # --interval_padding: This is typically used to add padding around exons
     # # when analyzing exomes. The general Broad exome calling pipeline uses
@@ -126,7 +126,7 @@ gatk PrintReads:
      # --logging_level INFO
      # -o {output_vcf}'
 
-gatk HaplotypeCaller:
+gatk3 HaplotypeCaller:
 
     # This step is the same for two pipelines:
     #
@@ -151,7 +151,7 @@ gatk HaplotypeCaller:
 
     # The -nt and -nct options can't be used when asking for a -bamout
 
-gatk HaplotypeCaller target_sites:
+gatk3 HaplotypeCaller target_sites:
 
     # GENOTYPE_GIVEN_ALLELES is not very well documented in GATK's guides.
     # https://software.broadinstitute.org/gatk/documentation/article?id=2803
@@ -172,7 +172,7 @@ gatk HaplotypeCaller target_sites:
      --logging_level INFO
      -bamout {output_bam}'
 
-gatk GenotypeGVCFs all_sites:
+gatk3 GenotypeGVCFs all_sites:
     # The {input_gvcfs} will be filled in the corresponding
     # task with -V <GVCF path> for each sample GVCF.
     '{executable}
@@ -186,7 +186,7 @@ gatk GenotypeGVCFs all_sites:
      --logging_level INFO
      -o {output_vcf}'
 
-gatk GenotypeGVCFs variant_sites:
+gatk3 GenotypeGVCFs variant_sites:
 
     # The only difference between this step and the same step above,
     # of the "all_sites" pipeline, is the missing -allSites parameter.
@@ -221,7 +221,7 @@ bcftools reset_filters:
      --output {output_vcf}
      {input_vcf}'
 
-gatk CombineVariants:
+gatk3 CombineVariants:
 
     # The {input_vcfs} will be filled in the corresponding
     # task with -V <VCF path> for each sample VCF.
@@ -247,7 +247,7 @@ snpsift dbSNP:
      {dbsnp_GRCh37}
      {input_vcf}'
 
-gatk SelectVariants snps:
+gatk3 SelectVariants snps:
     '{executable}
      -T SelectVariants
      -selectType SNP
@@ -257,7 +257,7 @@ gatk SelectVariants snps:
      --logging_level INFO
      -o {output_vcf}'
 
-gatk SelectVariants indels:
+gatk3 SelectVariants indels:
     '{executable}
      -T SelectVariants
      -selectType INDEL
@@ -267,7 +267,7 @@ gatk SelectVariants indels:
      --logging_level INFO
      -o {output_vcf}'
 
-gatk VariantFiltration snps:
+gatk3 VariantFiltration snps:
     '{executable}
      -T VariantFiltration
      -R {reference_genome}
@@ -283,7 +283,7 @@ gatk VariantFiltration snps:
      --logging_level INFO
      -o {output_vcf}'
 
-gatk VariantFiltration indels:
+gatk3 VariantFiltration indels:
     '{executable}
      -T VariantFiltration
      -R {reference_genome}
@@ -295,7 +295,7 @@ gatk VariantFiltration indels:
      --logging_level INFO
      -o {output_vcf}'
 
-gatk CombineVariants snps_indels:
+gatk3 CombineVariants snps_indels:
     # The :snps and :indels with -priority option are mandatory
     '{executable}
      -T CombineVariants
@@ -308,7 +308,7 @@ gatk CombineVariants snps_indels:
      --logging_level INFO
      -o {output_vcf}'
 
-gatk VariantFiltration genos:
+gatk3 VariantFiltration genos:
     '{executable}
      -T VariantFiltration
      -R {reference_genome}
@@ -381,7 +381,7 @@ vep annotate:
      # field of the VCF with VEP's huge annotation (which
      # makes the VCF unreadable).
 
-gatk SelectVariants sample:
+gatk3 SelectVariants sample:
     '{executable}
      -T SelectVariants
      -nt 1
@@ -392,7 +392,7 @@ gatk SelectVariants sample:
      -o {output_vcf}'
 
 
-gatk SelectVariants reportable:
+gatk3 SelectVariants reportable:
     "{executable}
      -T SelectVariants
      -nt 1
@@ -443,7 +443,7 @@ picard CollectVariantCallingMetrics:
    O={output_txt}'
 
 
-gatk VariantEval:
+gatk3 VariantEval:
   '{executable}
    -T VariantEval
    --eval {input_vcf}
@@ -484,7 +484,7 @@ samtools depth:
    # The -Q 40 makes samtools count the bases with a mapping quality > 40,
    # which is the MQ threshold that GATK uses in other part of the pipeline.
 
-gatk DiagnoseTargets:
+gatk3 DiagnoseTargets:
   '{executable}
    -T DiagnoseTargets
    -I {input_bam}
@@ -494,7 +494,7 @@ gatk DiagnoseTargets:
    -L {panel_regions}
    -o {output_vcf}'
 
-gatk DepthOfCoverage:
+gatk3 DepthOfCoverage:
   '{executable}
    -T DepthOfCoverage
    -I {input_bam}
@@ -540,7 +540,7 @@ xhmm MergeGATKDepths:
   -o {outfile}
   {sample_cvg_files}'
 
-gatk GCContentByInterval:
+gatk3 GCContentByInterval:
   '{executable}
    -T GCContentByInterval
    -L {panel_regions}

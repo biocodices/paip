@@ -16,7 +16,7 @@ class MakeGVCF(SampleTask):
         temp_bam = self._find_output('.bam').temporary_path
 
         with temp_vcf() as self.temp_vcf, temp_bam() as self.temp_bam:
-            program_name = 'gatk HaplotypeCaller'
+            program_name = 'gatk3 HaplotypeCaller'
             program_options = {
                 'input_bam': self.input().path,
                 'output_gvcf': self.temp_vcf,

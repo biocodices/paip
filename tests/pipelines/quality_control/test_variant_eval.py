@@ -13,7 +13,7 @@ def test_run(task):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk VariantEval'
+    assert program_name == 'gatk3 VariantEval'
     assert program_options['input_vcf'] == task.input().path
     assert 'eval.grp-luigi-tmp' in program_options['output_file']
 

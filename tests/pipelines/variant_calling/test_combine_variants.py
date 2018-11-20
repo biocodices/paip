@@ -12,7 +12,7 @@ def test_run(task, test_cohort_path, mock_rename):
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk CombineVariants snps_indels'
+    assert program_name == 'gatk3 CombineVariants snps_indels'
     assert program_options['input_snps'] == task.input()[0].path
     assert program_options['input_indels'] == task.input()[1].path
     assert 'filt.vcf-luigi-tmp' in program_options['output_vcf']

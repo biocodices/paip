@@ -14,7 +14,7 @@ class CombineVariants(CohortTask):
         input_indels = self.input()[1].path
 
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk CombineVariants snps_indels'
+            program_name = 'gatk3 CombineVariants snps_indels'
             program_options = {
                 'input_snps': input_snps,
                 'input_indels': input_indels,

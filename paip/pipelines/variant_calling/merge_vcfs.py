@@ -19,7 +19,7 @@ class MergeVCFs(CohortTask):
         input_vcfs = ['-V {}'.format(input_.path) for input_ in self.input()]
 
         with self.output().temporary_path() as self.temp_vcf:
-            program_name = 'gatk CombineVariants'
+            program_name = 'gatk3 CombineVariants'
             program_options = {
                 'input_vcfs': ' '.join(input_vcfs),
                 'output_vcf': self.temp_vcf,
