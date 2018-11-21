@@ -110,6 +110,9 @@ gatk3 BaseRecalibrator:
      --logging_level INFO
      -o {outfile}'
 
+# About PrintReads:
+# never include the -L option here: it leads to lost data! More here:
+# https://software.broadinstitute.org/gatk/documentation/article.php?id=4133
 gatk3 PrintReads:
     '{executable}
      -T PrintReads
@@ -192,13 +195,15 @@ gatk3 GenotypeGVCFs all_sites:
     '{executable}
      -T GenotypeGVCFs
      -allSites
-     -L {panel_regions}
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -nt 1
      {input_gvcfs}
      --logging_level INFO
      -o {output_vcf}'
+
+# Removed -L {panel_regions}
+# See the link cited above for PrintReads
 
 gatk3 GenotypeGVCFs variant_sites:
 
@@ -209,13 +214,15 @@ gatk3 GenotypeGVCFs variant_sites:
     # task with -V <GVCF path> for each sample GVCF.
     '{executable}
      -T GenotypeGVCFs
-     -L {panel_regions}
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -nt 8
      {input_gvcfs}
      --logging_level INFO
      -o {output_vcf}'
+
+# Removed -L {panel_regions}
+# See the link cited above for PrintReads
 
 bcftools reset_filters:
 
@@ -668,4 +675,3 @@ igv snapshots:
   'DISPLAY=:{DISPLAY}
    {executable}
    -b {script_path}'
-
