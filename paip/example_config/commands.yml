@@ -63,16 +63,30 @@ picard AddOrReplaceReadGroups:
      RGSM={sample_id}
      RGLB={library_id}
      RGPL={platform}
-     RGPU={flowcell_id}.{lane_number}.{sample_id}
+     RGPU={platform_unit}
      SORT_ORDER=coordinate
      CREATE_INDEX=True
      VALIDATION_STRINGENCY=LENIENT
      O={output_bam}'
 
+# About the way I generate the read group ID (RGID), see:
+# https://software.broadinstitute.org/gatk/documentation/article.php?id=6472
+#
+# "In the simple case where a single library preparation derived from a single
+# biological sample was run on a single lane of a flowcell, all the reads from
+# that lane run belong to the same read group. When multiplexing is involved,
+# then each subset of reads originating from a separate library run on that
+# lane will constitute a separate read group."
+#
+# So I'm puting the flowcell and lane in the RGID. I'm not sure if different
+# *samples* sharing a flowcell and lane should share RGID, I'm being conservative
+# and assume that they should not, so sample_id is part of the RGID as well.
+
 picard MarkDuplicates:
   # ASSUME_SORT_ORDER should match AddOrReplaceReadGroups SORT_ORDER
   # (i.e. the previous task SORT_ORDER value)
   '{executable}
+   MarkDuplicates
    I={input_bam}
    O={output_bam}
    METRICS_FILE={output_metrics_file}

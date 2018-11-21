@@ -20,6 +20,7 @@ class SortCompressPutReadGroups(SampleTask):
                 'output_bam': self.temp_bam,
                 'library_id': self.library_id,
                 'platform': self.platform,
+                'platform_unit': self.platform_unit,
                 'flowcell_id': self.flowcell_id,
                 'lane_number': self.lane_number,
                 'sample_id': self.sample,
