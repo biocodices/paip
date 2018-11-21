@@ -40,29 +40,43 @@ bwa:
     # output goes to STDOUT
     '{executable} mem
      -t 8
+     -M
      {reference_genome}
      {forward_reads}
      {reverse_reads}'
 
-samtools SAM to BAM:
-  '{executable} view
-   {input_sam}
-   -bT {reference_genome}'
+# I am not that sure that the -M flag is necessary, but GATK best practices
+# suggests it here:
+# https://gatkforums.broadinstitute.org/gatk/discussion/2799/howto-map-and-mark-duplicates
+#
+# "The -M flag causes BWA to mark shorter split hits as secondary
+# (essential for Picard compatibility)."
+#
+# This post doesn't throw much light on the subject:
+# https://www.biostars.org/p/97323/
 
 picard AddOrReplaceReadGroups:
-    # SO = SortOrder for the output
     '{executable}
      AddOrReplaceReadGroups
-     I={input_bam}
+     I={input_sam}
      RGID={flowcell_id}.{lane_number}.{sample_id}
      RGSM={sample_id}
      RGLB={library_id}
      RGPL={platform}
      RGPU={flowcell_id}.{lane_number}.{sample_id}
-     O={output_bam}
-     SO=coordinate
+     SORT_ORDER=coordinate
      CREATE_INDEX=True
-     VALIDATION_STRINGENCY=LENIENT'
+     VALIDATION_STRINGENCY=LENIENT
+     O={output_bam}'
+
+picard MarkDuplicates:
+  # ASSUME_SORT_ORDER should match AddOrReplaceReadGroups SORT_ORDER
+  # (i.e. the previous task SORT_ORDER value)
+  '{executable}
+   I={input_bam}
+   O={output_bam}
+   METRICS_FILE={output_metrics_file}
+   ASSUME_SORT_ORDER=coordinate'
 
 gatk3 RealignerTargetCreator:
     '{executable}
