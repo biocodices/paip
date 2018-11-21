@@ -20,4 +20,3 @@ def test_run(task, mock_rename):
 
 def test_output(task):
     assert task.output().path.endswith('snps.vcf')
-

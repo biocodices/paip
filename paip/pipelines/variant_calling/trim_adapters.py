@@ -14,19 +14,20 @@ class TrimAdapters(SampleTask):
               'reverse_reads': 'R2.trimmed.fastq.gz'}
 
     def run(self):
-        make_temp_fwd = self.output()['forward_reads'].temporary_path
-        make_temp_rev = self.output()['reverse_reads'].temporary_path
+        program_name = self.trim_software
+        program_options = {
+            'forward_reads': self.input()['forward_reads'].path,
+            'reverse_reads': self.input()['reverse_reads'].path,
 
-        with make_temp_fwd() as temp_fwd_file, make_temp_rev() as temp_rev_file:
-            program_name = self.trim_software
-            program_options = {
-                'forward_reads': self.input()['forward_reads'].path,
-                'reverse_reads': self.input()['reverse_reads'].path,
-                'forward_output': temp_fwd_file,
-                'reverse_output': temp_rev_file,
-            }
+            # NOTE: we can't use luigi's helpful temporary paths for this task
+            # because cutadapt expects filenames ending with ".gz" if you
+            # want to compress the output, and luigi's temporary paths end with
+            # "-luigi-<some_number>"
+            'forward_output': self.output()['forward_reads'].path,
+            'reverse_output': self.output()['reverse_reads'].path,
+        }
 
-            self.run_program(program_name, program_options)
+        self.run_program(program_name, program_options)
 
 
 TrimAdaptersCohort = create_cohort_task(TrimAdapters)

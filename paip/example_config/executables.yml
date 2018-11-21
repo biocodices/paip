@@ -2,24 +2,25 @@
 # ---------------
 
 cutadapt: /home/juan/miniconda3/bin/cutadapt
-fastq-mcf: /repos/paip/software/ea-utils.1.1.2-537/fastq-mcf
+# fastq-mcf: /repos/paip/software/ea-utils.1.1.2-537/fastq-mcf
 bwa: /software/bwa-0.7.17/bwa
 picard: java -jar /software/picard-2.18.16.jar
 gatk3: java -jar /software/GenomeAnalysisTK-3.7/GenomeAnalysisTK-3.7.jar
 gatk4: /software/gatk-4.0.8.1/gatk
-snpeff: java -jar /software/snpEff-4.3m/snpEff.jar
-snpsift: java -jar /software/snpEff-4.3m/SnpSift.jar
-vep: /software/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
+snpeff: java -jar /software/snpEff/snpEff.jar
+snpsift: java -jar /software/snpEff/SnpSift.jar
+vep: /software/ensembl-vep/vep
 
 # Quality control
 # ---------------
 
-fastqc: /software/FastQC-0.11.15/fastqc
-multiqc: /usr/local/bin/multiqc
-bcftools: /software/bcftools-1.4.1/bcftools
+fastqc: /software/FastQC/fastqc
+multiqc: /software/miniconda3/bin/multiqc
+bcftools: /software/bcftools-1.9/bcftools
 samtools: /software/samtools-1.9/samtools
-featureCounts: /software/subread-1.5.1-source/bin/featureCounts
-igv: java -jar /software/IGV_3.0_beta/igv.jar
+featureCounts: /software/subread-1.6.3-Linux-x86_64/bin/featureCounts
+# igv: java -jar /software/IGV_3.0_beta/igv.jar
+igv: java -jar /software/IGV_2.4.14/lib/igv.jar
 
 # CNV Calling
 # ---------------
