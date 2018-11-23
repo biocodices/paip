@@ -80,6 +80,11 @@ def task_factory(monkeypatch):
         # Test the command is generated correctly with the options passed
         # using the example_config YAML files as models.
         config = Config()
+
+        # FIXME: this is a hack, since we need to imitate the behavior of
+        # the real BaseTask.run_program here, I need to do this:
+        program_options.update({'num_threads': 1})
+
         generate_command(program_name, program_options, config)
         return_value = []
 

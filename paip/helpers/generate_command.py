@@ -18,4 +18,10 @@ def generate_command(program_name, options, config):
         'executable': executable
     })
     command_options.update(options)
+
+    # The "num_threads" parameter is passed 'by_default' to this method
+    # in BaseTask.run_program, but not all commands use it:
+    if 'num_threads' in command_options and '{num_threads}' not in command_template:
+        command_options.pop('num_threads')
+
     return command_template.format(**command_options)

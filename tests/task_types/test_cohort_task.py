@@ -52,6 +52,7 @@ def test_init(cohort_task_all, test_cohort_basedir):
         'min_dp': 30,
         'min_gq': 30,
         'trim_software': 'cutadapt',
+        'num_threads': 1,
     }
 
     # Test it breaks on bad pipeline_type

@@ -116,7 +116,10 @@ def test_run_program(base_task, monkeypatch):
     # so we just mock it here:
     def fake_generate_command(program_name, options, config):
         opts = list(options.items())[0]
-        return '{} --{} {}'.format(program_name, opts[0], opts[1])
+        command = f"{program_name}"
+        for key, value in options.items():
+            command += f" --{key} {value}"
+        return command
 
     # run_program also uses run_command to run the command, but we're not
     # interested in testing the actual shell running of the command,
@@ -151,7 +154,7 @@ def test_run_program(base_task, monkeypatch):
     )
 
     # Test the command is the one that comes from generate_command
-    assert args_received['command'] == 'program --foo bar'
+    assert args_received['command'] == 'program --foo bar --num-threads 1'
 
     # Test the logfile was created from the class name of the Task
     assert args_received['logfile'] == '/path/to/log.BaseTask'

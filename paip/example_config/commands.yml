@@ -39,7 +39,7 @@ cutadapt:  # Default for TrimAdapters
 bwa:
     # output goes to STDOUT
     '{executable} mem
-     -t 8
+     -t {num_threads}
      -M
      {reference_genome}
      {forward_reads}
@@ -106,6 +106,7 @@ gatk3 RealignerTargetCreator:
      -known {indels_mills}
      -L {panel_regions}
      --logging_level INFO
+     -nt {num_threads}
      -o {outfile}'
 
 gatk3 IndelRealigner:
@@ -216,7 +217,7 @@ gatk3 GenotypeGVCFs all_sites:
      -allSites
      -R {reference_genome}
      -D {dbsnp_GRCh37}
-     -nt 1
+     -nt {num_threads}
      {input_gvcfs}
      --logging_level INFO
      -o {output_vcf}'
@@ -235,7 +236,7 @@ gatk3 GenotypeGVCFs variant_sites:
      -T GenotypeGVCFs
      -R {reference_genome}
      -D {dbsnp_GRCh37}
-     -nt 8
+     -nt {num_threads}
      {input_gvcfs}
      --logging_level INFO
      -o {output_vcf}'
@@ -268,7 +269,7 @@ gatk3 CombineVariants:
 
     '{executable}
      -T CombineVariants
-     -nt 8
+     -nt {num_threads}
      -R {reference_genome}
      {input_vcfs}
      --logging_level INFO
@@ -291,7 +292,7 @@ gatk3 SelectVariants snps:
     '{executable}
      -T SelectVariants
      -selectType SNP
-     -nt 8
+     -nt {num_threads}
      -R {reference_genome}
      -V {input_vcf}
      --logging_level INFO
@@ -301,7 +302,7 @@ gatk3 SelectVariants indels:
     '{executable}
      -T SelectVariants
      -selectType INDEL
-     -nt 8
+     -nt {num_threads}
      -R {reference_genome}
      -V {input_vcf}
      --logging_level INFO
@@ -339,7 +340,7 @@ gatk3 CombineVariants snps_indels:
     # The :snps and :indels with -priority option are mandatory
     '{executable}
      -T CombineVariants
-     -nt 8
+     -nt {num_threads}
      -R {reference_genome}
      -V:snps {input_snps}
      -V:indels {input_indels}
@@ -424,7 +425,7 @@ vep annotate:
 gatk3 SelectVariants sample:
     '{executable}
      -T SelectVariants
-     -nt 1
+     -nt {num_threads}
      -R {reference_genome}
      -V {input_vcf}
      --sample_name {sample_id}
@@ -435,7 +436,7 @@ gatk3 SelectVariants sample:
 gatk3 SelectVariants reportable:
     "{executable}
      -T SelectVariants
-     -nt 1
+     -nt {num_threads}
      -R {reference_genome}
      -V {input_vcf}
      --excludeFiltered

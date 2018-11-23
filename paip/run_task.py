@@ -27,43 +27,30 @@ Options:
     VariantCalling options
     ----------------------
 
-    --basedir BASEDIR       Base directory for the run
-
-                            (default=current directory).
+    --basedir BASEDIR       Base directory for the run [default: .].
 
     --pipeline-type TYPE    Pipeline type: 'variant_sites', 'target_sites' or
-                            'all_sites'.
-
-                            (default=variant_sites)
+                            'all_sites'. [default: variant_sites]
 
     --min-gq GQ             Minimum Genotype Quality (GQ) to use during
-                            genotype filtering.
-
-                            (default=30)
+                            genotype filtering. [default: 30]
 
     --min-dp DP             Minimum read depth to use during genotype filtering.
-
-                            (default=30)
+                            [default: 30]
 
     --trim-software NAME    Name of the software to use in the reads trimming
                             step. Options: 'cutadapt', 'fastq-mcf'.
-
-                            (default=cutadapt)
+                            [default: cutadapt]
 
     --samples SAMPLES       Samples to include in the Cohort. Pass a list of
                             comma-separated names like S1,S2,S3 to limit the
-                            Cohort to those samples.
-
-                            Use for Cohort tasks, in case you don't want to
-                            include all samples in the pipeline.
-
-                            (default=ALL)
+                            Cohort to those samples. Use for Cohort tasks,
+                            in case you don't want to include all samples in
+                            the pipeline. [default: ALL]
 
     --sample SAMPLE         Sample ID that must match the name of a subdirectory
-                            of the current dir.
-
-                            Use for tasks that operate on a single sample. Not
-                            needed for Cohort tasks.
+                            of the current dir. Use for tasks that operate on
+                            a single sample. Not needed for Cohort tasks.
 
 
     AnnotateVariants options
@@ -72,21 +59,16 @@ Options:
     --cache CACHE           Options: 'mysq', 'postgres', 'redis', 'dict'. The
                             cache must be available! Check the `anotamela`
                             package for details about that.
-
-                            (default='mysql')
+                            [default: mysql]
 
     --http-proxy PROXY      HTTP proxy to use for AnnotateVariants. Typically,
                             you would set a Tor instance locally and use the
-                            default value.
-
-                            (default='socks5://localhost:9050')
+                            default value. [default: socks5://localhost:9050]
 
     --extra-annotation-kwargs JSON  Extra keyword arguments for AnnotateVariants,
-                                    which will be passed to `anotamela`'s
+                                    which will be passed to `anotamela`
                                     AnnotationPipeline. Pass them as a JSON
-                                    dictionary.
-
-                                    (default='{}')
+                                    dictionary. [default: {}]
 
 
     GenerateReports options
@@ -95,18 +77,16 @@ Options:
     --templates-dir TPL_DIR    Directory with the Jinja templates for the HTML
                                report generation.
 
-    --translations-dir TRANS_DIR     Directory with the translation files (.yml)
-                                     with texts for the reports.
+    --translations-dir TRANS_DIR     Directory with the translation files
+                                     (.yml) with texts for the reports.
 
-    --min-odds-ratio MIN_OR    Minimum odds ratio to consider a GWAS association
-                               as reportable.
-
-                               (default=1) Includes all associations.
+    --min-odds-ratio MIN_OR    Minimum odds ratio to consider a GWAS
+                               association as reportable. By default all
+                               associations are included. [default: 1]
 
     --max-frequency MAX_FR     Maximum allele frequency of an allele to be
-                               reportable.
-
-                               (default=1) Includes all alleles.
+                               reportable. By default, all alleles are
+                               reportable. [default: 1]
 
     --min-reportable-category MIN_CAT   Minimum category to consider an
                                         annotation as reportable. E.g. DRUG,
@@ -132,7 +112,7 @@ Options:
                             If set as 0, it deletes all files under the
                             directory, except: .fastq[.gz], .rb, .py, and .yml.
 
-                            (default=1)
+                            [default: 1]
 
 
     TakeIGVSnapshots options
@@ -149,8 +129,11 @@ Options:
     -T --tasks              List available tasks to run.
 
     --workers WORKERS       Number of parallel tasks to run.
+                            [default: 1]
 
-                            (default=1)
+    --num-threads N         Number of threads each worker can use.
+                            [default: 1]
+
 
 """
 

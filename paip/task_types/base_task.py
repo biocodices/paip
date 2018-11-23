@@ -27,6 +27,7 @@ class BaseTask(luigi.Task):
     pipeline_type = luigi.Parameter(default='variant_sites')
     min_gq = luigi.IntParameter(default=30)
     min_dp = luigi.IntParameter(default=30)
+    num_threads = luigi.IntParameter(default=1)
 
     # This parameter gives you extra flexibility for the trimming step
     trim_software = luigi.Parameter(default='cutadapt')
@@ -144,6 +145,7 @@ class BaseTask(luigi.Task):
         Returns the ouptut from run_command(), namely a tuple with
         (STDOUT, STDERR).
         """
+        program_options.update({'num_threads': self.num_threads})
         command = generate_command(program_name, program_options, self.config)
         logfile = self.log_path(self.__class__.__name__)
         # TODO: implement this correctly:
