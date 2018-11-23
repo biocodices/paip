@@ -1,18 +1,11 @@
 from collections import defaultdict
 from unittest.mock import mock_open, patch, MagicMock, PropertyMock
 
-import pytest
-
 import paip
 from paip.pipelines.quality_control import SummarizeCoverage
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(SummarizeCoverage)
-
-
-def test_run(task, monkeypatch):
+def test_run(sample_task_factory, monkeypatch):
     ca_instance = MagicMock()
     CoverageAnalyser = MagicMock(return_value=ca_instance)
 
@@ -21,8 +14,9 @@ def test_run(task, monkeypatch):
     mock_resources = patch('paip.helpers.config.Config.resources',
                            new_callable=PropertyMock)
     open_ = mock_open()
-    mock_open_context = patch('paip.pipelines.quality_control.summarize_coverage.open',
-                              open_)
+    mock_open_context = patch('paip.pipelines.quality_control.summarize_coverage.open', open_)
+
+    task = sample_task_factory(SummarizeCoverage)
 
     with mock_open_context, mock_resources as mock_resources:
         mock_resources.return_value = defaultdict(lambda: 'foo')

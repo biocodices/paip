@@ -1,14 +1,8 @@
-import pytest
-
 from paip.pipelines.variant_calling import TrimAdapters
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(TrimAdapters)
-
-
-def test_run(task):
+def test_run(sample_task_factory):
+    task = sample_task_factory(TrimAdapters)
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 

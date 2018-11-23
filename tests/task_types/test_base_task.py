@@ -106,6 +106,10 @@ def test_output(base_task, monkeypatch):
     assert outputs[0].path.endswith('BaseTask/xhmm_run/BaseTask.spam')
     assert outputs[1].path.endswith('BaseTask/xhmm_run/BaseTask.eggs')
 
+    with pytest.raises(ValueError):
+        base_task.OUTPUT = {1, 2}
+        base_task.output()
+
 
 def test_run_program(base_task, monkeypatch):
     # run_program uses generate_command, but we test the latter elsewhere,

@@ -71,9 +71,9 @@ def task_factory(monkeypatch):
     rename_temp_idx.
 
     The mocked run_program will check if executables, resources, and commands
-    are defined in the example config files, so we keep them updated.
+    are defined in the example config files, making sure we keep those
+    example configs updated.
     """
-
     # This takes the same arguments as BaseTask.run_program
     # and performs some extra checks:
     def extra_checks(program_name, program_options, **kwargs):
@@ -81,25 +81,20 @@ def task_factory(monkeypatch):
         # using the example_config YAML files as models.
         config = Config()
         generate_command(program_name, program_options, config)
-
         return_value = []
 
         if not kwargs.get('log_stdout'):
             return_value.append(b'stdout')
-
         if not kwargs.get('log_stderr'):
             return_value.append(b'stderr')
 
         return return_value
 
-
     run_program = MagicMock(side_effect=extra_checks, name='run_program')
 
     def factory(klass, params, extra_params={}):
         task = klass(**params, **extra_params)
-
         monkeypatch.setattr(task, 'run_program', run_program)
-
         return task
 
     return factory
@@ -144,4 +139,3 @@ def cohort_task_factory(task_factory, cohort_task_params):
         return task
 
     return factory
-

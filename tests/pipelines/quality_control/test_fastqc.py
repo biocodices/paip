@@ -1,14 +1,8 @@
-import pytest
-
 from paip.pipelines.quality_control import FastQC
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(FastQC)
-
-
-def test_run(task):
+def test_run(sample_task_factory):
+    task = sample_task_factory(FastQC)
     task.run()
     assert task.run_program.call_count == 2
 

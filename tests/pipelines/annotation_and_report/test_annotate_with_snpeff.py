@@ -1,16 +1,11 @@
 from unittest.mock import mock_open, patch
-import pytest
-
 from paip.pipelines.annotation_and_report import AnnotateWithSnpeff
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(AnnotateWithSnpeff,
+def test_run(sample_task_factory):
+    task = sample_task_factory(AnnotateWithSnpeff,
                                extra_params={'pipeline_type': 'variant_sites'})
 
-
-def test_run(task):
     open_ = mock_open()
 
     # FIXME: this whole 'path' to the module hardcoding is ugly, there must
@@ -26,8 +21,4 @@ def test_run(task):
     assert program_options['output_summary_csv'].endswith('snpEff.summary.csv')
     assert kwargs['log_stdout'] is False
     open_().write.assert_called_once_with(b'stdout')
-
-
-def test_output(task, test_cohort_path):
     assert task.output().path.endswith('.eff.vcf')
-

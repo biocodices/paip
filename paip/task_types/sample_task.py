@@ -16,6 +16,15 @@ class SampleTask(BaseTask):
     """
     sample = luigi.Parameter()
 
+    # These keys are expected in the sequencing YAML associated with each run
+    REQUIRED_SEQUENCING_DATA_KEYS = [
+        "library_id",
+        "platform",
+        "platform_unit",
+        "flowcell_id",
+        "lane_number",
+    ]
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -32,6 +41,16 @@ class SampleTask(BaseTask):
 
         for key in sequencing_data.keys():
             setattr(self, key, sequencing_data[key])
+
+        required_keys_missing = [
+            key for key in self.REQUIRED_SEQUENCING_DATA_KEYS
+            if not hasattr(self, key)
+        ]
+        if required_keys_missing:
+            raise ValueError(f"Sample '{self.name}' is missing sequencing "
+                             f"data: {', '.join(required_keys_missing)}.\n"
+                             "Please add this in the sequencing YAML.")
+
 
     def cohort_params(self):
         """

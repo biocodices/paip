@@ -1,14 +1,8 @@
-import pytest
-
 from paip.pipelines.variant_calling import SortCompressPutReadGroups
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(SortCompressPutReadGroups)
-
-
-def test_run(task, mock_rename):
+def test_run(sample_task_factory, mock_rename):
+    task = sample_task_factory(SortCompressPutReadGroups)
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 

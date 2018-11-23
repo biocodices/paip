@@ -92,6 +92,11 @@ picard MarkDuplicates:
    METRICS_FILE={output_metrics_file}
    ASSUME_SORT_ORDER=coordinate'
 
+picard BuildBamIndex:
+  '{executable}
+   BuildBamIndex
+   I={input_bam}'
+
 gatk3 RealignerTargetCreator:
     '{executable}
      -T RealignerTargetCreator

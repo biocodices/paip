@@ -3,6 +3,7 @@ from .trim_adapters import TrimAdapters, TrimAdaptersCohort
 from .align_to_reference import AlignToReference, AlignToReferenceCohort
 from .sort_compress_put_read_groups import SortCompressPutReadGroups, SortCompressPutReadGroupsCohort
 from .mark_duplicates import MarkDuplicates, MarkDuplicatesCohort
+from .index_alignment import IndexAlignment, IndexAlignmentCohort
 from .create_realignment_intervals import CreateRealignmentIntervals
 from .realign_around_indels import RealignAroundIndels
 from .create_recalibration_table import CreateRecalibrationTable

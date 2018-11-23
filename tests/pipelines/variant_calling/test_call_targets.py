@@ -1,14 +1,8 @@
-import pytest
-
 from paip.pipelines.variant_calling import CallTargets
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(CallTargets)
-
-
-def test_run(task, mock_rename):
+def test_run(sample_task_factory, mock_rename):
+    task = sample_task_factory(CallTargets)
     task.run()
     (program_name, program_options), _ = task.run_program.call_args
 
@@ -18,4 +12,3 @@ def test_run(task, mock_rename):
     expected_out = '.hc_target_sites_realignment.bam-luigi-tmp'
     assert expected_out in program_options['output_bam']
     assert mock_rename.call_count == 4
-

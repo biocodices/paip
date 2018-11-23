@@ -28,4 +28,3 @@ igv: java -jar /software/IGV_2.4.14/lib/igv.jar
 xhmm: /software/xhmm/bin/xhmm
 awk: /usr/bin/awk
 Rscript: /usr/bin/Rscript
-

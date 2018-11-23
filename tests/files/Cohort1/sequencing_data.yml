@@ -3,16 +3,19 @@ Sample1:
   library_id: Library-ID
   flowcell_id: Flowcell-ID
   lane_number: Lane-Number
+  platform_unit: Platform_Unit
 
 Sample2:
   platform: Platform
   flowcell_id: Flowcell-ID
   library_id: Library-ID
   lane_number: Lane-Number
+  platform_unit: Platform_Unit
 
 Sample3:
   platform: Platform
   flowcell_id: Flowcell-ID
   library_id: Library-ID
   lane_number: Lane-Number
+  platform_unit: Platform_Unit
 

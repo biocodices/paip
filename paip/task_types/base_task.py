@@ -96,8 +96,12 @@ class BaseTask(luigi.Task):
             targets = {key: luigi.LocalTarget((self.path(fn)))
                        for key, fn in self.OUTPUT.items()}
 
-        else:
+        elif isinstance(self.OUTPUT, str):
             targets = luigi.LocalTarget(self.path(self.OUTPUT))
+
+        else:
+            raise ValueError("I can't deal with this type of OUTPUT: "
+                             f"{type(self.OUTPUT)}")
 
         return targets
 

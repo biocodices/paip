@@ -1,14 +1,8 @@
-import pytest
-
 from paip.pipelines.quality_control import SamtoolsDepth
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(SamtoolsDepth)
-
-
-def test_run(task):
+def test_run(sample_task_factory):
+    task = sample_task_factory(SamtoolsDepth)
     task.run()
     (program_name, program_options), kwargs = task.run_program.call_args
     assert program_name == 'samtools depth'

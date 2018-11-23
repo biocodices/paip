@@ -79,4 +79,3 @@ def test_run(task, mock_makedirs, monkeypatch):
     assert program_name == 'igv snapshots'
     assert program_options['DISPLAY'] == os.getpid()
     assert program_options['script_path'].endswith('igv_batch_script')
-

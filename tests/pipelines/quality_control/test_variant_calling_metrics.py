@@ -1,14 +1,8 @@
-import pytest
-
 from paip.pipelines.quality_control import VariantCallingMetrics
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(VariantCallingMetrics)
-
-
-def test_run(task):
+def test_run(sample_task_factory):
+    task = sample_task_factory(VariantCallingMetrics)
     task.run()
 
     assert task.run_program.call_count == 1
@@ -17,4 +11,3 @@ def test_run(task):
     assert program_name == 'picard CollectVariantCallingMetrics'
     assert program_options['input_vcf'] == task.input().path
     assert program_options['output_txt'].endswith('QC')
-

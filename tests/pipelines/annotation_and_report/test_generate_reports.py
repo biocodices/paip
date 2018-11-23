@@ -6,25 +6,18 @@ from paip.pipelines.annotation_and_report.generate_reports import GenerateReport
 import paip.pipelines.annotation_and_report.generate_reports
 
 
-extra_params = {
-    'templates_dir': '/path/to/templates',
-    'translations_dir': '/path/to/translations',
+def test_run(sample_task_factory, monkeypatch):
+    extra_params = {
+        'templates_dir': '/path/to/templates',
+        'translations_dir': '/path/to/translations',
+        'min_reportable_category': 'CATEGORY',
+        'min_odds_ratio': 1.5,
+        'max_frequency': 0.5,
+        'phenos_regex_list': '["pheno-1"]',
+        'phenos_regex_file': '/path/to/phenos',
+    }
+    task = sample_task_factory(GenerateReports, extra_params=extra_params)
 
-    'min_reportable_category': 'CATEGORY',
-    'min_odds_ratio': 1.5,
-    'max_frequency': 0.5,
-    'phenos_regex_list': '["pheno-1"]',
-    'phenos_regex_file': '/path/to/phenos',
-}
-
-
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(GenerateReports,
-                               extra_params=extra_params)
-
-
-def test_run(task, monkeypatch):
     # Mock the ReportsPipeline class so it returns a mocked instance:
     pipeline_instance = Mock()
     ReportsPipeline = Mock(return_value=pipeline_instance)

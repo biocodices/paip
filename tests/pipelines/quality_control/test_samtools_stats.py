@@ -1,14 +1,8 @@
-import pytest
-
 from paip.pipelines.quality_control import SamtoolsStats
 
 
-@pytest.fixture
-def task(sample_task_factory):
-    return sample_task_factory(SamtoolsStats)
-
-
-def test_run(task):
+def test_run(sample_task_factory):
+    task = sample_task_factory(SamtoolsStats)
     task.run()
     (program_name, program_options), kwargs = task.run_program.call_args
     assert program_name == 'samtools stats'
