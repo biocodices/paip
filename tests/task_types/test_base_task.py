@@ -154,7 +154,7 @@ def test_run_program(base_task, monkeypatch):
     )
 
     # Test the command is the one that comes from generate_command
-    assert args_received['command'] == 'program --foo bar --num-threads 1'
+    assert args_received['command'] == 'program --foo bar --num_threads 1'
 
     # Test the logfile was created from the class name of the Task
     assert args_received['logfile'] == '/path/to/log.BaseTask'
