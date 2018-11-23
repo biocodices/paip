@@ -8,4 +8,3 @@ def test_run(sample_task_factory, mock_rename):
 
     assert program_name == 'picard BuildBamIndex'
     assert program_options['input_bam'] == task.input()['deduped_bam'].path
-    assert mock_rename.call_count == 1
