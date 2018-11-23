@@ -14,16 +14,13 @@ class MarkDuplicates(SampleTask):
     }
 
     def run(self):
-        with self.output()['deduped_bam'].temporary_path() as self.temp_bam, \
-             self.output()['metrics_file'].temporary_path() as temp_metrics_file:
-
+        with self.output()['deduped_bam'].temporary_path() as self.temp_bam:
             program_name = 'picard MarkDuplicates'
             program_options = {
                 'input_bam': self.input().path,
                 'output_bam': self.temp_bam,
-                'output_metrics_file': temp_metrics_file
+                'output_metrics_file': self.output()['metrics_file'].path,
             }
-
             self.run_program(program_name, program_options)
 
 

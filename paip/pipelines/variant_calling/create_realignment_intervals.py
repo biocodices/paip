@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import MarkDuplicates
+from paip.pipelines.variant_calling import IndexAlignment
 
 
 class CreateRealignmentIntervals(SampleTask):
@@ -8,7 +8,7 @@ class CreateRealignmentIntervals(SampleTask):
     'intervals' file with the regions that should be realigned considering
     known human indels.
     """
-    REQUIRES = MarkDuplicates
+    REQUIRES = IndexAlignment
     OUTPUT = 'realignment.intervals'
 
     def run(self):
@@ -16,7 +16,7 @@ class CreateRealignmentIntervals(SampleTask):
         with self.output().temporary_path() as temp_out:
             program_name = 'gatk3 RealignerTargetCreator'
             program_options = {
-                'input_bam': self.input()['deduped_bam'].path,
+                'input_bam': self.input().path,
                 'outfile': temp_out,
             }
 

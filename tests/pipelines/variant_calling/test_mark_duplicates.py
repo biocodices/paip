@@ -8,8 +8,8 @@ def test_run(sample_task_factory, mock_rename):
 
     assert program_name == 'picard MarkDuplicates'
     assert program_options['input_bam'] == task.input().path
-    assert mock_rename.call_count == 2 # Renames output BAM and metrics file
+    assert mock_rename.call_count == 1
     assert task.output()['deduped_bam'].path + '-luigi' \
         in program_options['output_bam']
-    assert task.output()['metrics_file'].path + '-luigi' \
+    assert task.output()['metrics_file'].path \
         in program_options['output_metrics_file']
