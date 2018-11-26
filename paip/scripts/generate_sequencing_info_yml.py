@@ -55,7 +55,7 @@ class Sample:
 
 def main(args):
     cohort_dir = args["--cohort-dir"]
-    pattern = f"{cohort_dir}/*/*.fastq.gz"
+    pattern = f"{cohort_dir}/*/*R?.fastq.gz" # R1.fastq.gz or R2.fastq.gz
     print(f"Trying pattern: {pattern}")
 
     sample_names = {re.sub(r"\.R[12]\.fastq\.gz", "", basename(fastq))
