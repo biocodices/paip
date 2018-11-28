@@ -1,6 +1,9 @@
 from .check_fastqs import CheckFastqs
 from .trim_adapters import TrimAdapters, TrimAdaptersCohort
-from .align_to_reference import AlignToReference, AlignToReferenceCohort
+from .align_to_reference_and_add_read_group import (
+    AlignToReferenceAndAddReadGroup,
+    AlignToReferenceAndAddReadGroupCohort
+)
 from .sort_compress_put_read_groups import SortCompressPutReadGroups, SortCompressPutReadGroupsCohort
 from .mark_duplicates import MarkDuplicates, MarkDuplicatesCohort
 from .index_alignment import IndexAlignment, IndexAlignmentCohort

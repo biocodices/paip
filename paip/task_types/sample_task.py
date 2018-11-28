@@ -21,8 +21,9 @@ class SampleTask(BaseTask):
         "library_id",
         "platform",
         "platform_unit",
+        "run_number",
         "flowcell_id",
-        "lane_number",
+        "lane_numbers_merged",
     ]
 
     def __init__(self, **kwargs):

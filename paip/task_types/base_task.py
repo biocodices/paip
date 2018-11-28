@@ -18,11 +18,17 @@ class BaseTask(luigi.Task):
     Base class for SampleTask and CohortTask, provides shared logic to
     run commands and rename temporary output files.
     """
+
+    # IMPORTANT:
+    #
+    # If you change any of these parameter defaults, please update the
+    # docstring at the top of paip/run_task.py!
+
     basedir = luigi.Parameter(default='.')
 
-    # These parameters are used in different places. Not all tasks
+    # The following parameters are used in different places. Not all tasks
     # make use of all of them, but it seemed cleaner to add them once
-    # here instead of all over different tasks:
+    # here instead of having them scattered over different tasks/files:
     samples = luigi.Parameter(default='ALL')
     pipeline_type = luigi.Parameter(default='variant_sites')
     min_gq = luigi.IntParameter(default=30)
@@ -32,13 +38,13 @@ class BaseTask(luigi.Task):
     # This parameter gives you extra flexibility for the trimming step
     trim_software = luigi.Parameter(default='cutadapt')
 
-    # Override in the child class to automatically define an output() method:
+    # Override in child classes to automatically define an output() method:
     OUTPUT = None
 
-    # Override in the child class to put outputs in a subdirectory:
+    # Override in child classes to put outputs in a subdirectory:
     SUBDIR = None
 
-    # Override in the child class to only allow a number of simultaneous
+    # Override in child classes to only allow a number of simultaneous
     # tasks of that type to be running at the same time:
     MAX_CONCURRENT_TASKS = None
 
@@ -205,7 +211,7 @@ class BaseTask(luigi.Task):
 
             S1:
                 library_id: Lib1
-                sequencing_id: Seq1
+                run_number: Seq1
                 id_in_sequencing: Spl1
 
         This method will work this way:
@@ -213,7 +219,7 @@ class BaseTask(luigi.Task):
             > sample_task.sample == 'S1'  # => True
             > sample_task.load_sequencing_data_from_yaml('data.yml')
             > sample_task.library_id  # => 'Lib1'
-            > sample_task.sequencing_id  # => 'Seq1'
+            > sample_task.run_number  # => 'Seq1'
             > sample_task.id_in_sequencing  # => 'Spl1'
 
         """
@@ -228,9 +234,9 @@ class BaseTask(luigi.Task):
                    'and create that file with info about the samples in this\n'
                    'sequencing. The sample IDs should be first level keys\n'
                    'and each sample must have these keys:\n\nSampleX:  \n'
-                   '  library_id: ...\n  sequencing_id: ...\n  '
+                   '  library_id: ...\n  run_number: ...\n  '
                    'id_in_sequencing: ...\n  platform: ...\n  '
-                   'platform_unit: ...\n')
+                   'platform_unit: ...\n  lane_numbers_merged: ...\n')
             raise IOError(msg.format(fp))
 
         return data

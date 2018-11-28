@@ -2,20 +2,20 @@ Sample1:
   platform: Platform
   library_id: Library-ID
   flowcell_id: Flowcell-ID
-  lane_number: Lane-Number
+  lane_numbers_merged: Lane1-Lane2
   platform_unit: Platform_Unit
 
 Sample2:
   platform: Platform
   flowcell_id: Flowcell-ID
   library_id: Library-ID
-  lane_number: Lane-Number
+  lane_numbers_merged: Lane1-Lane2
   platform_unit: Platform_Unit
 
 Sample3:
   platform: Platform
   flowcell_id: Flowcell-ID
   library_id: Library-ID
-  lane_number: Lane-Number
+  lane_numbers_merged: Lane1-Lane2
   platform_unit: Platform_Unit
 
