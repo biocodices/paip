@@ -1,5 +1,8 @@
 from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import RecalibrateAlignmentScores
+from paip.pipelines.variant_calling import (
+    MarkDuplicates,
+    IndexAlignment,
+)
 
 
 class CallTargets(SampleTask):
@@ -7,7 +10,10 @@ class CallTargets(SampleTask):
     Expects a BAM file. Runs GATK's HaplotypeCaller to call the genotypes
     of the variants specified in a panel_variants VCF.
     """
-    REQUIRES = RecalibrateAlignmentScores
+    REQUIRES = {
+        'alignment': MarkDuplicates,
+        'index': IndexAlignment,
+    }
     OUTPUT = ['vcf', 'hc_target_sites_realignment.bam']
 
     def run(self):
@@ -17,7 +23,7 @@ class CallTargets(SampleTask):
         with temp_vcf() as self.temp_vcf, temp_bam() as self.temp_bam:
             program_name = 'gatk3 HaplotypeCaller target_sites'
             program_options = {
-                'input_bam': self.input().path,
+                'input_bam': self.input()['alignment']['dupmarked_bam'].path,
                 'output_vcf': self.temp_vcf,
                 'output_bam': self.temp_bam,
             }

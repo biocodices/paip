@@ -12,11 +12,15 @@ from .sort_and_compress_alignment import (
 )
 from .mark_duplicates import MarkDuplicates, MarkDuplicatesCohort
 from .index_alignment import IndexAlignment, IndexAlignmentCohort
-from .create_realignment_intervals import CreateRealignmentIntervals
-from .realign_around_indels import RealignAroundIndels
-from .create_recalibration_table import CreateRecalibrationTable
-from .recalibrate_alignment_scores import RecalibrateAlignmentScores
-from .make_gvcf import MakeGVCF
+
+# DEPRECATED part of the pipeline:
+#
+#  from .create_realignment_intervals import CreateRealignmentIntervals
+#  from .realign_around_indels import RealignAroundIndels
+#  from .create_recalibration_table import CreateRecalibrationTable
+#  from .recalibrate_alignment_scores import RecalibrateAlignmentScores
+
+from .make_gvcf import MakeGVCF, MakeGVCFCohort
 from .call_targets import CallTargets
 from .reset_filters import ResetFilters, ResetFiltersCohort
 from .joint_genotyping import JointGenotyping
