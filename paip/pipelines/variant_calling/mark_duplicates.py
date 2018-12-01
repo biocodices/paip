@@ -9,14 +9,14 @@ class MarkDuplicates(SampleTask):
     """
     REQUIRES = SortAndCompressAlignment
     OUTPUT = {
-        'deduped_bam': 'deduped_alignment.bam',
-        'metrics_file': 'deduped_alignment.metrics.txt'
+        'dupmarked_bam': 'dupmarked_alignment.bam',
+        'metrics_file': 'dupmarked_alignment.metrics.txt'
     }
 
     # I've seen GATK ppl use the "dupmarked.bam" tag
 
     def run(self):
-        with self.output()['deduped_bam'].temporary_path() as self.temp_bam:
+        with self.output()['dupmarked_bam'].temporary_path() as self.temp_bam:
             program_name = 'picard MarkDuplicates'
             program_options = {
                 'input_bam': self.input().path,

@@ -79,6 +79,9 @@ class BaseTask(luigi.Task):
 
     def output(self):
         """
+        (This will be called only if the Task that inherits from BaseTask
+        does not define an output method)
+
         Take the filename in self.OUTPUT and return it as a luigi.LocalTarget
         that points to that filename in the sample's/cohort's directory.
 
@@ -97,7 +100,6 @@ class BaseTask(luigi.Task):
         value). This only works for input tasks that have a single file as
         output!
         """
-
         if self.OUTPUT:
             targets = self.make_targets_from_OUTPUT(self.OUTPUT)
         elif self.OUTPUT_RENAMING:
@@ -107,15 +109,15 @@ class BaseTask(luigi.Task):
                 'Please define an output methodm, an OUTPUT constant or an '
                 'OUTPUT_RENAMING constant for the class {}'
                 .format(self.__class__.__name__))
-
         return targets
 
     def make_targets_from_OUTPUT_RENAMING(self, old_value_new_value):
-        input_path = self.input().path
         # This assumes there's only ONE input file!
-        if not isinstance(input_path, str):
-            raise ValueError('OUTPUT_RENAMING only works for input tasks that'
-                             'produce a single file as output!')
+        if not isinstance(self.input(), luigi.LocalTarget):
+            raise ValueError('OUTPUT_RENAMING only works for tasks with a '
+                             'single input task that produces a single target '
+                             'as output!')
+        input_path = self.input().path
         old_value, new_value = old_value_new_value
         output_path = input_path.replace(old_value, new_value)
         return luigi.LocalTarget(output_path)

@@ -19,7 +19,7 @@ def test_run(sample_task_factory):
 
     assert program_name == 'picard ValidateSamFile'
     assert program_options['input_sam'] == task.input().path
-    assert program_options['output_txt'] == task.output().path
+    assert task.output().path + '-luigi-tmp-' in program_options['output_txt']
 
     open_.assert_called_once_with(task.output().path)
 

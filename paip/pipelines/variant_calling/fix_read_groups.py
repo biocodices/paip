@@ -19,15 +19,12 @@ class FixReadGroups(SampleTask):
     ID (this takes some time, since it loops over all SAM lines).
     """
     REQUIRES = AlignToReferenceAndAddReadGroup
+    OUTPUT_RENAMING = ('.wrong_rg.', '.fixed_rg.')
 
     def run(self):
         with self.output().temporary_path() as tmp_out:
             fix_sam_read_groups(sam_input=self.input().path,
                                 out_path=tmp_out)
-
-    def output(self):
-        path = self.input().path.replace('.wrong_rg.', '.fixed_rg.')
-        return luigi.LocalTarget(path)
 
 
 FixReadGroupsCohort = create_cohort_task(FixReadGroups)

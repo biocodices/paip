@@ -26,8 +26,6 @@ class SortAndCompressAlignment(SampleTask):
             }
             self.run_program(program_name, program_options)
 
-        #  self.rename_temp_bai()
-
     def output(self):
         path = self.input()['alignment'].path.replace('.sam', '.sorted.bam')
         return luigi.LocalTarget(path)
