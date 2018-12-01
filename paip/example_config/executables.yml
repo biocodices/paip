@@ -4,7 +4,7 @@
 cutadapt: /home/juan/miniconda3/bin/cutadapt
 # fastq-mcf: /repos/paip/software/ea-utils.1.1.2-537/fastq-mcf
 bwa: /software/bwa-0.7.17/bwa
-picard: java picard.useLegacyParser=false -jar /software/picard-2.18.16.jar
+picard: java -Dpicard.useLegacyParser=false -jar /software/picard-2.18.16.jar
 gatk3: java -jar /software/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef/GenomeAnalysisTK.jar
 gatk4: /software/gatk-4.0.8.1/gatk
 snpeff: java -jar /software/snpEff/snpEff.jar

@@ -4,7 +4,12 @@ from .align_to_reference_and_add_read_group import (
     AlignToReferenceAndAddReadGroup,
     AlignToReferenceAndAddReadGroupCohort
 )
-from .sort_compress_put_read_groups import SortCompressPutReadGroups, SortCompressPutReadGroupsCohort
+from .fix_read_groups import FixReadGroups
+from .validate_sam import ValidateSam
+from .sort_and_compress_alignment import (
+    SortAndCompressAlignment,
+    SortAndCompressAlignmentCohort
+)
 from .mark_duplicates import MarkDuplicates, MarkDuplicatesCohort
 from .index_alignment import IndexAlignment, IndexAlignmentCohort
 from .create_realignment_intervals import CreateRealignmentIntervals

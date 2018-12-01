@@ -103,6 +103,18 @@ picard AddOrReplaceReadGroups:
 # each sample comes from a different library preparation? Usually our samples
 # come from the same library for any single NGS run.
 
+picard ValidateSamFile:
+  '{executable}
+   ValidateSamFile
+   -I {input_sam}
+   -O {output_txt}'
+
+picard SortSam:
+  '{executable}
+   SortSam
+   -I {input_sam}
+   -O {output_bam}'
+
 picard MarkDuplicates:
   # ASSUME_SORT_ORDER should match AddOrReplaceReadGroups SORT_ORDER
   # (i.e. the previous task SORT_ORDER value)

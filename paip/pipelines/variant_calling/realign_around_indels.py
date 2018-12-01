@@ -1,6 +1,6 @@
 from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import (
-    SortCompressPutReadGroups,
+    IndexAlignment,
     CreateRealignmentIntervals,
 )
 
@@ -10,7 +10,7 @@ class RealignAroundIndels(SampleTask):
     Expects a BAM file and an intervals file. Runs a command to realign the reads
     in those intervals and produce a new BAM file with the fixed alignments.
     """
-    REQUIRES = [SortCompressPutReadGroups, CreateRealignmentIntervals]
+    REQUIRES = [IndexAlignment, CreateRealignmentIntervals]
     OUTPUT = 'realignment.bam'
 
     def run(self):

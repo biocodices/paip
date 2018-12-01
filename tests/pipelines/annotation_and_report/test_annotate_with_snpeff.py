@@ -8,8 +8,8 @@ def test_run(sample_task_factory):
 
     open_ = mock_open()
 
-    # FIXME: this whole 'path' to the module hardcoding is ugly, there must
-    # be a better way:
+    # FIXME: this whole 'path' to the module hardcoding is ugly, but I need
+    # the regular builtin open() to be operational for the rest of the code:
     with patch('paip.pipelines.annotation_and_report.annotate_with_snpeff.open', open_):
         task.run()
 

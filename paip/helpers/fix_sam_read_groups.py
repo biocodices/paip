@@ -2,6 +2,7 @@ import os
 import re
 from subprocess import run
 
+from more_itertools import collapse, unique_everseen, one
 from tqdm import tqdm
 
 
@@ -41,24 +42,60 @@ def fix_sam_read_groups(sam_input, out_path, progress_bar=False):
     # NOTE: the SAM files will be HEAVY, specially for exome data (say, 20Gb,
     # 50 million lines).
 
-    if os.path.isfile(out_path):
-        os.remove(out_path)
+    #  if os.path.isfile(out_path):
+        #  os.remove(out_path)
 
     assert '.sam' in out_path # accepts files like "myfile.sam-luigi-tmp-1234"
 
-    sam_header_path = out_path.replace('.sam', '.header.sam')
-    sam_body_path = out_path.replace('.sam', '.no-header.sam')
+    # Write the header of the new SAM, with one @RG entry for each lane
 
-    # Write the header # FIXME: it still lacks the new @RG entriies
+    headers = []
+    with open(sam_input) as f_in:
+        for line in f_in:
+            if not line.startswith("@"): # When the header is over
+                break
+            headers.append(line)
+
+    headers_not_RG = [l for l in headers if not l.startswith('@RG')]
+    headers_RG = [l for l in headers if l.startswith('@RG')]
+
+    # This entire function assumes the following structure for read group IDs:
+    # INSTRUMENT.RUN.FLOWCELL.1-2-3
+    # where 1-2-3 are the merged lane numbers
+    lane_numbers = []
+    for RG_line in headers_RG:
+        RG_header_parts = RG_line.split('\t')
+        # [@RG, ID:INSTRUMENT.RUN.FLOWCELL.1-2-3, LB:LIB, PL:ILLUMINA, ...]
+
+        RG_ID = one(chunk for chunk in RG_header_parts if 'ID:' in chunk)
+        # ID:INSTRUMENT.RUN.FLOWCELL.1-2-3
+
+        lane_numbers_merged = RG_ID.split('.')[-1] # 1-2-3
+
+        for lane_number in lane_numbers_merged.split('-'): # [1, 2, 3]
+            lane_numbers.append(lane_number)
+
+    # One RG line for each lane number seen:
+    new_RG_headers = []
+    template_RG_line = headers_RG[0]
+    for lane_number in sorted(unique_everseen(lane_numbers)):
+        new_RG_header = re.sub(r'(ID:)(.+?\.)(.+?\.)(.+?\.)(.+?)(\s)',
+                               rf'\1\2\3\g<4>{lane_number}\6',
+                               template_RG_line)
+        new_RG_headers.append(new_RG_header)
+
+    with open(out_path, 'w') as f_out:
+        for header in headers_not_RG + new_RG_headers:
+            f_out.write(header)
+
+    # Write the body of the SAM, fixing read groups read by read:
 
     regex_id = re.compile(r'^(.+?:.+?:.+?:.+?):.+?:.+?:.+?\s')
     regex_rg = re.compile(r'\sRG:Z:(.+)\s')
 
-    # Write the body of the SAM, fixing read groups read by read:
-
     inferred_read_groups = set()
 
-    with open(sam_input) as f_in, open(sam_body_path, 'w') as f_out:
+    with open(sam_input) as f_in, open(out_path, 'a') as f_out:
         input_iterable = tqdm(f_in) if progress_bar else f_in
 
         # NOTE: this will loop over ~50M lines for exome data!
@@ -76,40 +113,4 @@ def fix_sam_read_groups(sam_input, out_path, progress_bar=False):
             inferred_read_groups.add(inferred_read_group)
             f_out.write(fixed_line)
 
-    # Write the header of the SAM, adding an @RG entry for each read group
-    # seen among the reads:
-
-    #
-    #
-    #
-    # FIXME: SEGUIR Con esto pero tomar los read groups del archivo
-    # unique_read_groups que antes hice y escribir PRIMERO el header!
-    # única manera de que luego no tenga que concatenar y tener tres
-    # copias de todo el cuerpo del SAM en el disco en simultáneo
-    #
-    # O MEJORRRRRRRR: asumir que en el ** único ** read group que vino de
-    # BWA en el header, los lanes están mergeados! 3-4
-    #
-    #
-    #
-
-    header_lines = []
-    with open(sam_input) as f_in:
-        for line in f_in:
-            if not line.startswith("@"): # When the header is over
-                break
-            header_lines.append(line)
-
-    header_without_RG = [l for l in header_lines if not l.startswith('@RG')]
-    header_RG = [l for l in header_lines if l.startswith('@RG')]
-    template_RG_line = header_RG[0]
-
-    rg_lines = []
-    for read_group in sorted(inferred_read_groups):
-        rg_line = re.sub(r'(ID:)(.+?)(\s.+)', rf'\1{read_group}\3',
-                         template_RG_line)
-        rg_lines.append(rg_line)
-
-    with open(sam_header_path, 'w') as f_out:
-        for header_line in header_without_RG + rg_lines:
-            f_out.write(header_line)
+    return out_path

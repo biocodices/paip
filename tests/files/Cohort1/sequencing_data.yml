@@ -4,6 +4,7 @@ Sample1:
   flowcell_id: Flowcell-ID
   lane_numbers_merged: Lane1-Lane2
   platform_unit: Platform_Unit
+  run_number: 1
 
 Sample2:
   platform: Platform
@@ -11,6 +12,7 @@ Sample2:
   library_id: Library-ID
   lane_numbers_merged: Lane1-Lane2
   platform_unit: Platform_Unit
+  run_number: 1
 
 Sample3:
   platform: Platform
@@ -18,4 +20,4 @@ Sample3:
   library_id: Library-ID
   lane_numbers_merged: Lane1-Lane2
   platform_unit: Platform_Unit
-
+  run_number: 1
