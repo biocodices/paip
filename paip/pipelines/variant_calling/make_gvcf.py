@@ -16,7 +16,7 @@ class MakeGVCF(SampleTask):
         'alignment': MarkDuplicates,
         'index': IndexAlignment,
     }
-    OUTPUT = ['g.vcf', 'haplotypes.bam']
+    OUTPUT = ['g.vcf', 'HC_haplotypes.bam']
 
     def run(self):
         temp_vcf = self._find_output('.g.vcf').temporary_path

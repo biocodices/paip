@@ -9,5 +9,5 @@ def test_run(sample_task_factory):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'picard CollectAlignmentSummaryMetrics'
-    assert program_options['input_bam'] == task.input().path
+    assert program_options['input_bam'] == task.input()['dupmarked_bam'].path
     assert 'alignment_metrics.txt-luigi-tmp' in program_options['output_txt']

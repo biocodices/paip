@@ -10,5 +10,5 @@ def test_run(sample_task_factory, mock_rename):
     assert program_options['input_bam'] == \
         task.input()['alignment']['dupmarked_bam'].path
     assert 'g.vcf-luigi-tmp' in program_options['output_gvcf']
-    assert '.hc_realignment.bam-luigi-tmp' in program_options['output_bam']
+    assert '.HC_haplotypes.bam-luigi-tmp' in program_options['output_bam']
     assert mock_rename.call_count == 4

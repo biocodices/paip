@@ -34,7 +34,7 @@ def test_load_sample_data_from_yaml(sample_task):
     assert sample_task.flowcell_id == 'Flowcell-ID'
     assert sample_task.library_id == 'Library-ID'
     assert sample_task.platform == 'Platform'
-    assert sample_task.lane_number == 'Lane-Number'
+    assert sample_task.lane_numbers_merged == 'Lane1-Lane2'
 
 
 def test_output(sample_task, test_sample_path):
