@@ -11,12 +11,17 @@ class ValidateSam(SampleTask):
     same name as the input SAM plus '.is_valid'.
     """
     REQUIRES = FixReadGroups
-    OUTPUT = 'raw_alignment.fixed_rg.sam.validation_result'
+    OUTPUT_RENAMING = ('.sam', '.sam.validation_result')
+
+    def output(self):
+        path = self.input().path.replace('.sam', '.sam.validation_result')
+        return luigi.LocalTarget(path)
 
     def run(self):
         input_sam = self.input().path
         validation_file = self.output().path
 
+        with self.output()
         program_name = 'picard ValidateSamFile'
         program_options = {
             'input_sam': input_sam,
@@ -32,10 +37,6 @@ class ValidateSam(SampleTask):
             raise InvalidSamException('SAM file appears not to be valid. '
                                       'Maybe the read groups fix went wrong? '
                                       f'Check: {input_sam}')
-
-    def output(self):
-        path = self.input().path.replace('.sam', '.sam.validation_result')
-        return luigi.LocalTarget(path)
 
 
 class InvalidSamException(Exception): pass

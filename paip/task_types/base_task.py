@@ -40,6 +40,7 @@ class BaseTask(luigi.Task):
 
     # Override in child classes to automatically define an output() method:
     OUTPUT = None
+    OUTPUT_RENAMING = None
 
     # Override in child classes to put outputs in a subdirectory:
     SUBDIR = None
@@ -89,27 +90,48 @@ class BaseTask(luigi.Task):
 
         If self.SUBDIR is defined, the filepaths will be in it that
         subdirectory.
+
+        If no self.OUTPUT constant is defined, look for a self.OUTPUT constant
+        that should be a tuple of strings. Use both values for a replace
+        operation on the input file (replace the first value with the second
+        value). This only works for input tasks that have a single file as
+        output!
         """
-        if not self.OUTPUT:
-            raise Exception('Please define an output method or an OUTPUT '
-                            'constant for the class {}'
-                            .format(self.__class__.__name__))
 
-        if isinstance(self.OUTPUT, list):
+        if self.OUTPUT:
+            targets = self.make_targets_from_OUTPUT(self.OUTPUT)
+        elif self.OUTPUT_RENAMING:
+            targets = self.make_targets_from_OUTPUT_RENAMING(self.OUTPUT_RENAMING)
+        else:
+            raise Exception(
+                'Please define an output methodm, an OUTPUT constant or an '
+                'OUTPUT_RENAMING constant for the class {}'
+                .format(self.__class__.__name__))
+
+        return targets
+
+    def make_targets_from_OUTPUT_RENAMING(self, old_value_new_value):
+        input_path = self.input().path
+        # This assumes there's only ONE input file!
+        if not isinstance(input_path, str):
+            raise ValueError('OUTPUT_RENAMING only works for input tasks that'
+                             'produce a single file as output!')
+        old_value, new_value = old_value_new_value
+        output_path = input_path.replace(old_value, new_value)
+        return luigi.LocalTarget(output_path)
+
+    def make_targets_from_OUTPUT(self, out):
+        if isinstance(out, list):
             targets = [luigi.LocalTarget(self.path(fn))
-                       for fn in self.OUTPUT]
-
-        elif isinstance(self.OUTPUT, dict):
+                       for fn in out]
+        elif isinstance(out, dict):
             targets = {key: luigi.LocalTarget((self.path(fn)))
-                       for key, fn in self.OUTPUT.items()}
-
-        elif isinstance(self.OUTPUT, str):
-            targets = luigi.LocalTarget(self.path(self.OUTPUT))
-
+                       for key, fn in out.items()}
+        elif isinstance(out, str):
+            targets = luigi.LocalTarget(self.path(out))
         else:
             raise ValueError("I can't deal with this type of OUTPUT: "
-                             f"{type(self.OUTPUT)}")
-
+                             f"{type(out)}")
         return targets
 
     def path(self, filename, prefix=True):

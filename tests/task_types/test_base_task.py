@@ -18,7 +18,10 @@ def base_task(test_cohort_basedir):
 def MockTask():
 
     class MockClass(paip.task_types.BaseTask):
-        param = luigi.Parameter()
+        param = luigi.Parameter(default='foo')
+        OUTPUT = 'some-file.foo'
+        dir = 'some-dir'
+        name = 'Name'
 
     return MockClass
 
@@ -76,7 +79,7 @@ def test_load_sample_data_from_yaml(base_task):
     assert empty_seq_data == {}
 
 
-def test_output(base_task, monkeypatch):
+def test_output(base_task, monkeypatch, MockTask):
     # These are defined in CohortTask and SampleTask
     base_task.name = 'BaseTask'
     base_task.dir = '/path/to/BaseTask'
@@ -96,6 +99,12 @@ def test_output(base_task, monkeypatch):
     outputs = base_task.output()
     assert outputs['foo'].path.endswith('BaseTask/BaseTask.foo')
     assert outputs['bar'].path.endswith('BaseTask/BaseTask.bar')
+
+    base_task.REQUIRES = MockTask
+    base_task.OUTPUT = None
+    base_task.OUTPUT_RENAMING = ('.foo', '.foo.bar')
+    assert base_task.input().path.endswith('Name.some-file.foo')
+    assert base_task.output().path.endswith('Name.some-file.foo.bar')
 
     base_task.SUBDIR = 'xhmm_run'
     base_task.OUTPUT = 'baz'

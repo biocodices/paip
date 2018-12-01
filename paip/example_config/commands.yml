@@ -113,17 +113,18 @@ picard SortSam:
   '{executable}
    SortSam
    -I {input_sam}
-   -O {output_bam}'
+   -O {output_bam}
+   --SORT_ORDER coordinate'
 
 picard MarkDuplicates:
-  # ASSUME_SORT_ORDER should match AddOrReplaceReadGroups SORT_ORDER
+  # The option ASSUME_SORT_ORDER should match AddOrReplaceReadGroups SORT_ORDER
   # (i.e. the previous task SORT_ORDER value)
   '{executable}
    MarkDuplicates
    -I {input_bam}
    -O {output_bam}
-   -METRICS_FILE {output_metrics_file}
-   -ASSUME_SORT_ORDER coordinate'
+   --METRICS_FILE {output_metrics_file}
+   --ASSUME_SORT_ORDER coordinate'
 
 picard BuildBamIndex:
   '{executable}
@@ -131,37 +132,37 @@ picard BuildBamIndex:
    -I {input_bam}'
 
 gatk3 RealignerTargetCreator:
-    '{executable}
-     -T RealignerTargetCreator
-     -I {input_bam}
-     -R {reference_genome}
-     -known {indels_1000G}
-     -known {indels_mills}
-     -L {panel_regions}
-     --logging_level INFO
-     -nt {num_threads}
-     -o {outfile}'
+  '{executable}
+    -T RealignerTargetCreator
+    -I {input_bam}
+    -R {reference_genome}
+    -known {indels_1000G}
+    -known {indels_mills}
+    -L {panel_regions}
+    --logging_level INFO
+    -nt {num_threads}
+    -o {outfile}'
 
 gatk3 IndelRealigner:
-    '{executable}
-     -T IndelRealigner
-     -I {input_bam}
-     -R {reference_genome}
-     -targetIntervals {targets_file}
-     --logging_level INFO
-     -o {output_bam}'
+  '{executable}
+    -T IndelRealigner
+    -I {input_bam}
+    -R {reference_genome}
+    -targetIntervals {targets_file}
+    --logging_level INFO
+    -o {output_bam}'
 
 gatk3 BaseRecalibrator:
-    '{executable}
-     -T BaseRecalibrator
-     -nct 1
-     -I {input_bam}
-     -R {reference_genome}
-     -L {panel_regions}
-     -knownSites {indels_1000G}
-     -knownSites {indels_mills}
-     --logging_level INFO
-     -o {outfile}'
+  '{executable}
+    -T BaseRecalibrator
+    -nct 1
+    -I {input_bam}
+    -R {reference_genome}
+    -L {panel_regions}
+    -knownSites {indels_1000G}
+    -knownSites {indels_mills}
+    --logging_level INFO
+    -o {outfile}'
 
 # About PrintReads:
 # never include the -L option here: it leads to lost data! More here:

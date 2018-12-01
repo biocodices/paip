@@ -9,7 +9,7 @@ class MarkDuplicates(SampleTask):
     """
     REQUIRES = SortAndCompressAlignment
     OUTPUT = {
-        'deduped_bam': 'deduped_alignment.sorted.with_rg.bam',
+        'deduped_bam': 'deduped_alignment.bam',
         'metrics_file': 'deduped_alignment.metrics.txt'
     }
 
