@@ -5,7 +5,7 @@ import luigi
 
 from paip.task_types import SampleTask, ReportsTask, CohortTask
 from paip.pipelines.variant_calling import (
-    RecalibrateAlignmentScores,
+    MarkDuplicates,
     FilterGenotypes,
     ExtractSample,
     KeepReportableGenotypes,
@@ -40,7 +40,7 @@ class TakeIGVSnapshots(ReportsTask, SampleTask):
             'report_generation': GenerateReportsDone(**self.param_kwargs),
 
             # Other upstream tasks don't need the report-related params:
-            'alignment': RecalibrateAlignmentScores(**self.sample_params()),
+            'alignment': MarkDuplicates(**self.sample_params()),
             'sample_all': ExtractSample(**self.sample_params()),
             'sample_reportable': KeepReportableGenotypes(**self.sample_params()),
 
@@ -78,7 +78,7 @@ class TakeIGVSnapshots(ReportsTask, SampleTask):
         Writes the IGV batch script at *script_path* to take a screenshot of
         the pile of reads for each variant in the variants JSON of the sample.
         """
-        alignment_file = self.input()['alignment'].path
+        alignment_file = self.input()['alignment']['dupmarked_bam'].path
         variants_json = \
             self.input()['report_generation'].path
 

@@ -1,6 +1,6 @@
 import os
 
-from paip.pipelines.variant_calling import RecalibrateAlignmentScores
+from paip.pipelines.variant_calling import MarkDuplicates
 from paip.task_types import SampleTask
 from paip.helpers.create_cohort_task import create_cohort_task
 
@@ -9,14 +9,14 @@ class DepthOfCoverage(SampleTask):
     """
     Takes a BAM and creates a file of coverage per base in the panel regions.
     """
-    REQUIRES = RecalibrateAlignmentScores
+    REQUIRES = MarkDuplicates
     OUTPUT = 'depth_of_coverage'
 
     def run(self):
         with self.output().temporary_path() as tempfile:
             program_name = 'gatk3 DepthOfCoverage'
             program_options = {
-                'input_bam': self.input().path,
+                'input_bam': self.input()['dupmarked_bam'].path,
                 'outfile': tempfile,
             }
             self.run_program(program_name, program_options)

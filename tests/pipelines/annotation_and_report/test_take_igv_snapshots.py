@@ -35,8 +35,8 @@ def test_write_script(task, monkeypatch):
     init_tpl = init['template_data']
     assert init_tpl['sample_igv_snapshots_dir'].endswith('/igv_snapshots_PAT')
     assert init_tpl['cohort_variants'].endswith('.filt.geno_filt.vcf')
-    assert init_tpl['sample_alignment'].endswith('.realignment_recalibrated.bam')
-    assert init_tpl['sample_alignment_trackname'].endswith('.realignment_recalibrated.bam')
+    assert init_tpl['sample_alignment'].endswith('.dupmarked_alignment.bam')
+    assert init_tpl['sample_alignment_trackname'].endswith('.dupmarked_alignment.bam')
     assert init_tpl['sample_all_variants'].endswith('.with_filters.vcf')
     assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
     assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')

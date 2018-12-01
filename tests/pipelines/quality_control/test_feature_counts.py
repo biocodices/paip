@@ -7,5 +7,5 @@ def test_run(sample_task_factory):
     (program_name, program_options), _ = task.run_program.call_args
 
     assert program_name == 'featureCounts'
-    assert program_options['input_bam'] == task.input().path
+    assert program_options['input_bam'] == task.input()['dupmarked_bam'].path
     assert program_options['outfile'] == task.output().path

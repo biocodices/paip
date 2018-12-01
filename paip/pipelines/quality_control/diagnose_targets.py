@@ -1,4 +1,4 @@
-from paip.pipelines.variant_calling import RecalibrateAlignmentScores
+from paip.pipelines.variant_calling import MarkDuplicates
 from paip.task_types import SampleTask
 from paip.helpers.create_cohort_task import create_cohort_task
 
@@ -8,14 +8,14 @@ class DiagnoseTargets(SampleTask):
     Takes a BAM and the panel's BED and creates a VCF of coverage stats per
     region.
     """
-    REQUIRES = RecalibrateAlignmentScores
+    REQUIRES = MarkDuplicates
     OUTPUT = 'coverage_diagnosis.vcf'
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
             program_name = 'gatk3 DiagnoseTargets'
             program_options = {
-                'input_bam': self.input().path,
+                'input_bam': self.input()['dupmarked_bam'].path,
                 'min_dp': self.min_dp,
                 'output_vcf': self.temp_vcf,
             }
