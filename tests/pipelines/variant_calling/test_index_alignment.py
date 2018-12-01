@@ -7,4 +7,4 @@ def test_run(sample_task_factory, mock_rename):
     (program_name, program_options), kwargs = task.run_program.call_args
 
     assert program_name == 'picard BuildBamIndex'
-    assert program_options['input_bam'] == task.input()['deduped_bam'].path
+    assert program_options['input_bam'] == task.input()['dupmarked_bam'].path

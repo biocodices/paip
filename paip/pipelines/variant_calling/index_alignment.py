@@ -8,12 +8,12 @@ class IndexAlignment(SampleTask):
     Takes a BAM and creates its BAI (index) companion.
     """
     REQUIRES = MarkDuplicates
-    OUTPUT = "deduped_alignment.sorted.with_rg.bai"
+    OUTPUT = "dupmarked_alignment.bai"
 
     def run(self):
         program_name = 'picard BuildBamIndex'
         program_options = {
-            'input_bam': self.input()['deduped_bam'].path,
+            'input_bam': self.input()['dupmarked_bam'].path,
         }
         self.run_program(program_name, program_options)
 
