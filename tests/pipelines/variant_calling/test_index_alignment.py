@@ -8,3 +8,5 @@ def test_run(sample_task_factory, mock_rename):
 
     assert program_name == 'picard BuildBamIndex'
     assert program_options['input_bam'] == task.input()['dupmarked_bam'].path
+    assert task.output().path + '-luigi-tmp-' in program_options['output_bai']
+    assert mock_rename.call_count == 1

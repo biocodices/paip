@@ -1,3 +1,4 @@
+import re
 from paip.pipelines.variant_calling import TrimAdapters
 
 
@@ -9,8 +10,10 @@ def test_run(sample_task_factory):
     assert program_name == 'cutadapt'
     assert program_options['forward_reads'] == task.input()['forward_reads'].path
     assert program_options['reverse_reads'] == task.input()['reverse_reads'].path
-    assert 'R1.trimmed.fastq.gz' in program_options['forward_output']
-    assert 'R2.trimmed.fastq.gz' in program_options['reverse_output']
+    assert re.search(r'R1.trimmed.-luigi-tmp-\d+.fastq.gz$',
+                     program_options['forward_output'])
+    assert re.search(r'R2.trimmed.-luigi-tmp-\d+.fastq.gz$',
+                     program_options['reverse_output'])
 
     # This is important: cutadapt will only compress its output if it detects
     # filenames ending in ".gz", so we can't use different endings:

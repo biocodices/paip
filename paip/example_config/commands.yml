@@ -129,7 +129,8 @@ picard MarkDuplicates:
 picard BuildBamIndex:
   '{executable}
    BuildBamIndex
-   -I {input_bam}'
+   -I {input_bam}
+   -O {output_bai}'
 
 gatk3 HaplotypeCaller:
 
