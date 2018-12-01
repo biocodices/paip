@@ -131,72 +131,6 @@ picard BuildBamIndex:
    BuildBamIndex
    -I {input_bam}'
 
-gatk3 RealignerTargetCreator:
-  '{executable}
-    -T RealignerTargetCreator
-    -I {input_bam}
-    -R {reference_genome}
-    -known {indels_1000G}
-    -known {indels_mills}
-    -L {panel_regions}
-    --logging_level INFO
-    -nt {num_threads}
-    -o {outfile}'
-
-gatk3 IndelRealigner:
-  '{executable}
-    -T IndelRealigner
-    -I {input_bam}
-    -R {reference_genome}
-    -targetIntervals {targets_file}
-    --logging_level INFO
-    -o {output_bam}'
-
-gatk3 BaseRecalibrator:
-  '{executable}
-    -T BaseRecalibrator
-    -nct 1
-    -I {input_bam}
-    -R {reference_genome}
-    -L {panel_regions}
-    -knownSites {indels_1000G}
-    -knownSites {indels_mills}
-    --logging_level INFO
-    -o {outfile}'
-
-# About PrintReads:
-# never include the -L option here: it leads to lost data! More here:
-# https://software.broadinstitute.org/gatk/documentation/article.php?id=4133
-gatk3 PrintReads:
-    '{executable}
-     -T PrintReads
-     -nct 1
-     -I {input_bam}
-     -BQSR {recalibration_table}
-     -R {reference_genome}
-     --logging_level INFO
-     -o {output_bam}'
-
-# gatk3 HaplotypeCaller variant_sites for_exomes:
-    # # https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_engine_CommandLineGATK.php#--interval_padding
-    # # --interval_padding: This is typically used to add padding around exons
-    # # when analyzing exomes. The general Broad exome calling pipeline uses
-    # # 100 bp padding by default.
-    # '{executable}
-     # -T HaplotypeCaller
-     # -I {input_bam}
-     # -gt_mode DISCOVERY
-     # -ERC BP_RESOLUTION
-     # -variant_index_parameter 128000
-     # -variant_index_type LINEAR
-     # --interval_padding 100
-     # -L {panel_regions}
-     # -R {reference_genome}
-     # -D {dbsnp_GRCh37}
-     # -nct 8
-     # --logging_level INFO
-     # -o {output_vcf}'
-
 gatk3 HaplotypeCaller:
 
     # This step is the same for two pipelines:
@@ -217,10 +151,28 @@ gatk3 HaplotypeCaller:
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -o {output_gvcf}
-     --logging_level INFO
      -bamout {output_bam}'
 
     # The -nt and -nct options can't be used when asking for a -bamout
+
+    # NOTE: I'm not using the --interval_padding option because I'd rather
+    # have a -L panel_regions BED file that has regions already padded +- 100
+    # basepairs (Agilent support files include these).
+
+gatk4 HaplotypeCaller:
+    '{executable}
+     HaplotypeCaller
+     -I {input_bam}
+     -O {output_gvcf}
+     --intervals {panel_regions}
+     --reference {reference_genome}
+     --dbsnp {dbsnp_GRCh37}
+     --annotation-group StandardAnnotation
+     --genotyping-mode DISCOVERY
+     --emit-ref-confidence GVCF
+     --bam-output {output_bam}'
+
+    # ^ Notes on gatk3 HaplotypeCaller also apply to this command
 
 gatk3 HaplotypeCaller target_sites:
 
@@ -478,6 +430,56 @@ gatk3 SelectVariants reportable:
      --logging_level INFO
      -o {output_vcf}"
 
+##
+#
+# DEPRECATED: an old part of GATK3 early versions pipeline
+#
+##
+# gatk3 RealignerTargetCreator:
+  # '{executable}
+    # -T RealignerTargetCreator
+    # -I {input_bam}
+    # -R {reference_genome}
+    # -known {indels_1000G}
+    # -known {indels_mills}
+    # -L {panel_regions}
+    # --logging_level INFO
+    # -nt {num_threads}
+    # -o {outfile}'
+
+# gatk3 IndelRealigner:
+  # '{executable}
+    # -T IndelRealigner
+    # -I {input_bam}
+    # -R {reference_genome}
+    # -targetIntervals {targets_file}
+    # --logging_level INFO
+    # -o {output_bam}'
+
+# gatk3 BaseRecalibrator:
+  # '{executable}
+    # -T BaseRecalibrator
+    # -nct 1
+    # -I {input_bam}
+    # -R {reference_genome}
+    # -L {panel_regions}
+    # -knownSites {indels_1000G}
+    # -knownSites {indels_mills}
+    # --logging_level INFO
+    # -o {outfile}'
+
+# # About PrintReads:
+# # never include the -L option here: it leads to lost data! More here:
+# # https://software.broadinstitute.org/gatk/documentation/article.php?id=4133
+# gatk3 PrintReads:
+    # '{executable}
+     # -T PrintReads
+     # -nct 1
+     # -I {input_bam}
+     # -BQSR {recalibration_table}
+     # -R {reference_genome}
+     # --logging_level INFO
+     # -o {output_bam}'
 
 
 #########################################

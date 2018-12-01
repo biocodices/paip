@@ -10,6 +10,7 @@ from .sort_and_compress_alignment import (
     SortAndCompressAlignment,
     SortAndCompressAlignmentCohort
 )
+from .delete_sam_files import DeleteSamFiles, DeleteSamFilesCohort
 from .mark_duplicates import MarkDuplicates, MarkDuplicatesCohort
 from .index_alignment import IndexAlignment, IndexAlignmentCohort
 

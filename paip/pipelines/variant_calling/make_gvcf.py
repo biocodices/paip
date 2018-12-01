@@ -16,19 +16,18 @@ class MakeGVCF(SampleTask):
         'alignment': MarkDuplicates,
         'index': IndexAlignment,
     }
-    OUTPUT = ['g.vcf', 'hc_realignment.bam']
+    OUTPUT = ['g.vcf', 'haplotypes.bam']
 
     def run(self):
         temp_vcf = self._find_output('.g.vcf').temporary_path
         temp_bam = self._find_output('.bam').temporary_path
 
         with temp_vcf() as self.temp_vcf, temp_bam() as self.temp_bam:
-            program_name = 'gatk3 HaplotypeCaller'
+            program_name = 'gatk4 HaplotypeCaller'
             program_options = {
                 'input_bam': self.input()['alignment']['dupmarked_bam'].path,
                 'output_gvcf': self.temp_vcf,
-                'output_bam': self.temp_bam,
-            }
+                'output_bam': self.temp_bam, }
 
             self.run_program(program_name, program_options)
 
