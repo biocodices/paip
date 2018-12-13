@@ -2,6 +2,7 @@ import luigi
 
 from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import KeepReportableGenotypes
+from paip.helpers.create_cohort_task import create_cohort_task
 
 
 class VariantCallingReady(SampleTask, luigi.WrapperTask):
@@ -13,3 +14,6 @@ class VariantCallingReady(SampleTask, luigi.WrapperTask):
 
     def output(self):
         return self.input()
+
+
+VariantCallingReadyCohort = create_cohort_task(VariantCallingReady)

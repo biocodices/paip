@@ -27,4 +27,3 @@ class FilterGenotypes(CohortTask):
     def output(self):
         fn = self.input().path.replace('.vcf', '.geno_filt.vcf')
         return luigi.LocalTarget(fn)
-

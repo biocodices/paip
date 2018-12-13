@@ -37,4 +37,4 @@ from .extract_sample import ExtractSample
 from .external_exome import ExternalExome, ExternalExomeCohort
 from .fix_contig_names_and_sample_name import FixContigNamesAndSampleName
 from .keep_reportable_genotypes import KeepReportableGenotypes, KeepReportableGenotypesCohort
-from .variant_calling_ready import VariantCallingReady
+from .variant_calling_ready import VariantCallingReady, VariantCallingReadyCohort

@@ -193,7 +193,6 @@ gatk3 HaplotypeCaller target_sites:
      -R {reference_genome}
      -D {dbsnp_GRCh37}
      -o {output_vcf}
-     --logging_level INFO
      -bamout {output_bam}'
 
 gatk3 GenotypeGVCFs all_sites:
@@ -206,7 +205,6 @@ gatk3 GenotypeGVCFs all_sites:
      -D {dbsnp_GRCh37}
      -nt {num_threads}
      {input_gvcfs}
-     --logging_level INFO
      -o {output_vcf}'
 
 # Removed -L {panel_regions}
@@ -225,7 +223,6 @@ gatk3 GenotypeGVCFs variant_sites:
      -D {dbsnp_GRCh37}
      -nt {num_threads}
      {input_gvcfs}
-     --logging_level INFO
      -o {output_vcf}'
 
 # Removed -L {panel_regions}
@@ -259,7 +256,6 @@ gatk3 CombineVariants:
      -nt {num_threads}
      -R {reference_genome}
      {input_vcfs}
-     --logging_level INFO
      -o {output_vcf}'
 
 snpsift dbSNP:
@@ -282,7 +278,6 @@ gatk3 SelectVariants snps:
      -nt {num_threads}
      -R {reference_genome}
      -V {input_vcf}
-     --logging_level INFO
      -o {output_vcf}'
 
 gatk3 SelectVariants indels:
@@ -292,7 +287,6 @@ gatk3 SelectVariants indels:
      -nt {num_threads}
      -R {reference_genome}
      -V {input_vcf}
-     --logging_level INFO
      -o {output_vcf}'
 
 gatk3 VariantFiltration snps:
@@ -308,8 +302,16 @@ gatk3 VariantFiltration snps:
      -filter "MQRankSum < -12.5"
      --filterName RPRS
      -filter "ReadPosRankSum < -8.0"
-     --logging_level INFO
+
+     --filterName FS
+     -filter "FS > 60.0"
+
      -o {output_vcf}'
+
+# Exome filters use FS > 60.0 (Macrogen people use this, for instance)
+# We do not use it for panels though, so make sure you remove it for panel
+# cohorts!
+
 
 gatk3 VariantFiltration indels:
     '{executable}
@@ -320,7 +322,10 @@ gatk3 VariantFiltration indels:
      -filter "QD < 2.0"
      --filterName RPRS
      -filter "ReadPosRankSum < 20.0"
-     --logging_level INFO
+
+     --filterName FS
+     -filter "FS > 200.0"
+
      -o {output_vcf}'
 
 gatk3 CombineVariants snps_indels:
@@ -333,7 +338,6 @@ gatk3 CombineVariants snps_indels:
      -V:indels {input_indels}
      -genotypeMergeOptions PRIORITIZE
      -priority snps,indels
-     --logging_level INFO
      -o {output_vcf}'
 
 gatk3 VariantFiltration genos:
@@ -345,7 +349,6 @@ gatk3 VariantFiltration genos:
      -G_filter "GQ < {min_gq}"
      -G_filterName LowDP
      -G_filter "DP < {min_dp}"
-     --logging_level INFO
      -o {output_vcf}'
 
     # I originally included this RGQ filter for the all_sites pipeline:
@@ -462,7 +465,6 @@ gatk3 SelectVariants reportable:
     # -known {indels_1000G}
     # -known {indels_mills}
     # -L {panel_regions}
-    # --logging_level INFO
     # -nt {num_threads}
     # -o {outfile}'
 
@@ -472,7 +474,6 @@ gatk3 SelectVariants reportable:
     # -I {input_bam}
     # -R {reference_genome}
     # -targetIntervals {targets_file}
-    # --logging_level INFO
     # -o {output_bam}'
 
 # gatk3 BaseRecalibrator:
@@ -484,7 +485,6 @@ gatk3 SelectVariants reportable:
     # -L {panel_regions}
     # -knownSites {indels_1000G}
     # -knownSites {indels_mills}
-    # --logging_level INFO
     # -o {outfile}'
 
 # # About PrintReads:
@@ -497,7 +497,6 @@ gatk3 SelectVariants reportable:
      # -I {input_bam}
      # -BQSR {recalibration_table}
      # -R {reference_genome}
-     # --logging_level INFO
      # -o {output_bam}'
 
 
