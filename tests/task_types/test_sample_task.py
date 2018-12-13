@@ -41,6 +41,7 @@ def test_init(sample_task_factory):
     sample_with_fastqs = sample_task_factory(sample_name='Sample1')
 
     assert sample_with_exome.external_exome is True
+    assert sample_with_exome.external_sample_name == "External-Name"
     assert sample_with_fastqs.external_exome is False
 
     with pytest.raises(SampleNotFoundError):

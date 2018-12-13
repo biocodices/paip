@@ -24,8 +24,10 @@ Sample3:
 
 SampleWithExome:
   external_exome: true
+  external_sample_name: External-Name
 
 SampleWithoutExome:
   external_exome: true
+  external_sample_name: External-Name
 
 SampleWithIncompleteInfo: {}

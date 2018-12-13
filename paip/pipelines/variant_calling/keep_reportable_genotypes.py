@@ -1,7 +1,7 @@
 from paip.task_types import SampleTask
 from paip.pipelines.variant_calling import (
     ExtractSample,
-    FixContigNames,
+    FixContigNamesAndSampleName,
 )
 from paip.helpers.create_cohort_task import create_cohort_task
 
@@ -14,8 +14,10 @@ class KeepReportableGenotypes(SampleTask):
     OUTPUT = 'reportable.vcf'
 
     def requires(self):
-        Task = FixContigNames if self.external_exome else KeepReportableGenotypes
-        return Task(**self.param_kwargs)
+        if self.external_exome:
+            return FixContigNamesAndSampleName(**self.param_kwargs)
+        else:
+            return KeepReportableGenotypes(**self.param_kwargs)
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
@@ -24,7 +26,7 @@ class KeepReportableGenotypes(SampleTask):
                 'input_vcf': self.input().path,
                 'sample': self.sample,
                 'min_GQ': self.min_gq,
-                'min_DP': self.min_dp,
+                # 'min_DP': self.min_dp,
                 'output_vcf': self.temp_vcf,
             }
             self.run_program(program_name, program_options)

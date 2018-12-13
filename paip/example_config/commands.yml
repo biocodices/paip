@@ -361,8 +361,11 @@ gatk3 VariantFiltration genos:
     # is found.
 
 
-fix contig names:
-  'cat {input_vcf} | sed "s/ID=chr/ID=/" | sed "s/^chr//"'
+fix contig names and sample name:
+  'cat {input_vcf} |
+   sed "s/ID=chr/ID=/" |
+   sed "s/^chr//" |
+   sed "s/{external_sample_name}/{new_sample_name}/"'
    # Macrogen VCF files use the UCSC hg19 reference genome, which has contigs
    # named "chr1", "chr2", instead of GATK bundle names like "1", "2".
    # We need to fix this to use our pipeline.
@@ -426,7 +429,6 @@ gatk3 SelectVariants sample:
      -R {reference_genome}
      -V {input_vcf}
      --sample_name {sample_id}
-     --logging_level INFO
      -o {output_vcf}'
 
 
@@ -437,8 +439,7 @@ gatk3 SelectVariants reportable:
      -R {reference_genome}
      -V {input_vcf}
      --excludeFiltered
-     -select 'vc.getGenotype(\"{sample}\").getGQ() >= {min_GQ}'
-     --logging_level INFO
+     --selectexpressions 'vc.getGenotype(\"{sample}\").getGQ() >= {min_GQ}'
      -o {output_vcf}"
 
 # I used to include this filter:
