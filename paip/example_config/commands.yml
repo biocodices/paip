@@ -360,6 +360,14 @@ gatk3 VariantFiltration genos:
     # I'll leave them commented out until a solution for that issue
     # is found.
 
+
+fix contig names:
+  'cat {input_vcf} | sed "s/ID=chr/ID=/" | sed "s/^chr//"'
+   # Macrogen VCF files use the UCSC hg19 reference genome, which has contigs
+   # named "chr1", "chr2", instead of GATK bundle names like "1", "2".
+   # We need to fix this to use our pipeline.
+
+
 snpeff annotate:
     '{executable}
     ann

@@ -11,3 +11,6 @@ def test_generate_command(config_test_files):
     expected_command = ('executable-2 --foo foo_value --bar bar_value '
                         '--resource /path/to/resource-1.txt')
     assert command == expected_command
+
+    command = generate_command('command without executable', {}, config)
+    assert command == 'some command without executable to fill in'

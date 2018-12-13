@@ -35,5 +35,6 @@ from .combine_variants import CombineVariants
 from .filter_genotypes import FilterGenotypes
 from .extract_sample import ExtractSample
 from .external_exome import ExternalExome, ExternalExomeCohort
+from .fix_contig_names import FixContigNames
 from .keep_reportable_genotypes import KeepReportableGenotypes, KeepReportableGenotypesCohort
 from .variant_calling_ready import VariantCallingReady
