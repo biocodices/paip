@@ -17,24 +17,32 @@ def test_init(reseter):
 
 
 def test_removable_files(reseter):
-    files = reseter.removable_files
+    files_to_destroy = [
+        'Cohort1/Sample1/removable_file',
+        'Cohort1/removable_file',
+        'Cohort1/Sample1/Sample1.R1.fastq_report.html',
+        'Cohort1/Sample1/Sample1.R1_fastqc.zip',
+        'Cohort1/Sample2/Sample2.R1.trimmed.fastq',
+    ]
+    files_to_keep = [
+        'Cohort1/Sample1/Sample1.R1.fastq',
+        'Cohort1/Sample1/Sample1.R2.fastq',
+        'Cohort1/Sample1/Sample1.R1.fastq.gz',
+        'Cohort1/Sample1/Sample1.R2.fastq.gz',
+        'Cohort1/Sample1/Sample1.external_exome.vcf',
+        'Cohort1/sequencing_data.yml',
+        'Cohort1/other_seq_data.yml',
+        'Cohort1/non_removable_script.py',
+        'Cohort1/non_removable_script.rb',
+        'Cohort1/non_removable_script.sh',
+        'Cohort1/original_data/non_removable_file',
+    ]
 
-    assert pytest.helpers.file('Cohort1/Sample1/removable_file') in files
-    assert pytest.helpers.file('Cohort1/removable_file') in files
-
-    assert pytest.helpers.file('Cohort1/Sample1/Sample1.R1.fastq_report.html') in files
-    assert pytest.helpers.file('Cohort1/Sample1/Sample1.R1_fastqc.zip') in files
-    assert pytest.helpers.file('Cohort1/Sample2/Sample2.R1.trimmed.fastq') in files
-
-    assert pytest.helpers.file('Cohort1/Sample1/Sample1.R1.fastq') not in files
-    assert pytest.helpers.file('Cohort1/Sample1/Sample1.R2.fastq') not in files
-
-    assert pytest.helpers.file('Cohort1/sequencing_data.yml') not in files
-    assert pytest.helpers.file('Cohort1/other_seq_data.yml') not in files
-
-    assert pytest.helpers.file('Cohort1/non_removable_script.py') not in files
-    assert pytest.helpers.file('Cohort1/non_removable_script.rb') not in files
-    assert pytest.helpers.file('Cohort1/non_removable_script.sh') not in files
+    files_considered_removable = reseter.removable_files
+    for fn in files_to_destroy:
+        assert pytest.helpers.file(fn) in files_considered_removable
+    for fn in files_to_keep:
+        assert pytest.helpers.file(fn) not in files_considered_removable
 
 
 def test_reset_pipeline(reseter, monkeypatch):

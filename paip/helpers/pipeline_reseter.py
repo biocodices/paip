@@ -12,6 +12,17 @@ class PipelineReseter:
     Utility class to remove all files in a pipeline except for the FASTQs
     and configuration YAMLs.
     """
+    PATTERNS_TO_KEEP = [
+        r'.*original_data.*',
+        r'\.(R1|R2)\.fastq$',
+        r'\.(R1|R2)\.fastq\.gz$',
+        r'\.external_exome\.vcf',
+        r'\.rb$',
+        r'\.py$',
+        r'\.sh$',
+        r'\.yml$',
+        r'\.yaml$',
+    ]
 
     def __init__(self, basedir):
         """Pass the base directory of the cohort."""
@@ -31,14 +42,15 @@ class PipelineReseter:
 
         for root, dirs, files in os.walk(self.basedir):
             for filename in files:
-                if 'fastq' in filename and 'fastqc' not in filename:
-                    if not re.search(r'(trimmed|html)', filename):
-                        continue
+                filepath = join(root, filename)
+                should_be_removed = True
+                for pattern_to_keep in self.PATTERNS_TO_KEEP:
+                    if re.search(pattern_to_keep, filepath):
+                        should_be_removed = False
+                        break
 
-                if re.search(r'(\.rb|\.py|\.sh|\.yml)$', filename):
-                    continue
-
-                removable_files.append(join(root, filename))
+                if should_be_removed:
+                    removable_files.append(filepath)
 
         return sorted(removable_files)
 
