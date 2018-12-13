@@ -397,17 +397,19 @@ vep annotate:
      --stats_file {output_stats_html}
      --verbose
      -i {input_vcf}
-     -o {output_vcf}'
+     -o {output_tsv}'
 
      # {vep_datadir} is specified in ~/.paip/resources.yml
      #
      # The --merged option is important since the local
      # database for VEP is the 'homo_sapiens_merged' one.
      #
-     # About the --tab option, I'd rather put this output
-     # in a clean tab-delimited file than stuffing the INFO
-     # field of the VCF with VEP's huge annotation (which
-     # makes the VCF unreadable).
+     # --format vcf refers to the *input* file format
+     #
+     # --tab refers to the *output* file format, it means a TSV file!
+     # I'd rather put this output in a clean tab-delimited file than stuffing
+     # the INFO field of the VCF with VEP's huge annotation (which makes the
+     # VCF unreadable).
 
 gatk3 SelectVariants sample:
     '{executable}
@@ -427,9 +429,16 @@ gatk3 SelectVariants reportable:
      -R {reference_genome}
      -V {input_vcf}
      --excludeFiltered
-     -select 'vc.getGenotype(\"{sample}\").getGQ() >= {min_GQ} && vc.getGenotype(\"{sample}\").getDP() >= {min_DP}'
+     -select 'vc.getGenotype(\"{sample}\").getGQ() >= {min_GQ}'
      --logging_level INFO
      -o {output_vcf}"
+
+# I used to include this filter:
+#
+# -select 'vc.getGenotype(\"{sample}\").getGQ() >= {min_GQ} && vc.getGenotype(\"{sample}\").getDP() >= {min_DP}'
+#
+# But I'd rather have a low depth variant be excluded manually later in the
+# pipeline.
 
 ##
 #

@@ -21,3 +21,11 @@ Sample3:
   lane_numbers_merged: Lane1-Lane2
   platform_unit: Platform_Unit
   run_number: 1
+
+SampleWithExome:
+  external_exome: true
+
+SampleWithoutExome:
+  external_exome: true
+
+SampleWithIncompleteInfo: {}

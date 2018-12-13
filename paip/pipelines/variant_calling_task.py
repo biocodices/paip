@@ -16,4 +16,3 @@ class VariantCalling(CohortTask, luigi.WrapperTask):
         sample_tasks = [AnnotateWithSnpeff(sample=sample, **self.param_kwargs)
                         for sample in self.sample_list]
         return cohort_tasks + sample_tasks
-

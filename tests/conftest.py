@@ -7,6 +7,7 @@ pytest_plugins = ['helpers_namespace']
 import pytest
 
 from paip.helpers import Config, generate_command
+from paip.task_types import SampleTask
 
 
 
@@ -48,12 +49,6 @@ def test_sample_path(test_cohort_basedir):
     def func(path):
         return join(test_cohort_basedir, 'Sample1', path)
     return func
-
-
-@pytest.fixture
-def sample_taks_params(test_cohort_basedir):
-    return {'basedir': test_cohort_basedir,
-            'sample': 'Sample1'}
 
 
 @pytest.fixture
@@ -127,10 +122,12 @@ def mock_remove(monkeypatch):
 
 
 @pytest.fixture(scope='function')
-def sample_task_factory(task_factory, sample_taks_params):
+def sample_task_factory(task_factory, test_cohort_basedir):
 
-    def factory(klass, extra_params={}):
-        task = task_factory(klass, sample_taks_params, extra_params)
+    def factory(klass=SampleTask, extra_params={}, sample_name='Sample1'):
+        sample_task_params = {'basedir': test_cohort_basedir,
+                              'sample': sample_name}
+        task = task_factory(klass, sample_task_params, extra_params)
         return task
 
     return factory

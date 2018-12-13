@@ -21,7 +21,14 @@ def cohort_task_2(test_cohort_basedir):
 
 def test_find_samples_ALL(cohort_task_all):
     found_samples = cohort_task_all._find_samples(samples='ALL')
-    assert found_samples == ['Sample1', 'Sample2', 'Sample3']
+    expected_samples = [
+        'Sample1',
+        'Sample2',
+        'Sample3',
+        'SampleWithExome',
+        'SampleWithoutExome',
+    ]
+    assert found_samples == expected_samples
 
 
 def test_find_samples_some(cohort_task_all):
@@ -35,7 +42,8 @@ def test_find_samples_fail(cohort_task_all):
 
 
 def test_init(cohort_task_all, test_cohort_basedir):
-    assert cohort_task_all.sample_list == ['Sample1', 'Sample2', 'Sample3']
+    # Test the sample list is populated
+    assert cohort_task_all.sample_list
 
     # Test default value for pipe type
     assert cohort_task_all.pipeline_type == 'variant_sites'

@@ -2,14 +2,13 @@ from os.path import isabs
 
 import pytest
 
-import paip.task_types
+from paip.task_types import SampleTask
+from paip.task_types.sample_task import SampleNotFoundError, MissingDataInYML
 
 
 @pytest.fixture
-def sample_task(test_cohort_basedir):
-    task = paip.task_types.SampleTask(basedir=test_cohort_basedir,
-                                      sample='Sample1')
-    return task
+def sample_task(sample_task_factory):
+    return sample_task_factory(SampleTask, sample_name="Sample1")
 
 
 def test_path(sample_task):
@@ -35,6 +34,19 @@ def test_load_sample_data_from_yaml(sample_task):
     assert sample_task.library_id == 'Library-ID'
     assert sample_task.platform == 'Platform'
     assert sample_task.lane_numbers_merged == 'Lane1-Lane2'
+
+
+def test_init(sample_task_factory):
+    sample_with_exome = sample_task_factory(sample_name='SampleWithExome')
+    sample_with_fastqs = sample_task_factory(sample_name='Sample1')
+
+    assert sample_with_exome.external_exome is True
+    assert sample_with_fastqs.external_exome is False
+
+    with pytest.raises(SampleNotFoundError):
+        sample_task_factory(sample_name='SampleNotInYAML')
+    with pytest.raises(MissingDataInYML):
+        sample_task_factory(sample_name='SampleWithIncompleteInfo')
 
 
 def test_output(sample_task, test_sample_path):

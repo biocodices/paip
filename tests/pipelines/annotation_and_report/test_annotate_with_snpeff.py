@@ -3,9 +3,7 @@ from paip.pipelines.annotation_and_report import AnnotateWithSnpeff
 
 
 def test_run(sample_task_factory):
-    task = sample_task_factory(AnnotateWithSnpeff,
-                               extra_params={'pipeline_type': 'variant_sites'})
-
+    task = sample_task_factory(AnnotateWithSnpeff)
     open_ = mock_open()
 
     # FIXME: this whole 'path' to the module hardcoding is ugly, but I need

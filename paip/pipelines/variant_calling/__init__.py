@@ -34,4 +34,6 @@ from .filter_indels import FilterIndels
 from .combine_variants import CombineVariants
 from .filter_genotypes import FilterGenotypes
 from .extract_sample import ExtractSample
-from .keep_reportable_genotypes import KeepReportableGenotypes
+from .external_exome import ExternalExome, ExternalExomeCohort
+from .keep_reportable_genotypes import KeepReportableGenotypes, KeepReportableGenotypesCohort
+from .variant_calling_ready import VariantCallingReady

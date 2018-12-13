@@ -11,13 +11,12 @@ class AnnotateWithVEP(CohortTask):
     OUTPUT = 'vep.tsv'
 
     def run(self):
-        with self.output().temporary_path() as self.temp_vcf:
+        with self.output().temporary_path() as self.temp_tsv:
             program_name = 'vep annotate'
             program_options = {
                 'input_vcf': self.input().path,
-                'output_vcf': self.temp_vcf,
+                'output_tsv': self.temp_tsv,
                 'output_stats_html': self.output().path.replace('.tsv',
                                                                 '_summary.html')
             }
             self.run_program(program_name, program_options)
-

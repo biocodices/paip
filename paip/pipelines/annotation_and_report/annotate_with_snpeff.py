@@ -1,14 +1,14 @@
 import luigi
 
 from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import KeepReportableGenotypes
+from paip.pipelines.variant_calling import VariantCallingReady
 
 
 class AnnotateWithSnpeff(SampleTask):
     """
     Takes a VCF and adds SnpEff annotations. Generats a new VCF.
     """
-    REQUIRES = KeepReportableGenotypes
+    REQUIRES = VariantCallingReady
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
@@ -28,4 +28,3 @@ class AnnotateWithSnpeff(SampleTask):
     def output(self):
         fn = self.input().path.replace('.vcf', '.eff.vcf')
         return luigi.LocalTarget(fn)
-

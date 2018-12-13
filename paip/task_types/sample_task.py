@@ -17,6 +17,7 @@ class SampleTask(BaseTask):
     sample = luigi.Parameter()
 
     # These keys are expected in the sequencing YAML associated with each run
+    # unless it's an external job like a Macrogen exome:
     REQUIRED_SEQUENCING_DATA_KEYS = [
         "library_id",
         "platform",
@@ -28,30 +29,42 @@ class SampleTask(BaseTask):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
         self.name = self.sample
         self.dir = join(self.basedir, self.sample)
+        self.store_sequencing_data()
+        self.check_sequencing_data()
 
+    def store_sequencing_data(self):
+        """
+        Put data from the YAML for this particular sample in self.
+        """
         try:
-            sequencing_data = self.sequencing_data[self.sample]
+            sample_data = self.sequencing_data[self.sample]
         except KeyError:
             available_samples = ', '.join(self.sequencing_data.keys())
             message = (f'Sample "{self.sample}" not found! '
                        f'Available samples are: {available_samples}.')
             raise SampleNotFoundError(message)
 
-        for key in sequencing_data.keys():
-            setattr(self, key, sequencing_data[key])
+        for key, value in sample_data.items():
+            setattr(self, key, value)
 
+        self.external_exome = getattr(self, 'external_exome', False)
+
+    def check_sequencing_data(self):
+        """
+        Check everything expected was found on the sequencing YAML file for
+        this particular sample.
+        """
         required_keys_missing = [
             key for key in self.REQUIRED_SEQUENCING_DATA_KEYS
             if not hasattr(self, key)
         ]
-        if required_keys_missing:
-            raise ValueError(f"Sample '{self.name}' is missing sequencing "
-                             f"data: {', '.join(required_keys_missing)}.\n"
-                             "Please add this in the sequencing YAML.")
-
+        if required_keys_missing and not self.external_exome:
+            raise MissingDataInYML(
+                f"Sample '{self.name}' is missing sequencing data: " +
+                ', '.join(required_keys_missing) + '\n' +
+                'Please add this in the sequencing YAML.')
 
     def cohort_params(self):
         """
@@ -62,5 +75,5 @@ class SampleTask(BaseTask):
         return params
 
 
-class SampleNotFoundError(Exception):
-    pass
+class SampleNotFoundError(Exception): pass
+class MissingDataInYML(Exception): pass
