@@ -7,6 +7,7 @@ class ExternalExome(SampleTask):
     Check that exome VCF files are present for the sample.
     """
     OUTPUT = 'external_exome.vcf'
+    # TODO: This should be an external task like CheckFastqs
 
 
 ExternalExomeCohort = create_cohort_task(ExternalExome)

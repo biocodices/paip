@@ -47,6 +47,9 @@ human_features: Homo_sapiens.GRCh37.87.gtf
 #                                                                #
 ##################################################################
 
+# This should be passed to `anotamela` during AnnotateVariants,
+# but it's not done (we rely on `anotamela`'s own copy of this VCF:
+#
 clinvar_GRCh37_VCF: &clinvar_GRCh37_VCF clinvar_20180729.grch37.vcf.gz
 clinvar_GRCh37: *clinvar_GRCh37_VCF
 clinvar_VCF: *clinvar_GRCh37_VCF

@@ -9,8 +9,7 @@ class AnnotateVariants(CohortAnnotationTask):
     Annotates each sample's variants (taken from the reportable-variants VCF)
     and generates some JSON files with the annotations.
 
-    This task will work if `anotamela` Python package is installed in the
-    sytstem.
+    This task will work if `anotamela` Python package is installed.
     """
     REQUIRES = FilterGenotypes
     OUTPUT = {

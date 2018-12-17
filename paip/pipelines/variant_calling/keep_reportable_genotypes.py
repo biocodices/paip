@@ -17,7 +17,7 @@ class KeepReportableGenotypes(SampleTask):
         if self.external_exome:
             return FixContigNamesAndSampleName(**self.param_kwargs)
         else:
-            return KeepReportableGenotypes(**self.param_kwargs)
+            return ExtractSample(**self.param_kwargs)
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:

@@ -45,10 +45,13 @@ class GenerateReports(ReportsTask, SampleTask):
         # Remove the extra parameters that the report generation needs, but
         # that are not needed nor expected by the tasks upstream:
         return {
+            # TODO: make this task dependant on VariantCalling, which already
+            # wraps AnnotateWithVEP (cohort) + AnnotateWithSnpeff (samples)
             'vep': AnnotateWithVEP(**self.cohort_params()),
+            'snpeff': AnnotateWithSnpeff(**self.sample_params()),
+
             'annotate_variants': AnnotateVariants(**self.cohort_params()),
             'annotate_genes': AnnotateGenes(**self.cohort_params()),
-            'snpeff': AnnotateWithSnpeff(**self.sample_params()),
         }
 
     def run(self):
@@ -79,7 +82,9 @@ class GenerateReports(ReportsTask, SampleTask):
         reports_pipeline.run(samples=self.sample)
 
     def output(self):
-        fn = f'{self.sample}.report_data_threshold_{self.min_reportable_category}.json'
+        fn = (f'{self.sample}.report_data.'
+              f'threshold_{self.min_reportable_category}-'
+              f'max_freq_{self.max_frequency}.json')
         return {
             'report_json': luigi.LocalTarget(join(self.dir, fn)),
         }
