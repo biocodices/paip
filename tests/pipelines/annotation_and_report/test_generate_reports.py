@@ -6,10 +6,8 @@ from paip.pipelines.annotation_and_report.generate_reports import GenerateReport
 import paip.pipelines.annotation_and_report.generate_reports
 
 
-def test_run(sample_task_factory, monkeypatch):
+def test_run(sample_task_factory, mock_rename, monkeypatch):
     extra_params = {
-        'templates_dir': '/path/to/templates',
-        'translations_dir': '/path/to/translations',
         'min_reportable_category': 'CATEGORY',
         'min_odds_ratio': 1.5,
         'max_frequency': 0.5,
@@ -31,6 +29,7 @@ def test_run(sample_task_factory, monkeypatch):
     # Check the reports generator has been called with the correct arguments
 
     assert ReportsPipeline.call_count == 1
+    assert mock_rename.call_count == 1
 
     init_args = ReportsPipeline.call_args[1]
 

@@ -28,10 +28,10 @@ class GenerateReports(ReportsTask, SampleTask):
 
         - *min_odds_ratio*, the minimum odds ratio of a GWAS association
           to make a genotype reportable
-        - *max_frequency*, the maximum frequency (global MAF) for an allele
-          to be reportable
         - *min_reportable_category*, the minimum pathogenicity category
           of an allele to be included in the reports
+        - *max_frequency*, the maximum frequency (global MAF) for an allele
+          to be reportable
         - *phenos_regex_list*, a JSON string with a list of phenotype patterns
           to keep in the report (non-matching phenotypes will not be included,
           no matter how serious their pathogenicity!)
@@ -62,32 +62,30 @@ class GenerateReports(ReportsTask, SampleTask):
         if self.phenos_regex_list:
             self.phenos_regex_list = json.loads(self.phenos_regex_list)
 
-        reports_pipeline = ReportsPipeline(
-            vep_tsv=self.input()['vep'].path,
-            genotypes_vcf=self.input()['snpeff'].path,
-            variants_json=self.input()['annotate_variants']['variants_json'].path,
-            genes_json=self.input()['annotate_genes'].path,
+        with self.output().temporary_path() as temp_json:
+            reports_pipeline = ReportsPipeline(
+                vep_tsv=self.input()['vep'].path,
+                genotypes_vcf=self.input()['snpeff'].path,
+                variants_json=self.input()['annotate_variants']['variants_json'].path,
+                genes_json=self.input()['annotate_genes'].path,
 
-            templates_dir=self.templates_dir,
-            translations_dir=self.translations_dir,
-            outdir=self.dir,
+                outdir=self.dir,
+                out_report_path=temp_json,
 
-            min_reportable_category=self.min_reportable_category,
-            min_odds_ratio=self.min_odds_ratio,
-            max_frequency=self.max_frequency,
-            phenos_regex_list=self.phenos_regex_list,
-            phenos_regex_file=self.phenos_regex_file,
-        )
-
-        reports_pipeline.run(samples=self.sample)
+                min_reportable_category=self.min_reportable_category,
+                min_odds_ratio=self.min_odds_ratio,
+                max_frequency=self.max_frequency,
+                phenos_regex_list=self.phenos_regex_list,
+                phenos_regex_file=self.phenos_regex_file,
+            )
+            reports_pipeline.run(samples=self.sample)
 
     def output(self):
-        fn = (f'{self.sample}.report_data.'
-              f'threshold_{self.min_reportable_category}-'
-              f'max_freq_{self.max_frequency}.json')
-        return {
-            'report_json': luigi.LocalTarget(join(self.dir, fn)),
-        }
+        fn = (f'{self.sample}.report_data.' +
+              f'min-cat-{self.min_reportable_category}.' +
+              f'max-freq-{self.max_frequency}' +
+              '.json')
+        return luigi.LocalTarget(join(self.dir, fn))
 
 
 class GenerateReportsCohort(CohortTask, ReportsTask, luigi.WrapperTask):

@@ -7,10 +7,6 @@ class ReportsTask:
     GenerateReportsCohort. See the former class for a full explanation of
     each parameter.
     """
-    # Directories
-    templates_dir = luigi.Parameter(default=None)
-    translations_dir = luigi.Parameter(default=None)
-
     # Reportable variants settings
     min_odds_ratio = luigi.FloatParameter(default=1)  # All by default
     max_frequency = luigi.FloatParameter(default=1)  # All by default
@@ -19,8 +15,6 @@ class ReportsTask:
     phenos_regex_file = luigi.Parameter(default=None)
 
     EXTRA_PARAMS = [
-        'templates_dir',
-        'translations_dir',
         'min_odds_ratio',
         'max_frequency',
         'min_reportable_category',
@@ -49,4 +43,3 @@ class ReportsTask:
         cohort_params = self.sample_params()
         del(cohort_params['sample'])
         return cohort_params
-
