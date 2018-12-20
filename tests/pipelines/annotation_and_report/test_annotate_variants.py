@@ -19,11 +19,11 @@ def test_run(task, monkeypatch):
     # Mock the AnnotationPipeline class so it returns a mocked instance:
     pipeline_instance = MagicMock()
     AnnotationPipeline = MagicMock(return_value=pipeline_instance)
-    json_mock = MagicMock()
+    prettify_JSON_dump_mock = MagicMock()
     monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_variants,
                         'AnnotationPipeline', AnnotationPipeline)
     monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_variants,
-                        'json', json_mock)
+                        'prettify_JSON_dump', prettify_JSON_dump_mock)
 
     # Mock the open built-in function to test the output is written
     open_ = mock_open()
@@ -52,8 +52,8 @@ def test_run(task, monkeypatch):
     assert pipeline_instance.other_variants.to_json.call_args[1] == \
         {'orient': 'split'}
 
-    assert json_mock.loads.call_count == 2
-    assert json_mock.dumps.call_count == 2
+    assert prettify_JSON_dump_mock.call_count == 2
+    assert prettify_JSON_dump_mock.call_count == 2
 
     # I don't write genes.json in this task anymore:
     #  assert pipeline_instance.gene_annotations.to_json.call_count == 1

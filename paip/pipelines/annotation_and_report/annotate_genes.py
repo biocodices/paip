@@ -5,7 +5,7 @@ from anotamela.pipeline import annotate_entrez_gene_ids
 
 from paip.task_types import CohortAnnotationTask
 from paip.pipelines.annotation_and_report import AnnotateWithVEP
-from paip.helpers import read_vep_tsv
+from paip.helpers import read_vep_tsv, prettify_JSON_dump
 
 
 class AnnotateGenes(CohortAnnotationTask):
@@ -24,6 +24,7 @@ class AnnotateGenes(CohortAnnotationTask):
         gene_annotations = annotate_entrez_gene_ids(entrez_gene_ids,
                                                     **annotation_params)
         genes_json = gene_annotations.to_json(orient='split')
+        genes_json = prettify_JSON_dump(genes_json)
 
         with open(self.output().path, 'w') as f:
             f.write(genes_json)

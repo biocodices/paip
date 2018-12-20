@@ -3,7 +3,6 @@ from unittest.mock import mock_open, patch, Mock
 import pytest
 import pandas as pd
 
-import anotamela.pipeline
 import paip.pipelines.annotation_and_report.annotate_genes
 from paip.pipelines.annotation_and_report.annotate_genes import (
     AnnotateGenes,
@@ -34,12 +33,16 @@ def test_extract_entrez_gene_ids_from_vep_tsv(vep_tsv_path):
 def test_run(task, monkeypatch):
     mock_gene_annotations = pd.DataFrame({})
     mock_annotate_entrez_gene_ids = Mock(return_value=mock_gene_annotations)
+    prettify_JSON_dump_mock = Mock()
     monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_genes,
                         'annotate_entrez_gene_ids',
                         mock_annotate_entrez_gene_ids)
     monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_genes,
                         'extract_entrez_gene_ids_from_vep_tsv',
                         Mock())
+    monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_genes,
+                        'prettify_JSON_dump',
+                        prettify_JSON_dump_mock)
 
     # Mock the open built-in function to test the output is written
     open_ = mock_open()
@@ -51,3 +54,4 @@ def test_run(task, monkeypatch):
         task.run()
 
     open_.assert_called_once_with(task.path('genes.json'), 'w')
+    assert prettify_JSON_dump_mock.call_count == 1

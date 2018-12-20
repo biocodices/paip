@@ -11,3 +11,4 @@ from .igv_script_helper import IGVScriptHelper
 from .x_server import X_server
 from .read_vep_tsv import read_vep_tsv
 from .fix_sam_read_groups import fix_sam_read_groups
+from .prettify_JSON_dump import prettify_JSON_dump
