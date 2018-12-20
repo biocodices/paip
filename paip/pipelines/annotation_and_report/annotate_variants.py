@@ -1,3 +1,5 @@
+import json
+
 from anotamela import AnnotationPipeline
 
 from paip.task_types import CohortAnnotationTask
@@ -23,10 +25,14 @@ class AnnotateVariants(CohortAnnotationTask):
         annotator.run_from_vcf(self.input().path)
 
         rs_variants_json = annotator.rs_variants.to_json(orient='split')
+        rs_variants_json = self.prettify_pandas_JSON_dump(rs_variants_json)
+
         with open(self.output()['variants_json'].path, 'w') as f:
             f.write(rs_variants_json)
 
         other_variants_json = annotator.other_variants.to_json(orient='split')
+        other_variants_json = self.prettify_pandas_JSON_dump(other_variants_json)
+
         with open(self.output()['other_variants_json'].path, 'w') as f:
             f.write(other_variants_json)
 
@@ -35,3 +41,12 @@ class AnnotateVariants(CohortAnnotationTask):
         #  genes_json = annotator.gene_annotations.to_json(orient='split')
         #  with open(self.output()['genes_json'].path, 'w') as f:
             #  f.write(genes_json)
+
+    def prettify_pandas_JSON_dump(self, json_from_pandas):
+        """
+        Pandas .to_json does not have an option to make the JSON dump look
+        pretty, so it's written all in one line. This is a hack to solve that.
+        """
+        loaded_object = json.loads(json_from_pandas)
+        prettified = json.dumps(loaded_object, indent=2)
+        return prettified
