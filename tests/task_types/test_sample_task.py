@@ -44,6 +44,11 @@ def test_init(sample_task_factory):
     assert sample_with_exome.external_sample_name == "External-Name"
     assert sample_with_fastqs.external_exome is False
 
+    sample_from_ion = sample_task_factory(sample_name='Sample1',
+                                          cohort_name='IonCohort')
+    assert sample_from_ion.ion is True
+    assert sample_from_ion.external_sample_name == 'Sample-1-External-Name'
+
     with pytest.raises(SampleNotFoundError):
         sample_task_factory(sample_name='SampleNotInYAML')
     with pytest.raises(MissingDataInYML):

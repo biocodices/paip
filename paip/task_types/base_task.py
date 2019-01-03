@@ -253,14 +253,34 @@ class BaseTask(luigi.Task):
             with open(fp) as f:
                 data = yaml.load(f) or {}
         except IOError:
-            msg = ("I couldn't find this YAML file:\n\n{}\n\n"
-                   'Make sure you are in the base directory of the Cohort\n'
-                   'and create that file with info about the samples in this\n'
-                   'sequencing. The sample IDs should be first level keys\n'
-                   'and each sample must have these keys:\n\nSampleX:  \n'
-                   '  library_id: ...\n  run_number: ...\n  '
-                   'id_in_sequencing: ...\n  platform: ...\n  '
-                   'platform_unit: ...\n  lane_numbers_merged: ...\n')
+            msg = ("""I couldn't find this YAML file:\n\n{}
+
+Make sure you are in the base directory of the Cohort
+and create that file with info about the samples in this
+sequencing. The sample IDs should be first level keys
+and each sample must have these keys:
+
+SampleX:
+  library_id: ...
+  run_number: ...
+  id_in_sequencing: ...
+  platform: ...
+  platform_unit: ...
+  lane_numbers_merged: ...
+
+In case it's a sample from external exome data, just put:
+
+SampleX:
+  external_exome: true
+  external_sample_name: EXOME-Sample-Foo
+
+And if it's a sample from IonTorrent:
+
+SampleX:
+  ion: true
+  external_sample_name: "Lib 2" # The one present in the BAM SM: field!
+
+""")
             raise IOError(msg.format(fp))
 
         return data

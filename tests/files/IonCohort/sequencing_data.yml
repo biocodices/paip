@@ -1,0 +1,7 @@
+Sample1:
+  ion: true
+  external_sample_name: Sample-1-External-Name
+
+SampleWithoutBAM:
+  ion: true
+  external_sample_name: Sample-Without-BAM-External-Name

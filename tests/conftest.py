@@ -122,12 +122,17 @@ def mock_remove(monkeypatch):
 
 
 @pytest.fixture(scope='function')
-def sample_task_factory(task_factory, test_cohort_basedir):
+def sample_task_factory(task_factory):
 
-    def factory(klass=SampleTask, extra_params={}, sample_name='Sample1'):
-        sample_task_params = {'basedir': test_cohort_basedir,
-                              'sample': sample_name}
+    def factory(klass=SampleTask,
+                extra_params={},
+                cohort_name='Cohort1',
+                sample_name='Sample1'):
+
+        cohort_dir = pytest.helpers.file(cohort_name)
+        sample_task_params = {'basedir': cohort_dir, 'sample': sample_name}
         task = task_factory(klass, sample_task_params, extra_params)
+
         return task
 
     return factory

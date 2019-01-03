@@ -78,6 +78,11 @@ def test_load_sample_data_from_yaml(base_task):
     empty_seq_data = base_task.load_sample_data_from_yaml('sequencing_data.yml')
     assert empty_seq_data == {}
 
+    base_task.basedir = base_task.basedir.replace('EmptyCohort', 'IonCohort')
+    ion_data = base_task.load_sample_data_from_yaml('sequencing_data.yml')
+    assert ion_data['Sample1']['external_sample_name'] == 'Sample-1-External-Name'
+    assert ion_data['Sample1']['ion'] is True
+
 
 def test_output(base_task, monkeypatch, MockTask):
     # These are defined in CohortTask and SampleTask

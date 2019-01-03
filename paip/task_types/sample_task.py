@@ -17,7 +17,7 @@ class SampleTask(BaseTask):
     sample = luigi.Parameter()
 
     # These keys are expected in the sequencing YAML associated with each run
-    # unless it's an external job like a Macrogen exome:
+    # unless it's an external job like a Macrogen exome or an IonTorrent panel:
     REQUIRED_SEQUENCING_DATA_KEYS = [
         "library_id",
         "platform",
@@ -50,6 +50,7 @@ class SampleTask(BaseTask):
             setattr(self, key, value)
 
         self.external_exome = getattr(self, 'external_exome', False)
+        self.ion = getattr(self, 'ion', False)
 
     def check_sequencing_data(self):
         """
@@ -60,7 +61,7 @@ class SampleTask(BaseTask):
             key for key in self.REQUIRED_SEQUENCING_DATA_KEYS
             if not hasattr(self, key)
         ]
-        if required_keys_missing and not self.external_exome:
+        if required_keys_missing and not (self.external_exome or self.ion):
             raise MissingDataInYML(
                 f"Sample '{self.name}' is missing sequencing data: " +
                 ', '.join(required_keys_missing) + '\n' +
