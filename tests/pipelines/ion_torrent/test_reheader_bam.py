@@ -14,10 +14,10 @@ def test_fix_header_sam(sample_task_factory, tmpdir):
         content = f.read()
 
     assert 'SM:Lib 1' not in content
-    assert 'SM:Sample1' in content
+    assert "@RG\tID:RGID\tCN:RGCN\tDT:RGDT\tFO:RGFO\tKS:RGKS\tPG:RGPG\tPL:RGPL\tPU:RGPU\tSM:Sample1\n" in content
 
     assert 'LN:16569' not in content
-    assert 'LN:16571' in content
+    assert "LN:16571\n" in content
 
 
 def test_run(sample_task_factory, monkeypatch):

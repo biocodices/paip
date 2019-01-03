@@ -12,7 +12,7 @@ class ReheaderBam(SampleTask):
       - External name under the "SM:" tag, which does not match our sample name.
     """
     REQUIRES = BamPresent
-    OUTPUT = '.fix.bam'
+    OUTPUT = 'fix.bam'
 
     def run(self):
         header_sam = self.input().path.replace('.bam', '.header.sam')
@@ -42,10 +42,18 @@ class ReheaderBam(SampleTask):
                     fixed_line = line.replace('LN:16569', 'LN:16571')
 
                 if line.startswith('@RG'):
-                    fields = line.split('\t')
-                    fields_fixed = [f'SM:{self.name}' if 'SM:' in f else f
+                    # fields = [f for f in re.split(r"\s+", line) if f]
+                    fields = line.split("\t")
+                    fixed_fields = [f'SM:{self.name}' if 'SM:' in f else f
                                     for f in fields]
-                    fixed_line = '\t'.join(fields_fixed)
+
+                    fixed_line = "\t".join(fixed_fields)
+
+                    if not fixed_line.endswith("\n"):
+                        # If SM: is the *last* field, we're removing the
+                        # trailing newline in the previous fix, so we need
+                        # to restore it:
+                        fixed_line += "\n"
 
                 f2.write(fixed_line)
 

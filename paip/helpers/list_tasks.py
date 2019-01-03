@@ -4,6 +4,7 @@ import luigi
 
 import paip
 from paip.pipelines.variant_calling import *
+from paip.pipelines.ion_torrent import *
 from paip.pipelines.quality_control import *
 from paip.pipelines.annotation_and_report import *
 from paip.pipelines.cnv_calling import *
@@ -23,6 +24,9 @@ def list_tasks():
 
         ('Variant Calling tasks',
          list(paip.pipelines.variant_calling.__dict__.items())),
+
+        ('Ion Torrent tasks',
+         list(paip.pipelines.ion_torrent.__dict__.items())),
 
         ('Quality Control tasks',
          list(paip.pipelines.quality_control.__dict__.items())),
