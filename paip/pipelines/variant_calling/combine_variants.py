@@ -24,4 +24,3 @@ class CombineVariants(CohortTask):
             self.run_program(program_name, program_options)
 
         self.rename_temp_idx()
-

@@ -1,1 +1,0 @@
-WARNING: Specified reference allele C does not match Ensembl reference allele G on line 2
