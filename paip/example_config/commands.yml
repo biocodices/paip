@@ -1,3 +1,15 @@
+#########################################
+#                                       #
+# IonTorrent Variant Calling Pipeline   #
+#                                       #
+#########################################
+
+
+samtools extract header:
+  '{executable} view -H {input_bam}'
+
+samtools reheader:
+  '{executable} reheader {header_sam} {input_bam}'
 
 
 
