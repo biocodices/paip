@@ -151,14 +151,10 @@ def test_run_program(base_task, monkeypatch):
 
     monkeypatch.setattr(paip.task_types.base_task, 'generate_command',
                         fake_generate_command)
-    monkeypatch.setattr(paip.task_types.base_task, 'run_command',
+    monkeypatch.setattr(paip.helpers, 'run_command',
                         fake_run_command)
-    #  monkeypatch.setattr(paip.task_types.base_task, 'path', fake_path)
     base_task.path = fake_path
 
-    # TODO: uncomment when the feature is implemented correcly
-    #  sleep_until_available_to_run = MagicMock()
-    # base_task.sleep_until_available_to_run = sleep_until_available_to_run
 
     result = base_task.run_program(
         program_name='program',

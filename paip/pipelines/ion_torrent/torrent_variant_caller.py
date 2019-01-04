@@ -23,19 +23,6 @@ class TorrentVariantCaller(SampleTask):
         program_options = {
             'input_bam': self.input().path,
             'output_dir': self.dir,
-
-            # NOTE: Beware that this might point either to somatic params or
-            # germline params in the resources file -->
-            #  'parameters_file': self.config.resources['parameters_file'],
-
-            #  # NOTE: Beware that this might point either to Hi-Q params or
-            #  # general non-Hi-Q params in the resources file -->
-            #  'error_motifs_file': self.config.resources['error_motifs_file'],
-
-            #  'ucsc_reference_fasta': self.config.resources['ucsc_reference_fasta'],
-            # 'region_bed': self.config.resources['panel_bed'],
-            #  'bin_tvc': self.config.resources['bin_tvc'],
-            #  'bin_tvcutils': self.config.resources['bin_tvcutils'],
         }
         self.run_program(program_name, program_options)
 
@@ -63,4 +50,4 @@ class TorrentVariantCaller(SampleTask):
             os.rename(old_fp, new_fp)
 
 
-ReheaderBamCohort = create_cohort_task(ReheaderBam)
+TorrentVariantCallerCohort = create_cohort_task(TorrentVariantCaller)
