@@ -1,8 +1,0 @@
-—————————— TIME
-
-2019-01-04 15:52:56.311748
-
-—————————— COMMAND
-
-/usr/bin/python2.7 /software/TS/plugin/variantCaller/variant_caller_plugin.py --region-bed /path/to/cohort/resources/baz.bed --input-bam /home/juan/repos/paip/tests/files/IonCohort/Sample1/Sample1.fix.bam --reference-fasta /biocodices/paip_resources/hg19.25chromosomes.sorted.fa --output-dir /home/juan/repos/paip/tests/files/IonCohort/Sample1 --parameters-file /path/to/cohort/resources/bar.json --error-motifs /path/to/cohort/resources/foo.txt --bin-tvc /software/TS/build/Analysis/tvc --bin-tvcutils /software/TS/build/Analysis/tvcutils --generate-gvcf on --num-threads 1
-
