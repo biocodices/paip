@@ -27,10 +27,11 @@ def test_run(task, mock_rename):
 
     check_matrix.assert_called_once()
 
-    (program_name, program_options), _ = task.run_program.call_args
-    assert program_name == 'xhmm PCA'
-    assert 'DATA.filtered_centered.RD.txt' in program_options['filtered_centered_matrix']
-    assert 'DATA-temp.RD_PCA' in program_options['outfiles_basename']
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'xhmm --PCA' in command
+    assert 'DATA.filtered_centered.RD.txt' in command
+    assert 'DATA-temp.RD_PCA' in command
 
     assert mock_rename.call_count == 3
     assert 'DATA-temp.RD_PCA' in mock_rename.call_args[0][0]

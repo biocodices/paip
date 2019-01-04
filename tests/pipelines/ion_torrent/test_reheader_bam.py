@@ -28,14 +28,16 @@ def test_run(sample_task_factory, monkeypatch):
                                sample_name='Sample1',
                                cohort_name='IonCohort')
     task.run()
-    (program_name, program_options), kwargs = task.run_program.call_args_list[0]
 
-    assert program_name == 'samtools extract header'
+    (command, ), kwargs = task.run_command.call_args_list[0]
+    assert 'samtools view -H' in command
+    assert 'Sample1.bam' in command
+
     assert kwargs['redirect_stdout_to_path'].endswith('.header.sam')
 
     assert mock_fix_header_sam.call_count == 1
 
-    (program_name, program_options), kwargs = task.run_program.call_args_list[1]
+    (command, ), kwargs = task.run_command.call_args_list[1]
 
-    assert program_name == 'samtools reheader'
+    assert 'samtools reheader' in command
     assert '.fix.bam-luigi' in kwargs['redirect_stdout_to_path']

@@ -1,0 +1,5 @@
+resources_dir: /path/to/cohort/resources
+
+error_motifs_file: foo.txt
+parameters_file: bar.json
+region_bed: baz.bed

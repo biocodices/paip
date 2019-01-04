@@ -10,14 +10,13 @@ def task(cohort_task_factory):
 
 def test_run(task):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
+    (command, ), kwargs = task.run_command.call_args
 
-    assert program_name == 'xhmm MergeGATKDepths'
-    assert 'DATA.RD.txt' in program_options['outfile']
+    assert 'xhmm --mergeGATKdepths' in command
+    assert 'DATA.RD.txt' in command
 
     cvg_files = ['Sample1.depth_of_coverage.sample_interval_summary',
                  'Sample2.depth_of_coverage.sample_interval_summary']
 
     for cvg_file in cvg_files:
-        assert cvg_file in program_options['sample_cvg_files']
-
+        assert cvg_file in command

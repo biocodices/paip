@@ -10,14 +10,11 @@ def task(cohort_task_factory):
 
 def test_run(task):
     task.run()
+    (command, ), kwargs = task.run_command.call_args
 
-    (program_name, program_options), _ = task.run_program.call_args
-    assert program_name == 'xhmm discover'
-    assert program_options['data_files_basename'].endswith('DATA')
-    assert ('DATA.PCA_normalized.filtered.sample_zscores.RD.txt' in
-            program_options['zscores_matrix'])
-    assert ('DATA.same_filtered.RD.txt'
-            in program_options['read_depth_matrix_filtered'])
-    assert 'DATA.xcnv' in program_options['outfile']
-    assert 'DATA.aux_xcnv' in program_options['aux_outfile']
-
+    assert 'xhmm --discover' in command
+    assert 'Cohort1.DATA' in command
+    assert 'DATA.PCA_normalized.filtered.sample_zscores.RD.txt' in command
+    assert 'DATA.same_filtered.RD.txt' in command
+    assert 'DATA.xcnv' in command
+    assert 'DATA.aux_xcnv' in command

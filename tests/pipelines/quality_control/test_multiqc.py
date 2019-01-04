@@ -10,9 +10,9 @@ def task(cohort_task_factory):
 
 def test_run(task, test_cohort_path):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'multiqc'
-    assert program_options['basedir'] == task.basedir
-    assert program_options['report_filename'] == task.output().path
+    (command, ), kwargs = task.run_command.call_args
 
+    assert 'multiqc' in command
+    assert task.basedir in command
+    assert task.output().path in command

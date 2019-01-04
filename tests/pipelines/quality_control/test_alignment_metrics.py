@@ -5,9 +5,10 @@ def test_run(sample_task_factory):
     task = sample_task_factory(AlignmentMetrics)
     task.run()
 
-    assert task.run_program.call_count == 1
-    (program_name, program_options), _ = task.run_program.call_args
+    assert task.run_command.call_count == 1
 
-    assert program_name == 'picard CollectAlignmentSummaryMetrics'
-    assert program_options['input_bam'] == task.input()['dupmarked_bam'].path
-    assert 'alignment_metrics.txt-luigi-tmp' in program_options['output_txt']
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'picard-2.18.16.jar CollectAlignmentSummaryMetrics' in command
+    assert 'Sample1.dupmarked_alignment.bam' in command
+    assert 'alignment_metrics.txt-luigi-tmp' in command

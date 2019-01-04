@@ -10,11 +10,11 @@ def task(cohort_task_factory):
 
 def test_run(task):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
+    (command, ), kwargs = task.run_command.call_args
 
-    assert program_name == 'xhmm genotype'
-    assert program_options['zscores_matrix'].endswith('sample_zscores.RD.txt')
-    assert program_options['read_depth_matrix'].endswith('same_filtered.RD.txt')
-    assert program_options['cnvs_file'].endswith('.xcnv')
-    assert program_options['output_vcf'].endswith('.vcf')
+    assert 'xhmm --genotype' in command
+    assert 'Cohort1.DATA.PCA_normalized.filtered.sample_zscores.RD.txt' in command
+    assert 'Cohort1.DATA.same_filtered.RD.txt' in command
+    assert 'Cohort1.DATA.xcnv' in command
+    assert 'Cohort1.DATA.vcf' in command
 

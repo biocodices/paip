@@ -10,15 +10,16 @@ def task(cohort_task_factory):
 
 def test_run(task, test_cohort_path, mock_rename):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk3 CombineVariants snps_indels'
-    assert program_options['input_snps'] == task.input()[0].path
-    assert program_options['input_indels'] == task.input()[1].path
-    assert 'filt.vcf-luigi-tmp' in program_options['output_vcf']
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'GenomeAnalysisTK.jar -T CombineVariants' in command
+    assert task.input()[0].path in command
+    assert task.input()[1].path in command
+    assert 'filt.vcf-luigi-tmp' in command
+
     assert mock_rename.call_count == 2
 
 
 def test_output(task, test_cohort_path):
     assert task.output().path.endswith('filt.vcf')
-

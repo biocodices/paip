@@ -40,9 +40,10 @@ def test_run(variant_sites_task, test_cohort_path, monkeypatch):
     with patch('paip.pipelines.variant_calling.annotate_with_snpsift_dbsnp.open', open_):
         task.run()
 
-    (program_name, program_options), kwargs = task.run_program.call_args
-    assert program_name == 'snpsift dbSNP'
-    assert program_options['input_vcf'] == task.input().path
-    assert kwargs['log_stdout'] is False
-    open_().write.assert_called_once_with(b'stdout')
+    (command, ), kwargs = task.run_command.call_args
 
+    assert 'SnpSift.jar annotate' in command
+    assert task.input().path in command
+    assert kwargs['log_stdout'] is False
+
+    open_().write.assert_called_once_with(b'stdout')

@@ -16,10 +16,12 @@ def test_requires(task, cohort_task_params):
 
 def test_run(task, mock_rename):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk3 SelectVariants sample'
-    assert program_options['input_vcf'] == task.input().path
-    assert 'with_filters.vcf-luigi-tmp' in program_options['output_vcf']
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'GenomeAnalysisTK.jar -T SelectVariants'
+    assert task.input().path in command
+    assert 'with_filters.vcf-luigi-tmp' in command
+
     assert mock_rename.call_count == 2
 

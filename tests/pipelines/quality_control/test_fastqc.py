@@ -4,20 +4,17 @@ from paip.pipelines.quality_control import FastQC
 def test_run(sample_task_factory):
     task = sample_task_factory(FastQC)
     task.run()
-    assert task.run_program.call_count == 2
 
-    (program_name, program_options), _ = task.run_program.call_args_list[0]
+    assert task.run_command.call_count == 2
 
-    assert program_name == 'fastqc'
-    assert program_options['forward_reads'] == \
-        task.input()['raw_reads']['forward_reads'].path
-    assert program_options['reverse_reads'] == \
-        task.input()['raw_reads']['reverse_reads'].path
+    (command, ), kwargs = task.run_command.call_args_list[0]
 
-    (program_name, program_options), _ = task.run_program.call_args_list[1]
+    assert 'fastqc' in command
+    assert task.input()['raw_reads']['forward_reads'].path in command
+    assert task.input()['raw_reads']['reverse_reads'].path in command
 
-    assert program_name == 'fastqc'
-    assert program_options['forward_reads'] == \
-        task.input()['trimmed_reads']['forward_reads'].path
-    assert program_options['reverse_reads'] == \
-        task.input()['trimmed_reads']['reverse_reads'].path
+    (command, ), kwargs = task.run_command.call_args_list[1]
+
+    assert 'fastqc' in command
+    assert task.input()['trimmed_reads']['forward_reads'].path in command
+    assert task.input()['trimmed_reads']['reverse_reads'].path in command

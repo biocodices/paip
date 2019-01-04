@@ -5,10 +5,11 @@ import yaml
 
 import luigi
 
+import paip.helpers
+
 from paip.helpers import (
     Config,
     generate_command,
-    run_command,
     get_running_tasks,
 )
 
@@ -169,19 +170,23 @@ class BaseTask(luigi.Task):
         Will generate a command to run in the shell for *program_name* with
         *program_options*. Extra kwargs are passed to run_command().
 
+        Stores the generated command in self.generated_command
+
         The name of the current class (that is, a luigi.Task) will be used
         as the name for the logfile.
 
-        Returns the ouptut from run_command(), namely a tuple with
-        (STDOUT, STDERR).
+        Returns a tuple with the generated command and its result from
+        run_command(), that is, something like: (command, (STDOUT, STDERR)).
         """
         program_options.update({'num_threads': self.num_threads})
         command = generate_command(program_name, program_options, self.config)
+        self.generated_command = command
         logfile = self.log_path(self.__class__.__name__)
         # TODO: implement this correctly:
         # self.sleep_until_available_to_run()
-        command_result = run_command(command, logfile=logfile, **kwargs)
-        return command_result
+        command_result = paip.helpers.run_command(command, logfile=logfile,
+                                                  **kwargs)
+        return (command, command_result)
 
     def rename_temp_idx(self):
         """

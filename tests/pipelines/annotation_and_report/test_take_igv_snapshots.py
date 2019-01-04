@@ -74,8 +74,8 @@ def test_run(task, mock_makedirs, monkeypatch):
         script_path=task.output()['script'].path
     )
 
-    (program_name, program_options), _ = task.run_program.call_args
+    (command, ), kwargs = task.run_command.call_args
 
-    assert program_name == 'igv snapshots'
-    assert program_options['DISPLAY'] == os.getpid()
-    assert program_options['script_path'].endswith('igv_batch_script')
+    assert 'igv.jar' in command
+    assert command.startswith('DISPLAY=:')
+    assert command.endswith('Sample1.igv_batch_script')

@@ -10,9 +10,9 @@ def task(cohort_task_factory):
 
 def test_run(task):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
+    (command, ), kwargs = task.run_command.call_args
 
-    assert program_name == 'vep annotate'
-    assert program_options['input_vcf'] == task.input().path
-    assert program_options['output_stats_html'].endswith('_summary.html')
-    assert '.vep.tsv-luigi-tmp' in program_options['output_tsv']
+    assert 'vep' in command
+    assert task.input().path in command
+    assert '_summary.html' in command
+    assert '.vep.tsv-luigi-tmp' in command

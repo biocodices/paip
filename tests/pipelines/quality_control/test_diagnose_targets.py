@@ -4,10 +4,11 @@ from paip.pipelines.quality_control import DiagnoseTargets
 def test_run(sample_task_factory, mock_rename):
     task = sample_task_factory(DiagnoseTargets)
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
+    (command, ), kwargs = task.run_command.call_args
 
-    assert program_name == 'gatk3 DiagnoseTargets'
-    assert program_options['input_bam'] == task.input()['dupmarked_bam'].path
-    assert program_options['min_dp'] == task.min_dp
-    assert 'coverage_diagnosis.vcf-luigi-tmp' in program_options['output_vcf']
+    assert 'GenomeAnalysisTK.jar -T DiagnoseTargets' in command
+    assert task.input()['dupmarked_bam'].path in command
+    assert f'--minimum_coverage {task.min_dp}' in command
+    assert 'coverage_diagnosis.vcf-luigi-tmp' in command
+
     assert mock_rename.call_count == 2

@@ -15,13 +15,15 @@ def test_requires(task):
 
 def test_run(task, test_cohort_path, mock_rename):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk3 VariantFiltration genos'
-    assert program_options['input_vcf'] == task.input().path
-    assert program_options['min_gq'] == task.min_gq
-    assert program_options['min_dp'] == task.min_dp
-    assert 'geno_filt.vcf-luigi-tmp' in program_options['output_vcf']
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'GenomeAnalysisTK.jar -T VariantFiltration' in command
+    assert task.input().path in command
+    assert f'GQ < {task.min_gq}' in command
+    assert f'DP < {task.min_dp}' in command
+    assert 'geno_filt.vcf-luigi-tmp' in command
+
     assert mock_rename.call_count == 2
 
 

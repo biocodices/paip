@@ -16,11 +16,14 @@ def test_requires(task):
 
 def test_run(task, mock_rename):
     task.run()
-    (program_name, program_options), _ = task.run_program.call_args
 
-    assert program_name == 'gatk3 GenotypeGVCFs variant_sites'
-    expected_inputs = ['-V {}'.format(input_[0].path) for input_ in task.input()]
-    assert program_options['input_gvcfs'] == ' '.join(expected_inputs)
-    assert 'vcf-luigi-tmp' in program_options['output_vcf']
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'GenomeAnalysisTK.jar -T GenotypeGVCFs' in command
+    expected_inputs = ['-V {}'.format(input_[0].path)
+                       for input_ in task.input()]
+    assert ' '.join(expected_inputs) in command
+    assert 'vcf-luigi-tmp' in command
+
     assert mock_rename.call_count == 2
 

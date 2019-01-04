@@ -11,6 +11,18 @@ samtools extract header:
 samtools reheader:
   '{executable} reheader {header_sam} {input_bam}'
 
+variant_caller_pipeline.py:
+  '{executable}
+    --region-bed {region_bed}
+    --input-bam {input_bam}
+    --reference-fasta {ucsc_reference_fasta}
+    --output-dir {output_dir}
+    --parameters-file {parameters_file}
+    --error-motifs {error_motifs_file}
+    --bin-tvc {bin_tvc}
+    --bin-tvcutils {bin_tvcutils}
+    --generate-gvcf on
+    --num-threads {num_threads}'
 
 
 #########################################

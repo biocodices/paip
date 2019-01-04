@@ -38,10 +38,12 @@ def test_run(task, monkeypatch):
     mock_makedirs.assert_called_once()
     assert mock_makedirs.call_args[0][0].endswith('xhmm_run/plots')
 
-    task.run_program.assert_called_once()
-    (program_name, program_options), _ = task.run_program.call_args
-    assert program_name == 'Rscript make_XHMM_plots'
-    assert program_options['script_path'].endswith('make_XHMM_plots.R')
+    task.run_command.assert_called_once()
+
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'Rscript' in command
+    assert command.endswith('make_XHMM_plots.R')
 
 
 def test_copy_and_edit_R_script(task, monkeypatch):

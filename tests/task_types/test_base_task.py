@@ -129,7 +129,6 @@ def test_run_program(base_task, monkeypatch):
     # run_program uses generate_command, but we test the latter elsewhere,
     # so we just mock it here:
     def fake_generate_command(program_name, options, config):
-        opts = list(options.items())[0]
         command = f"{program_name}"
         for key, value in options.items():
             command += f" --{key} {value}"
@@ -161,20 +160,26 @@ def test_run_program(base_task, monkeypatch):
     #  sleep_until_available_to_run = MagicMock()
     # base_task.sleep_until_available_to_run = sleep_until_available_to_run
 
-    args_received = base_task.run_program(
+    result = base_task.run_program(
         program_name='program',
         program_options={'foo': 'bar'},
         extra_kwarg='foo'
     )
 
+    expected_command = 'program --foo bar --num_threads 1'
+    assert result[0] == expected_command
+    assert base_task.generated_command == expected_command
+
+    args_received_by_run_command = result[1]
+
     # Test the command is the one that comes from generate_command
-    assert args_received['command'] == 'program --foo bar --num_threads 1'
+    assert args_received_by_run_command['command'] == expected_command
 
     # Test the logfile was created from the class name of the Task
-    assert args_received['logfile'] == '/path/to/log.BaseTask'
+    assert args_received_by_run_command['logfile'] == '/path/to/log.BaseTask'
 
     # Test extra kwargs were passed to run_command
-    assert args_received['extra_kwarg'] == 'foo'
+    assert args_received_by_run_command['extra_kwarg'] == 'foo'
 
     # sleep_until_available_to_run.assert_called_once()
 

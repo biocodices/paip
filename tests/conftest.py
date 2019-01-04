@@ -6,7 +6,8 @@ pytest_plugins = ['helpers_namespace']
 
 import pytest
 
-from paip.helpers import Config, generate_command
+import paip
+from paip.helpers import Config
 from paip.task_types import SampleTask
 
 
@@ -69,32 +70,20 @@ def task_factory(monkeypatch):
     are defined in the example config files, making sure we keep those
     example configs updated.
     """
-    # This takes the same arguments as BaseTask.run_program
-    # and performs some extra checks:
-    def extra_checks(program_name, program_options, **kwargs):
-        # Test the command is generated correctly with the options passed
-        # using the example_config YAML files as models.
-        config = Config()
-
-        # FIXME: this is a hack, since we need to imitate the behavior of
-        # the real BaseTask.run_program here, I need to do this:
-        program_options.update({'num_threads': 1})
-
-        generate_command(program_name, program_options, config)
-        return_value = []
-
-        if not kwargs.get('log_stdout'):
-            return_value.append(b'stdout')
-        if not kwargs.get('log_stderr'):
-            return_value.append(b'stderr')
-
-        return return_value
-
-    run_program = MagicMock(side_effect=extra_checks, name='run_program')
+    mock_run_command = Mock(return_value=(b'stdout', b'stderr')) ##
+    monkeypatch.setattr(paip.helpers, 'run_command', mock_run_command) ##
 
     def factory(klass, params, extra_params={}):
         task = klass(**params, **extra_params)
-        monkeypatch.setattr(task, 'run_program', run_program)
+        task.run_command = mock_run_command
+
+        old_run_program = task.run_program
+        def run_program_with_print(*args, **kwargs):
+            result = old_run_program(*args, **kwargs)
+            print(f"Running:\n {result[0]}\n") # command
+            return result
+        task.run_program = run_program_with_print
+
         return task
 
     return factory

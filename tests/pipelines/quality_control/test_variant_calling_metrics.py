@@ -5,9 +5,10 @@ def test_run(sample_task_factory):
     task = sample_task_factory(VariantCallingMetrics)
     task.run()
 
-    assert task.run_program.call_count == 1
-    (program_name, program_options), _ = task.run_program.call_args
+    assert task.run_command.call_count == 1
 
-    assert program_name == 'picard CollectVariantCallingMetrics'
-    assert program_options['input_vcf'] == task.input().path
-    assert program_options['output_txt'].endswith('QC')
+    (command, ), kwargs = task.run_command.call_args
+
+    assert 'picard-2.18.16.jar CollectVariantCallingMetrics' in command
+    assert task.input().path in command
+    assert command.endswith('Sample1.QC')

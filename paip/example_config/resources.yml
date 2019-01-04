@@ -43,6 +43,29 @@ human_features: Homo_sapiens.GRCh37.87.gtf
 
 ##################################################################
 #                                                                #
+# Resources for IonTorrent Pipeline                              #
+#                                                                #
+##################################################################
+
+hi_q_chemistry_error_motifs_file: ionTorrent_files/ampliseqexome_germline_p1_hiq_motifset.txt
+parameters_file_somatic_PGM: ionTorrent_files/ampliseq_somatic_lowstringency_pgm_parameters.json
+thyroid_cancer_panel: thyroid_cancer_panel.bed
+
+ucsc_reference_fasta: hg19.25chromosomes.sorted.fa
+bin_tvc: /software/TS/build/Analysis/tvc
+bin_tvcutils: /software/TS/build/Analysis/tvcutils
+
+## It's prefereable to set these parameters on a per-run basis,
+## to make sure that somatic parameters are exclusively used for somatic
+## runs and no mistakes are made. Just put a resources.yml in the Cohort
+## directory with these keys and the `resources_dir` key:
+#
+# error_motifs_file: foo.txt
+# parameters_file: bar.json
+# region_bed: baz.bed
+
+##################################################################
+#                                                                #
 # Other resources                                                #
 #                                                                #
 ##################################################################
@@ -81,4 +104,3 @@ panel_annotated_intervals: trusight_cardio_grch37.sorted.annotated_targets.from_
 
 # This file is used only in the "target_sites" pipeline:
 panel_variants: *ENPv1_reduced
-

@@ -25,8 +25,9 @@ class AnnotateWithSnpsiftDbSNP(CohortTask):
             }
 
             # Snpsift outputs the annotated VCF to STDOUT
-            stdout, _ = self.run_program(program_name, program_options,
-                                         log_stdout=False)
+            command, (stdout, stderr) = \
+                self.run_program(program_name, program_options,
+                                 log_stdout=False)
 
             with open(self.temp_vcf, 'wb') as f:
                 f.write(stdout)

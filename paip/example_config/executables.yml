@@ -11,6 +11,10 @@ snpeff: java -jar /software/snpEff/snpEff.jar
 snpsift: java -jar /software/snpEff/SnpSift.jar
 vep: /software/ensembl-vep/vep
 
+# IonTorrent Variant Calling
+# --------------------------
+variant_caller_pipeline.py: /usr/bin/python2.7 /software/TS/plugin/variantCaller/variant_caller_plugin.py
+
 # Quality control
 # ---------------
 
@@ -23,7 +27,7 @@ featureCounts: /software/subread-1.6.3-Linux-x86_64/bin/featureCounts
 igv: java -jar /software/IGV_2.4.14/lib/igv.jar
 
 # CNV Calling
-# ---------------
+# -----------
 
 xhmm: /software/xhmm/bin/xhmm
 awk: /usr/bin/awk

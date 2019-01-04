@@ -15,11 +15,11 @@ def test_run(sample_task_factory):
     with patch('paip.pipelines.variant_calling.validate_sam.open', open_):
         task.run()
 
-    (program_name, program_options), kwargs = task.run_program.call_args
+    (command, ), kwargs = task.run_command.call_args
 
-    assert program_name == 'picard ValidateSamFile'
-    assert program_options['input_sam'] == task.input().path
-    assert task.output().path + '-luigi-tmp-' in program_options['output_txt']
+    assert 'picard-2.18.16.jar ValidateSamFile' in command
+    assert task.input().path in command
+    assert task.output().path + '-luigi-tmp-' in command
 
     open_.assert_called_once_with(task.output().path)
 

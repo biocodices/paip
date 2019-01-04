@@ -8,11 +8,13 @@ class Config:
     def __init__(self, custom_config_dir=None):
         """
         If a *custom_config_dir* is provided, config files will be searched
-        for there in addition to the CONFIG_DIR of this class. The definitions
-        in the CONFIG_DIR files will be merged with the definitions in the custom
-        config files, with priority for custom configs.
+        for there **in addition** to the CONFIG_DIR of this class. The
+        definitions in the default CONFIG_DIR files will be merged with the
+        definitions in the custom config files, with priority for custom
+        configs.
 
         Config files are three YAMLs:
+
             - `resources.yml` describing location of resources, like the
               human genome or dbsnp files. This file MUST have a special
               key named "resources_dir" poiting to the directory with the
