@@ -13,7 +13,7 @@ vep: /software/ensembl-vep/vep
 
 # IonTorrent Variant Calling
 # --------------------------
-variant_caller_pipeline.py: /usr/bin/python2.7 /software/TS/plugin/variantCaller/variant_caller_plugin.py
+variant_caller_pipeline.py: /usr/bin/python2.7 /software/TS/plugin/variantCaller/bin/variant_caller_pipeline.py
 
 # Quality control
 # ---------------

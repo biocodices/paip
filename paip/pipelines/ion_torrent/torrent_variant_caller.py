@@ -1,5 +1,5 @@
 import os
-from os.path import join
+from os.path import join, isfile
 
 from paip.task_types import SampleTask
 from paip.pipelines.ion_torrent import ReheaderBam
@@ -47,7 +47,8 @@ class TorrentVariantCaller(SampleTask):
         for old_fn in files_to_add_sample_prefix:
             old_fp = join(self.dir, old_fn)
             new_fp = self.path(old_fn) # Just add the sample name as prefix
-            os.rename(old_fp, new_fp)
+            if isfile(old_fp):
+                os.rename(old_fp, new_fp)
 
 
 TorrentVariantCallerCohort = create_cohort_task(TorrentVariantCaller)

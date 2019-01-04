@@ -10,10 +10,11 @@ def test_run(sample_task_factory, mock_rename):
     (command, ), kwargs = task.run_command.call_args
 
     assert 'python2.7' in command
-    assert 'variant_caller_plugin.py' in command
+    assert 'variant_caller_pipeline.py' in command
     assert 'Sample1.fix.bam' in command
 
-    assert mock_rename.call_count == 9
+    # assert mock_rename.call_count == 9
+    assert mock_rename.call_count == 4
 
     rename_call_args = mock_rename.call_args_list[0]
     assert 'TSVC_variants.vcf.gz' in rename_call_args[0][0]
@@ -31,22 +32,22 @@ def test_run(sample_task_factory, mock_rename):
     assert 'TSVC_variants.genome.vcf.gz.tbi' in rename_call_args[0][0]
     assert 'Sample1.genome.vcf.gz.tbi' in rename_call_args[0][1]
 
-    rename_call_args = mock_rename.call_args_list[4]
-    assert 'black_listed.vcf' in rename_call_args[0][0]
-    assert 'Sample1.black_listed.vcf' in rename_call_args[0][1]
+    #  rename_call_args = mock_rename.call_args_list[4]
+    #  assert 'black_listed.vcf' in rename_call_args[0][0]
+    #  assert 'Sample1.black_listed.vcf' in rename_call_args[0][1]
 
-    rename_call_args = mock_rename.call_args_list[5]
-    assert 'depth.txt' in rename_call_args[0][0]
-    assert 'Sample1.depth.txt' in rename_call_args[0][1]
+    #  rename_call_args = mock_rename.call_args_list[5]
+    #  assert 'depth.txt' in rename_call_args[0][0]
+    #  assert 'Sample1.depth.txt' in rename_call_args[0][1]
 
-    rename_call_args = mock_rename.call_args_list[6]
-    assert 'indel_assembly.vcf' in rename_call_args[0][0]
-    assert 'Sample1.indel_assembly.vcf' in rename_call_args[0][1]
+    #  rename_call_args = mock_rename.call_args_list[6]
+    #  assert 'indel_assembly.vcf' in rename_call_args[0][0]
+    #  assert 'Sample1.indel_assembly.vcf' in rename_call_args[0][1]
 
-    rename_call_args = mock_rename.call_args_list[7]
-    assert 'small_variants_filtered.vcf' in rename_call_args[0][0]
-    assert 'Sample1.small_variants_filtered.vcf' in rename_call_args[0][1]
+    #  rename_call_args = mock_rename.call_args_list[7]
+    #  assert 'small_variants_filtered.vcf' in rename_call_args[0][0]
+    #  assert 'Sample1.small_variants_filtered.vcf' in rename_call_args[0][1]
 
-    rename_call_args = mock_rename.call_args_list[8]
-    assert 'small_variants.vcf' in rename_call_args[0][0]
-    assert 'Sample1.small_variants.vcf' in rename_call_args[0][1]
+    #  rename_call_args = mock_rename.call_args_list[8]
+    #  assert 'small_variants.vcf' in rename_call_args[0][0]
+    #  assert 'Sample1.small_variants.vcf' in rename_call_args[0][1]
