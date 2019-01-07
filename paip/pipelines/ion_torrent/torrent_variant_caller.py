@@ -1,5 +1,5 @@
 import os
-from os.path import join, isfile
+from os.path import join
 
 from paip.task_types import SampleTask
 from paip.pipelines.ion_torrent import ReheaderBam
@@ -14,8 +14,8 @@ class TorrentVariantCaller(SampleTask):
     OUTPUT = {
         'gzipped_vcf': 'vcf.gz',
         'gzipped_vcf_index': 'vcf.gz.tbi',
-        'genome_gzipped_vcf': 'genome.vcf.gz',
-        'genome_gzipped_vcf_index': 'genome.vcf.gz.tbi',
+        'genome_gzipped_vcf': 'g.vcf.gz',
+        'genome_gzipped_vcf_index': 'g.vcf.gz.tbi',
     }
 
     def run(self):
@@ -43,11 +43,12 @@ class TorrentVariantCaller(SampleTask):
             'indel_assembly.vcf',
             'small_variants_filtered.vcf',
             'small_variants.vcf',
+            'tvc_metrics.json',
         ]
         for old_fn in files_to_add_sample_prefix:
             old_fp = join(self.dir, old_fn)
             new_fp = self.path(old_fn) # Just add the sample name as prefix
-            if isfile(old_fp):
+            if os.path.isfile(old_fp):
                 os.rename(old_fp, new_fp)
 
 
