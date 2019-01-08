@@ -25,14 +25,24 @@ variant_caller_pipeline.py:
     --num-threads {num_threads}'
 
 snpsift dbSNP:
-    '{executable}
-     annotate
-     -tabix
-     -id
-     -v
-     {dbsnp_GRCh37}
-     {input_vcf}'
-     # output goes to STDOUT
+  '{executable}
+    annotate
+    -tabix
+    -id
+    -v
+    {dbsnp_GRCh37}
+    {input_vcf}'
+    # output goes to STDOUT
+
+snpsift gnomAD:
+  '{executable}
+    annotate
+    -tabix
+    -noId
+    -v
+    {gnomad_GRCh37_genomes}
+    {input_vcf}'
+    # output goes to STDOUT
 
 
 #########################################

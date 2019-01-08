@@ -1,16 +1,14 @@
 import re
 
-import pytest
-
 from paip.pipelines.variant_calling import JointGenotyping, MakeGVCF
 
 
-@pytest.fixture
-def task(cohort_task_factory):
-    return cohort_task_factory(JointGenotyping)
-
-
-def test_requires(task):
+def test_requires(cohort_task_factory):
+    task = cohort_task_factory(
+        JointGenotyping,
+        cohort_name='Cohort1',
+        samples='Sample1,Sample2',
+    )
     expected_dependencies = [
         MakeGVCF(sample='Sample1', basedir=task.basedir),
         MakeGVCF(sample='Sample2', basedir=task.basedir),
@@ -18,7 +16,12 @@ def test_requires(task):
     assert task.requires() == expected_dependencies
 
 
-def test_run(task, mock_rename):
+def test_run(cohort_task_factory, mock_rename):
+    task = cohort_task_factory(
+        JointGenotyping,
+        cohort_name='Cohort1',
+        samples='Sample1,Sample2',
+    )
     task.run()
 
     (command, ), kwargs = task.run_command.call_args

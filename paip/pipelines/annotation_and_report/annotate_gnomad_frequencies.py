@@ -1,21 +1,18 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipelines.variant_calling import FilterGenotypes
+from paip.pipelines.annotation_and_report import AnnotateDbsnpId
 
 
-class AnnotateDbsnpId(CohortTask):
+class AnnotateGnomadFrequencies(CohortTask):
     """
-    Take a VCF and add IDs from a dbSNP VCF file.
-
-    TODO: Replace any previous ID in the VCF, leaving only the preferred
-    DbSNP's version. (Not implemented yet.)
+    Take a VCF and add INFO data from a gnomAD VCF file. Do NOT add IDs.
     """
-    REQUIRES = FilterGenotypes
+    REQUIRES = AnnotateDbsnpId
 
     def run(self):
         with self.output().temporary_path() as temp_vcf:
-            program_name = 'snpsift dbSNP'
+            program_name = 'snpsift gnomAD'
             program_options = {
                 'input_vcf': self.input().path,
             }
@@ -24,5 +21,5 @@ class AnnotateDbsnpId(CohortTask):
                              log_stdout=False)
 
     def output(self):
-        fn = self.input().path.replace('.vcf', '.dbSNP.vcf')
+        fn = self.input().path.replace('.vcf', '.AD.vcf')
         return luigi.LocalTarget(fn)
