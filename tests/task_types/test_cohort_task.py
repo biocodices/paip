@@ -102,3 +102,12 @@ def test_sample_requires(cohort_task_params):
     # Check that sample requires is correctly assigned as requires()
     # when SAMPLE_REQUIRES variable is present:
     assert list(cohort_task.sample_requires()) == list(cohort_task.requires())
+
+
+def test_ion_cohort():
+    task = CohortTask(basedir=pytest.helpers.file('IonCohort'),
+                      samples='ALL',
+                      pipeline_type='variant_sites',
+                      min_dp=30,
+                      min_gq=30)
+    assert task.ion is True

@@ -65,14 +65,25 @@ class CohortTask(BaseTask):
 
         return join(self.dir, '{0}/{0}.{1}'.format(sample, filename))
 
+    @property
+    def ion(self):
+        """
+        Check whether all the samples in the Cohort are from ion.
+        """
+        for sample, sample_info in self.sequencing_data.items():
+            if sample_info.get('ion') is not True:
+                return False
+
+        return True
+
+
     def _find_samples(self, samples):
         """
-        Check for the *samples* in the dir. 'ALL' will make it
-        find every subdir in the CWD (as long as it's also found in
-        self.sequencing_data) and return those dirnames as sample
-        names, while a list of comma-separated sample names will trigger a
-        check of the sample's existence as subdirs and return only those
-        in a list.
+        Check for the *samples* in the dir. 'ALL' will make it find every
+        subdir in the CWD (as long as it's also found in self.sequencing_data)
+        and return those dirnames as sample names, while a list of
+        comma-separated sample names will trigger a check of the sample's
+        existence as subdirs and return only those in a list.
         """
         available_samples = [name for name in sorted(listdir(self.dir))
                              if isdir(join(self.dir, name)) and

@@ -30,6 +30,7 @@ def test_removable_files(reseter):
         'Cohort1/Sample1/Sample1.R1.fastq.gz',
         'Cohort1/Sample1/Sample1.R2.fastq.gz',
         'Cohort1/Sample1/Sample1.external_exome.vcf',
+        'Cohort1/Sample1/Sample1.ion.bam',
         'Cohort1/sequencing_data.yml',
         'Cohort1/other_seq_data.yml',
         'Cohort1/non_removable_script.py',
@@ -38,11 +39,14 @@ def test_removable_files(reseter):
         'Cohort1/original_data/non_removable_file',
     ]
 
-    files_considered_removable = reseter.removable_files
+    files_considered_removable = reseter.removable_files()
     for fn in files_to_destroy:
         assert pytest.helpers.file(fn) in files_considered_removable
+
+    files_considered_keepable = reseter.keepable_files()
     for fn in files_to_keep:
         assert pytest.helpers.file(fn) not in files_considered_removable
+        assert pytest.helpers.file(fn) in files_considered_keepable
 
 
 def test_reset_pipeline(reseter, monkeypatch):
@@ -53,5 +57,4 @@ def test_reset_pipeline(reseter, monkeypatch):
     assert mock_remove.call_count == 0
 
     reseter.reset_pipeline(dry_run=False)
-    assert mock_remove.call_count == len(reseter.removable_files)
-
+    assert mock_remove.call_count == len(reseter.removable_files())

@@ -12,8 +12,11 @@ class TorrentVariantCaller(SampleTask):
     """
     REQUIRES = ReheaderBam
     OUTPUT = {
+        'vcf': 'vcf',
         'gzipped_vcf': 'vcf.gz',
         'gzipped_vcf_index': 'vcf.gz.tbi',
+
+        'genome_vcf': 'g.vcf',
         'genome_gzipped_vcf': 'g.vcf.gz',
         'genome_gzipped_vcf_index': 'g.vcf.gz.tbi',
     }
@@ -27,8 +30,10 @@ class TorrentVariantCaller(SampleTask):
         self.run_program(program_name, program_options)
 
         files_to_rename = {
+            'TSVC_variants.vcf': 'vcf',
             'TSVC_variants.vcf.gz': 'gzipped_vcf',
             'TSVC_variants.vcf.gz.tbi': 'gzipped_vcf_index',
+            'TSVC_variants.genome.vcf': 'genome_vcf',
             'TSVC_variants.genome.vcf.gz': 'genome_gzipped_vcf',
             'TSVC_variants.genome.vcf.gz.tbi': 'genome_gzipped_vcf_index',
         }

@@ -17,7 +17,12 @@ def test_fix_header_sam(sample_task_factory, tmpdir):
     assert "@RG\tID:RGID\tCN:RGCN\tDT:RGDT\tFO:RGFO\tKS:RGKS\tPG:RGPG\tPL:RGPL\tPU:RGPU\tSM:Sample1\n" in content
 
     assert 'LN:16569' not in content
-    assert "LN:16571\n" in content
+    # assert "LN:16571\n" in content
+
+    assert 'SN:chr1' not in content
+    assert 'SN:chrY' not in content
+    assert 'SN:1' in content
+    assert 'SN:Y' in content
 
 
 def test_run(sample_task_factory, monkeypatch):
@@ -31,7 +36,7 @@ def test_run(sample_task_factory, monkeypatch):
 
     (command, ), kwargs = task.run_command.call_args_list[0]
     assert 'samtools view -H' in command
-    assert 'Sample1.bam' in command
+    assert 'Sample1.ion.bam' in command
 
     assert kwargs['redirect_stdout_to_path'].endswith('.header.sam')
 

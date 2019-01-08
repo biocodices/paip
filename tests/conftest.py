@@ -8,7 +8,7 @@ import pytest
 
 import paip
 from paip.helpers import Config
-from paip.task_types import SampleTask
+from paip.task_types import SampleTask, CohortTask
 
 
 
@@ -50,13 +50,6 @@ def test_sample_path(test_cohort_basedir):
     def func(path):
         return join(test_cohort_basedir, 'Sample1', path)
     return func
-
-
-@pytest.fixture
-def cohort_task_params(test_cohort_basedir):
-    return {'basedir': test_cohort_basedir,
-            'samples': 'Sample1,Sample2',
-            'pipeline_type': 'variant_sites'}
 
 
 @pytest.fixture(scope='function')
@@ -127,11 +120,27 @@ def sample_task_factory(task_factory):
     return factory
 
 
-@pytest.fixture(scope='function')
-def cohort_task_factory(task_factory, cohort_task_params):
+@pytest.fixture
+def cohort_task_params(test_cohort_basedir):
+    return {'basedir': test_cohort_basedir,
+            'samples': 'Sample1,Sample2',
+            'pipeline_type': 'variant_sites'}
 
-    def factory(klass, extra_params={}):
-        task = task_factory(klass, cohort_task_params, extra_params)
+
+@pytest.fixture(scope='function')
+def cohort_task_factory(task_factory):
+
+    def factory(klass=CohortTask,
+                extra_params={},
+                cohort_name='Cohort1',
+                samples='ALL',
+                pipeline_type='variant_sites'):
+
+        cohort_dir = pytest.helpers.file(cohort_name)
+        cohort_params = {'basedir': cohort_dir,
+                         'samples': samples,
+                         'pipeline_type': pipeline_type}
+        task = task_factory(klass, cohort_params, extra_params)
         return task
 
     return factory

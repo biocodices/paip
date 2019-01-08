@@ -26,7 +26,6 @@ from .call_targets import CallTargets
 from .reset_filters import ResetFilters, ResetFiltersCohort
 from .joint_genotyping import JointGenotyping
 from .merge_vcfs import MergeVCFs
-from .annotate_with_snpsift_dbsnp import AnnotateWithSnpsiftDbSNP
 from .select_snps import SelectSNPs
 from .select_indels import SelectIndels
 from .filter_snps import FilterSNPs

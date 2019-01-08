@@ -8,7 +8,7 @@ class BamPresent(luigi.ExternalTask, SampleTask):
     """
     Expects a IonTorrent-generated BAM file from a single sample.
     """
-    OUTPUT = 'bam'
+    OUTPUT = 'ion.bam'
 
 
 BamPresentCohort = create_cohort_task(BamPresent)

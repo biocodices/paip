@@ -25,4 +25,3 @@ class ResetFilters(SampleTask):
 
 
 ResetFiltersCohort = create_cohort_task(ResetFilters)
-

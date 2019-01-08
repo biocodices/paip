@@ -15,7 +15,7 @@ variant_caller_pipeline.py:
   '{executable}
     --region-bed {region_bed}
     --input-bam {input_bam}
-    --reference-fasta {ucsc_reference_fasta}
+    --reference-fasta {reference_genome_25_chromosomes}
     --output-dir {output_dir}
     --parameters-file {parameters_file}
     --error-motifs {error_motifs_file}
@@ -23,6 +23,16 @@ variant_caller_pipeline.py:
     --bin-tvcutils {bin_tvcutils}
     --generate-gvcf on
     --num-threads {num_threads}'
+
+snpsift dbSNP:
+    '{executable}
+     annotate
+     -tabix
+     -id
+     -v
+     {dbsnp_GRCh37}
+     {input_vcf}'
+     # output goes to STDOUT
 
 
 #########################################
@@ -281,19 +291,6 @@ gatk3 CombineVariants:
      -R {reference_genome}
      {input_vcfs}
      -o {output_vcf}'
-
-snpsift dbSNP:
-
-     # output goes to STDOUT
-
-    '{executable}
-     annotate
-     -v
-     -noAlt
-     -id
-     -sorted
-     {dbsnp_GRCh37}
-     {input_vcf}'
 
 gatk3 SelectVariants snps:
     '{executable}

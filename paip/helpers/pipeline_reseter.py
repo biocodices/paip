@@ -17,6 +17,7 @@ class PipelineReseter:
         r'\.(R1|R2)\.fastq$',
         r'\.(R1|R2)\.fastq\.gz$',
         r'\.external_exome\.vcf',
+        r'\.ion\.bam',
         r'\.rb$',
         r'\.py$',
         r'\.sh$',
@@ -31,14 +32,16 @@ class PipelineReseter:
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__, self.basedir)
 
-    @property
-    def removable_files(self):
+    def removable_files(self, invert=False):
         """
         Recursively list the removable files in self.basedir. Keeps scripts
-        ending in .py, .sh, or .rb, config files ending in .yml, and fastqs
-        (but not trimmed fastqs).
+        ending in .py, .sh, or .rb, config files ending in .yml, fastqs
+        (but not trimmed fastqs), external_exome.vcf, and ion.bam.
+
+        Set *invert* as True to show the keepable files.
         """
         removable_files = []
+        keepable_files = []
 
         for root, dirs, files in os.walk(self.basedir):
             for filename in files:
@@ -51,8 +54,13 @@ class PipelineReseter:
 
                 if should_be_removed:
                     removable_files.append(filepath)
+                else:
+                    keepable_files.append(filepath)
 
-        return sorted(removable_files)
+        return sorted(keepable_files) if invert else sorted(removable_files)
+
+    def keepable_files(self):
+        return self.removable_files(invert=True)
 
     def reset_pipeline(self, dry_run=True):
         """
@@ -63,9 +71,9 @@ class PipelineReseter:
             logger.warning('Running in dry mode, no changes will be made.')
 
         del_count = 0
-        for file_ in self.removable_files:
+        for file_ in self.removable_files():
             if dry_run:
-                logger.info('I would delete: {}'.format(file_))
+                logger.info(f'I would delete: {file_}')
             else:
                 os.remove(file_)
                 # ^ Please keep this as 'os.remove', and not as 'remove',
@@ -73,7 +81,10 @@ class PipelineReseter:
                 del_count += 1
 
         if dry_run:
+            for file_ in self.keepable_files():
+                logger.info(f'I would keep: {file_}')
+
             logger.warning('Dry-run. I would have deleted {} files in {}'
-                           .format(len(self.removable_files), self.basedir))
+                           .format(len(self.removable_files()), self.basedir))
         else:
             logger.warning('Deleted {} files.'.format(del_count))

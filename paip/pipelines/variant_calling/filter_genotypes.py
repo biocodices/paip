@@ -1,14 +1,18 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipelines.variant_calling import CombineVariants
+from paip.pipelines.variant_calling import CombineVariants, MergeVCFs
 
 
 class FilterGenotypes(CohortTask):
     """
     Takes a VCF and applies filters to each genotype. Generates a new VCF.
     """
-    REQUIRES = CombineVariants
+    def requires(self):
+        if self.ion:
+            return MergeVCFs(**self.param_kwargs)
+        else:
+            return CombineVariants(**self.param_kwargs)
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:
@@ -19,7 +23,6 @@ class FilterGenotypes(CohortTask):
                 'min_gq': self.min_gq,
                 'min_dp': self.min_dp,
             }
-
             self.run_program(program_name, program_options)
 
         self.rename_temp_idx()

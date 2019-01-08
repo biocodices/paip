@@ -51,7 +51,8 @@ hi_q_chemistry_error_motifs_file: ionTorrent_files/ampliseqexome_germline_p1_hiq
 parameters_file_somatic_PGM: ionTorrent_files/ampliseq_somatic_lowstringency_pgm_parameters.json
 thyroid_cancer_panel: thyroid_cancer_panel.bed
 
-ucsc_reference_fasta: hg19.25chromosomes.sorted.fa
+# ucsc_reference_fasta: hg19.25chromosomes.sorted.fa
+reference_genome_25_chromosomes: human_g1k_v37.25chromosomes.sorted.fasta
 bin_tvc: /software/TS/build/Analysis/tvc
 bin_tvcutils: /software/TS/build/Analysis/tvcutils
 

@@ -38,9 +38,19 @@ class ReheaderBam(SampleTask):
             for line in f1:
                 fixed_line = line
 
+                # Remove mithocondrial contig
                 if 'chrM' in line:
-                    fixed_line = line.replace('LN:16569', 'LN:16571')
+                    continue
+                    # This might cause trouble in the future if some read is
+                    # mapped to the chrM accidentally.
+                    # The right way to get rid of the problem is to filter the
+                    # input ion.bam by the regions with samtools -L BED (TODO)
 
+                # Fix contig names chr1 -> 1
+                if 'SN:chr' in line:
+                    fixed_line = fixed_line.replace('SN:chr', 'SN:')
+
+                # Fix sample name
                 if line.startswith('@RG'):
                     # fields = [f for f in re.split(r"\s+", line) if f]
                     fields = line.split("\t")
