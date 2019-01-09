@@ -1,11 +1,11 @@
-import re
 from inspect import signature
 
+from anotamela.annotators import GeneEntrezLocalAnnotator
 from anotamela.pipeline import annotate_entrez_gene_ids
 
 from paip.task_types import CohortAnnotationTask
-from paip.pipelines.annotation import AnnotateWithVep
-from paip.helpers import read_vep_tsv, prettify_JSON_dump
+from paip.pipelines.annotation import AnnotateWithSnpeff
+from paip.helpers import prettify_JSON_dump
 
 
 class AnnotateGenes(CohortAnnotationTask):
@@ -13,11 +13,26 @@ class AnnotateGenes(CohortAnnotationTask):
     Annotates all Entrez gene IDs found in the VEP annotation .tsv file.
     Generates a JSON file with the annotations for each gene.
     """
-    REQUIRES = AnnotateWithVep
+    REQUIRES = AnnotateWithSnpeff
     OUTPUT = 'genes.json'
 
+    def read_gene_symbols(self, path):
+        """
+        Extract a unique list of Entrez gene symbols from the *path*.
+        """
+        with open(path) as f:
+            return [line.split()[0] for line in f if not line.startswith('#')]
+
+    def gene_symbols_to_entrez_ids(self, gene_symbols):
+        annotator = GeneEntrezLocalAnnotator()
+        return sorted(set(annotator.annotate(gene_symbols)['GeneID']))
+
     def run(self):
-        entrez_gene_ids = extract_entrez_gene_ids_from_vep_tsv(self.input().path)
+        snpeff_annotation = self.requires()
+        gene_symbols = self.read_gene_symbols(snpeff_annotation.genes_txt)
+        entrez_gene_ids = self.gene_symbols_to_entrez_ids(gene_symbols)
+
+        # Annotate the entrez gene Ids
         sig = signature(annotate_entrez_gene_ids)
         annotation_params = {k: v for k, v in self.annotation_kwargs.items()
                              if k in sig.parameters.keys()}
@@ -28,14 +43,3 @@ class AnnotateGenes(CohortAnnotationTask):
 
         with open(self.output().path, 'w') as f:
             f.write(genes_json)
-
-
-def extract_entrez_gene_ids_from_vep_tsv(tsv_path):
-    """
-    Extract a unique list of Entrez gene IDs from VEP's .tsv annotation
-    file. Removes any Ensemble gene IDs found.
-    """
-    vep_annotations = read_vep_tsv(tsv_path)
-    gene_ids = vep_annotations['gene'].dropna().unique()
-    print([g for g in gene_ids if not isinstance(g, str)])
-    return [gene_id for gene_id in gene_ids if re.search(r'^[0-9]+$', gene_id)]

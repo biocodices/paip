@@ -3,11 +3,8 @@ from unittest.mock import mock_open, patch, Mock
 import pytest
 import pandas as pd
 
-import paip.pipelines.annotation.annotate_genes
-from paip.pipelines.annotation.annotate_genes import (
-    AnnotateGenes,
-    extract_entrez_gene_ids_from_vep_tsv,
-)
+import paip
+from paip.pipelines.annotation.annotate_genes import AnnotateGenes
 
 
 @pytest.fixture
@@ -25,24 +22,34 @@ def task(cohort_task_factory):
     return cohort_task_factory(AnnotateGenes, extra_params=extra_params)
 
 
-def test_extract_entrez_gene_ids_from_vep_tsv(vep_tsv_path):
-    result = extract_entrez_gene_ids_from_vep_tsv(vep_tsv_path)
-    assert result == ['123', '234']
+def test_read_gene_symbols(task):
+    fp = pytest.helpers.file('snpEff.summary.genes.txt')
+    gene_symbols = task.read_gene_symbols(fp)
+    assert gene_symbols == ['GENE1' , 'GENE1-AS']
+
+
+def test_gene_symbols_to_entrez_ids(task):
+    result = task.gene_symbols_to_entrez_ids(['A1BG', 'NAT1'])
+    assert result == [1, 9]
 
 
 def test_run(task, monkeypatch):
-    mock_gene_annotations = pd.DataFrame({})
-    mock_annotate_entrez_gene_ids = Mock(return_value=mock_gene_annotations)
-    prettify_JSON_dump_mock = Mock()
+    mock_read_gene_symbols = Mock(return_value=['GENE1'])
+    monkeypatch.setattr(task, 'read_gene_symbols',
+                        mock_read_gene_symbols)
+
+    mock_gene_symbols_to_entrez_ids = Mock(return_value=[1])
+    monkeypatch.setattr(task, 'gene_symbols_to_entrez_ids',
+                        mock_gene_symbols_to_entrez_ids)
+
+    mock_annotate_entrez_gene_ids = Mock(return_value=pd.DataFrame({}))
     monkeypatch.setattr(paip.pipelines.annotation.annotate_genes,
                         'annotate_entrez_gene_ids',
                         mock_annotate_entrez_gene_ids)
+
+    mock_prettify_JSON_dump = Mock()
     monkeypatch.setattr(paip.pipelines.annotation.annotate_genes,
-                        'extract_entrez_gene_ids_from_vep_tsv',
-                        Mock())
-    monkeypatch.setattr(paip.pipelines.annotation.annotate_genes,
-                        'prettify_JSON_dump',
-                        prettify_JSON_dump_mock)
+                        'prettify_JSON_dump', mock_prettify_JSON_dump)
 
     # Mock the open built-in function to test the output is written
     open_ = mock_open()
@@ -54,4 +61,8 @@ def test_run(task, monkeypatch):
         task.run()
 
     open_.assert_called_once_with(task.path('genes.json'), 'w')
-    assert prettify_JSON_dump_mock.call_count == 1
+
+    assert mock_read_gene_symbols.call_count == 1
+    mock_gene_symbols_to_entrez_ids.assert_called_once_with(['GENE1'])
+    mock_annotate_entrez_gene_ids.assert_called_once_with([1])
+    assert mock_prettify_JSON_dump.call_count == 1

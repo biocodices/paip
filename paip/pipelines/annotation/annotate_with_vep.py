@@ -1,5 +1,5 @@
 from paip.task_types import CohortTask
-from paip.pipelines.variant_calling import FilterGenotypes
+from paip.pipelines.annotation import AnnotateGnomadFrequencies
 
 
 class AnnotateWithVep(CohortTask):
@@ -7,7 +7,7 @@ class AnnotateWithVep(CohortTask):
     Takes a VCF and adds Variant Effect Predictor annotations.
     Generats a new VCF.
     """
-    REQUIRES = FilterGenotypes
+    REQUIRES = AnnotateGnomadFrequencies
     OUTPUT_RENAMING = ('.vcf', '.vep.vcf.gz')
 
     def run(self):

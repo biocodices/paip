@@ -67,6 +67,35 @@ vep annotate:
      # an ID:
      # --tab refers to the *output* file format, it means a TSV file!
 
+snpeff annotate:
+    '{executable}
+    ann
+    GRCh37.p13.RefSeq
+    -canon
+    -csvStats {output_summary_csv}
+    -nodownload
+    -datadir {snpeff_datadir}
+    -t
+    {input_vcf}'
+
+    # -nodownload because you are supposed to download the genome beforehand
+    # with this command: `snpeff download GRCh37.p13.Refseq`
+    # -canon: Only use canonical transcripts.
+    # -csvStats: this option creates an extra CSV with stats,
+    # which can be later used by multiqc
+    # -t to use multi-threading
+
+snpsift ClinVar:
+  '{executable}
+    annotate
+    -tabix
+    -noId
+    -v
+    -name CLINVAR_
+    {clinvar_GRCh37}
+    {input_vcf}'
+    # output goes to STDOUT
+
 igv snapshots:
   'DISPLAY=:{DISPLAY}
    {executable}
@@ -459,23 +488,6 @@ fix contig names and sample name:
    # named "chr1", "chr2", instead of GATK bundle names like "1", "2".
    # We need to fix this to use our pipeline.
 
-
-snpeff annotate:
-    '{executable}
-    ann
-    GRCh37.75
-    -canon
-    -csvStats {output_summary_csv}
-    -nodownload
-    -datadir {snpeff_datadir}
-    {input_vcf}'
-
-    # I previously used hg19 as database (instead of GRCh37.75).
-    # They should be the same.
-    # -canon: Only use canonical transcripts.
-    # -csvStats: this option creates an extra CSV with stats,
-    # which can be later used by multiqc
-    # -interval ?
 
 gatk3 SelectVariants sample:
     '{executable}
