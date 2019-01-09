@@ -41,10 +41,14 @@ vep annotate:
      --fasta {reference_genome_hg19}
      --force_overwrite
      --format vcf
+     --vcf
+     --compress_output bgzip
      --everything
      --merged
-     --stats_file {output_stats_html}
+     --stats_file {stats_file}
+     --warning_file {warning_file}
      --verbose
+     --fork {num_threads}
      -i {input_vcf}
      -o {output_tsv}'
 
@@ -54,6 +58,8 @@ vep annotate:
      # database for VEP is the 'homo_sapiens_merged' one.
      #
      # --format vcf refers to the *input* file format
+     #
+     # --vcf refers to the *output* file format, along with --compress_output
      #
      # I used to use this parameter, not amymore. Later merging of the TSV
      # annotations with the VCF genotypes proved to be far more challenging

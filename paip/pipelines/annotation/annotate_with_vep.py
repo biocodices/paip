@@ -8,7 +8,7 @@ class AnnotateWithVep(CohortTask):
     Generats a new VCF.
     """
     REQUIRES = FilterGenotypes
-    OUTPUT_RENAMING = ('.vcf', '.vep.vcf')
+    OUTPUT_RENAMING = ('.vcf', '.vep.vcf.gz')
 
     def run(self):
         with self.output().temporary_path() as self.temp_tsv:
@@ -16,7 +16,9 @@ class AnnotateWithVep(CohortTask):
             program_options = {
                 'input_vcf': self.input().path,
                 'output_tsv': self.temp_tsv,
-                'output_stats_html': self.output().path.replace('.vcf',
-                                                                '.summary.html')
+                'stats_file': self.output().path.replace('.vcf.gz',
+                                                         '.summary.html'),
+                'warning_file': self.output().path.replace('.vcf.gz',
+                                                           '.warning.txt')
             }
             self.run_program(program_name, program_options)
