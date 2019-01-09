@@ -5,7 +5,7 @@ import luigi
 from reports_generation import ReportsPipeline
 
 from paip.task_types import SampleTask, CohortTask, ReportsTask
-from paip.pipelines.annotation_and_report import (
+from paip.pipelines.annotation import (
     AnnotateWithSnpeff,
     AnnotateWithVEP,
     AnnotateVariants,

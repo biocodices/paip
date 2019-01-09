@@ -1,8 +1,8 @@
 from unittest.mock import mock_open, patch, MagicMock
 import pytest
 
-import paip.pipelines.annotation_and_report.annotate_variants
-from paip.pipelines.annotation_and_report.annotate_variants import AnnotateVariants
+import paip.pipelines.annotation.annotate_variants
+from paip.pipelines.annotation.annotate_variants import AnnotateVariants
 
 
 @pytest.fixture
@@ -20,14 +20,14 @@ def test_run(task, monkeypatch):
     pipeline_instance = MagicMock()
     AnnotationPipeline = MagicMock(return_value=pipeline_instance)
     prettify_JSON_dump_mock = MagicMock()
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_variants,
+    monkeypatch.setattr(paip.pipelines.annotation.annotate_variants,
                         'AnnotationPipeline', AnnotationPipeline)
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_variants,
+    monkeypatch.setattr(paip.pipelines.annotation.annotate_variants,
                         'prettify_JSON_dump', prettify_JSON_dump_mock)
 
     # Mock the open built-in function to test the output is written
     open_ = mock_open()
-    with patch('paip.pipelines.annotation_and_report.annotate_variants.open', open_):
+    with patch('paip.pipelines.annotation.annotate_variants.open', open_):
         task.requires()
         # ^ Simulate that requires() is called, which happens in the actual
         # pipeline. Without it, some args parsing is not done and the test

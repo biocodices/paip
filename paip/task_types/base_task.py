@@ -40,8 +40,8 @@ class BaseTask(luigi.Task):
     trim_software = luigi.Parameter(default='cutadapt')
 
     # Override in child classes to automatically define an output() method:
-    OUTPUT = None
-    OUTPUT_RENAMING = None
+    OUTPUT = None # String
+    OUTPUT_RENAMING = None # Tuple of 2 strings
 
     # Override in child classes to put outputs in a subdirectory:
     SUBDIR = None
@@ -95,11 +95,11 @@ class BaseTask(luigi.Task):
         If self.SUBDIR is defined, the filepaths will be in it that
         subdirectory.
 
-        If no self.OUTPUT constant is defined, look for a self.OUTPUT constant
-        that should be a tuple of strings. Use both values for a replace
-        operation on the input file (replace the first value with the second
-        value). This only works for input tasks that have a single file as
-        output!
+        If no self.OUTPUT constant is defined, look for a self.OUTPUT_RENAMING
+        constant that should be a tuple of strings. Use both values for a
+        replace operation on the input file (replace the first value with the
+        second value). This only works for input tasks that have a single file
+        as output!
         """
         if self.OUTPUT:
             targets = self.make_targets_from_OUTPUT(self.OUTPUT)

@@ -1,6 +1,6 @@
 import pytest
 
-from paip.pipelines.annotation_and_report import AnnotateWithClinvar
+from paip.pipelines.annotation import AnnotateWithClinvar
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@ from inspect import signature
 from anotamela.pipeline import annotate_entrez_gene_ids
 
 from paip.task_types import CohortAnnotationTask
-from paip.pipelines.annotation_and_report import AnnotateWithVEP
+from paip.pipelines.annotation import AnnotateWithVEP
 from paip.helpers import read_vep_tsv, prettify_JSON_dump
 
 

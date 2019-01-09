@@ -2,7 +2,7 @@ import os
 
 from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import TrimAdapters
-from paip.pipelines.annotation_and_report import AnnotateWithSnpeff
+from paip.pipelines.annotation import AnnotateWithSnpeff
 from paip.pipelines.quality_control import (
     FastQC,
     BcftoolsStats,

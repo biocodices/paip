@@ -6,7 +6,7 @@ import pytest
 
 import paip
 from paip.helpers import IGVScriptHelper
-from paip.pipelines.annotation_and_report import TakeIGVSnapshots
+from paip.pipelines.annotation import TakeIGVSnapshots
 
 
 
@@ -22,7 +22,7 @@ def test_write_script(task, monkeypatch):
     mock_script_helper_class = Mock(name='IGVScriptHelper',
                                     return_value=mock_script_helper)
 
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.take_igv_snapshots,
+    monkeypatch.setattr(paip.pipelines.annotation.take_igv_snapshots,
                         'IGVScriptHelper', mock_script_helper_class)
 
     script_path = '/path/to/script.txt'
@@ -59,7 +59,7 @@ def test_run(task, mock_makedirs, monkeypatch):
         mock_X_server.call_arg = port_number
         yield port_number
 
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.take_igv_snapshots,
+    monkeypatch.setattr(paip.pipelines.annotation.take_igv_snapshots,
                         'X_server', mock_X_server)
 
     task.run()

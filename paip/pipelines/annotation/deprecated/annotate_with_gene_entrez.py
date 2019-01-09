@@ -1,7 +1,7 @@
 import json
 
 from paip.task_types import CohortAnnotationTask
-from paip.pipelines.annotation_and_report import AnnotateWithDbsnpWeb
+from paip.pipelines.annotation import AnnotateWithDbsnpWeb
 
 from anotamela.annotators import GeneEntrezAnnotator
 

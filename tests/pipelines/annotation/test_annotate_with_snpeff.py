@@ -1,5 +1,5 @@
 from unittest.mock import mock_open, patch
-from paip.pipelines.annotation_and_report import AnnotateWithSnpeff
+from paip.pipelines.annotation import AnnotateWithSnpeff
 
 
 def test_run(sample_task_factory):
@@ -8,7 +8,7 @@ def test_run(sample_task_factory):
 
     # FIXME: this whole 'path' to the module hardcoding is ugly, but I need
     # the regular builtin open() to be operational for the rest of the code:
-    with patch('paip.pipelines.annotation_and_report.annotate_with_snpeff.open', open_):
+    with patch('paip.pipelines.annotation.annotate_with_snpeff.open', open_):
         task.run()
 
     (command, ), kwargs = task.run_command.call_args

@@ -1,5 +1,3 @@
-import luigi
-
 from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import FilterGenotypes
 
@@ -12,6 +10,7 @@ class AnnotateDbsnpId(CohortTask):
     DbSNP's version. (Not implemented yet.)
     """
     REQUIRES = FilterGenotypes
+    OUTPUT_RENAMING = ('.vcf', '.dbSNP.vcf')
 
     def run(self):
         with self.output().temporary_path() as temp_vcf:
@@ -22,7 +21,3 @@ class AnnotateDbsnpId(CohortTask):
             self.run_program(program_name, program_options,
                              redirect_stdout_to_path=temp_vcf,
                              log_stdout=False)
-
-    def output(self):
-        fn = self.input().path.replace('.vcf', '.dbSNP.vcf')
-        return luigi.LocalTarget(fn)

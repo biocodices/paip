@@ -1,3 +1,72 @@
+---
+#########################################
+#                                       #
+# Annotation Pipeline                   #
+#                                       #
+#########################################
+
+
+snpsift dbSNP:
+  '{executable}
+    annotate
+    -tabix
+    -id
+    -v
+    {dbsnp_GRCh37}
+    {input_vcf}'
+    # output goes to STDOUT
+
+snpsift gnomAD:
+  '{executable}
+    annotate
+    -tabix
+    -noId
+    -v
+    -name GNOMAD_
+    {gnomad_GRCh37_genomes}
+    {input_vcf}'
+    # output goes to STDOUT
+
+vep annotate:
+    # Options are described here:
+    # http://www.ensembl.org/info/docs/tools/vep/script/vep_options.html
+
+    '{executable}
+     --offline
+     --dir {vep_datadir}
+     --dir_cache {vep_datadir}
+     --dir_plugins {vep_datadir}
+     --species homo_sapiens
+     --assembly GRCh37
+     --fasta {reference_genome_hg19}
+     --force_overwrite
+     --format vcf
+     --everything
+     --merged
+     --stats_file {output_stats_html}
+     --verbose
+     -i {input_vcf}
+     -o {output_tsv}'
+
+     # {vep_datadir} is specified in ~/.paip/resources.yml
+     #
+     # The --merged option is important since the local
+     # database for VEP is the 'homo_sapiens_merged' one.
+     #
+     # --format vcf refers to the *input* file format
+     #
+     # I used to use this parameter, not amymore. Later merging of the TSV
+     # annotations with the VCF genotypes proved to be far more challenging
+     # than expected and very prone to error, specially for variants without
+     # an ID:
+     # --tab refers to the *output* file format, it means a TSV file!
+
+igv snapshots:
+  'DISPLAY=:{DISPLAY}
+   {executable}
+   -b {script_path}'
+
+
 #########################################
 #                                       #
 # IonTorrent Variant Calling Pipeline   #
@@ -23,26 +92,6 @@ variant_caller_pipeline.py:
     --bin-tvcutils {bin_tvcutils}
     --generate-gvcf on
     --num-threads {num_threads}'
-
-snpsift dbSNP:
-  '{executable}
-    annotate
-    -tabix
-    -id
-    -v
-    {dbsnp_GRCh37}
-    {input_vcf}'
-    # output goes to STDOUT
-
-snpsift gnomAD:
-  '{executable}
-    annotate
-    -tabix
-    -noId
-    -v
-    {gnomad_GRCh37_genomes}
-    {input_vcf}'
-    # output goes to STDOUT
 
 
 #########################################
@@ -422,40 +471,6 @@ snpeff annotate:
     # which can be later used by multiqc
     # -interval ?
 
-vep annotate:
-    # Options are described here:
-    # http://www.ensembl.org/info/docs/tools/vep/script/vep_options.html
-
-    '{executable}
-     --offline
-     --dir {vep_datadir}
-     --dir_cache {vep_datadir}
-     --dir_plugins {vep_datadir}
-     --species homo_sapiens
-     --assembly GRCh37
-     --fasta {reference_genome_hg19}
-     --force_overwrite
-     --format vcf
-     --tab
-     --everything
-     --merged
-     --stats_file {output_stats_html}
-     --verbose
-     -i {input_vcf}
-     -o {output_tsv}'
-
-     # {vep_datadir} is specified in ~/.paip/resources.yml
-     #
-     # The --merged option is important since the local
-     # database for VEP is the 'homo_sapiens_merged' one.
-     #
-     # --format vcf refers to the *input* file format
-     #
-     # --tab refers to the *output* file format, it means a TSV file!
-     # I'd rather put this output in a clean tab-delimited file than stuffing
-     # the INFO field of the VCF with VEP's huge annotation (which makes the
-     # VCF unreadable).
-
 gatk3 SelectVariants sample:
     '{executable}
      -T SelectVariants
@@ -764,19 +779,3 @@ xhmm genotype:
 
 Rscript make_XHMM_plots:
   '{executable} {script_path}'
-
-
-
-
-#########################################
-#                                       #
-# Reports Pipeline                      #
-#                                       #
-#########################################
-
-
-
-igv snapshots:
-  'DISPLAY=:{DISPLAY}
-   {executable}
-   -b {script_path}'

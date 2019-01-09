@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import CohortTask
-from paip.pipelines.annotation_and_report import (
+from paip.pipelines.annotation import (
     AnnotateWithVEP,
     AnnotateWithSnpeff,
 )

@@ -3,8 +3,8 @@ from unittest.mock import mock_open, patch, Mock
 import pytest
 import pandas as pd
 
-import paip.pipelines.annotation_and_report.annotate_genes
-from paip.pipelines.annotation_and_report.annotate_genes import (
+import paip.pipelines.annotation.annotate_genes
+from paip.pipelines.annotation.annotate_genes import (
     AnnotateGenes,
     extract_entrez_gene_ids_from_vep_tsv,
 )
@@ -34,19 +34,19 @@ def test_run(task, monkeypatch):
     mock_gene_annotations = pd.DataFrame({})
     mock_annotate_entrez_gene_ids = Mock(return_value=mock_gene_annotations)
     prettify_JSON_dump_mock = Mock()
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_genes,
+    monkeypatch.setattr(paip.pipelines.annotation.annotate_genes,
                         'annotate_entrez_gene_ids',
                         mock_annotate_entrez_gene_ids)
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_genes,
+    monkeypatch.setattr(paip.pipelines.annotation.annotate_genes,
                         'extract_entrez_gene_ids_from_vep_tsv',
                         Mock())
-    monkeypatch.setattr(paip.pipelines.annotation_and_report.annotate_genes,
+    monkeypatch.setattr(paip.pipelines.annotation.annotate_genes,
                         'prettify_JSON_dump',
                         prettify_JSON_dump_mock)
 
     # Mock the open built-in function to test the output is written
     open_ = mock_open()
-    with patch('paip.pipelines.annotation_and_report.annotate_genes.open', open_):
+    with patch('paip.pipelines.annotation.annotate_genes.open', open_):
         task.requires()
         # ^ Simulate that requires() is called, which happens in the actual
         # pipeline. Without it, some args parsing is not done and the test

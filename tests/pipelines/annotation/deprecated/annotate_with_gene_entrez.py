@@ -1,6 +1,6 @@
 import pytest
 
-from paip.pipelines.annotation_and_report import AnnotateWithGeneEntrez
+from paip.pipelines.annotation import AnnotateWithGeneEntrez
 
 
 @pytest.fixture
@@ -29,4 +29,3 @@ def test_run(task):
     # that it looks like a wasted effort.
     # There must be a better way.
     pass
-
