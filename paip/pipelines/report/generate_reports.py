@@ -7,7 +7,7 @@ from reports_generation import ReportsPipeline
 from paip.task_types import SampleTask, CohortTask, ReportsTask
 from paip.pipelines.annotation import (
     AnnotateWithSnpeff,
-    AnnotateWithVEP,
+    AnnotateWithVep,
     AnnotateVariants,
     AnnotateGenes,
 )
@@ -46,8 +46,8 @@ class GenerateReports(ReportsTask, SampleTask):
         # that are not needed nor expected by the tasks upstream:
         return {
             # TODO: make this task dependant on VariantCalling, which already
-            # wraps AnnotateWithVEP (cohort) + AnnotateWithSnpeff (samples)
-            'vep': AnnotateWithVEP(**self.cohort_params()),
+            # wraps AnnotateWithVep (cohort) + AnnotateWithSnpeff (samples)
+            'vep': AnnotateWithVep(**self.cohort_params()),
             'snpeff': AnnotateWithSnpeff(**self.sample_params()),
 
             'annotate_variants': AnnotateVariants(**self.cohort_params()),

@@ -2,7 +2,7 @@ import luigi
 
 from paip.task_types import CohortTask
 from paip.pipelines.annotation import (
-    AnnotateWithVEP,
+    AnnotateWithVep,
     AnnotateWithSnpeff,
 )
 
@@ -13,7 +13,7 @@ class VariantCalling(CohortTask, luigi.WrapperTask):
     """
     def requires(self):
         cohort_tasks = [
-            AnnotateWithVEP(**self.param_kwargs),
+            AnnotateWithVep(**self.param_kwargs),
         ]
         sample_tasks = [
             AnnotateWithSnpeff(sample=sample, **self.param_kwargs)
