@@ -2,7 +2,7 @@ from paip.task_types import CohortTask
 from paip.pipelines.variant_calling import FilterGenotypes
 
 
-class AnnotateWithVEP(CohortTask):
+class AnnotateWithVep(CohortTask):
     """
     Takes a VCF and adds Variant Effect Predictor annotations.
     Generats a new VCF.
@@ -16,7 +16,7 @@ class AnnotateWithVEP(CohortTask):
             program_options = {
                 'input_vcf': self.input().path,
                 'output_tsv': self.temp_tsv,
-                'output_stats_html': self.output().path.replace('.tsv',
-                                                                '_summary.html')
+                'output_stats_html': self.output().path.replace('.vcf',
+                                                                '.summary.html')
             }
             self.run_program(program_name, program_options)

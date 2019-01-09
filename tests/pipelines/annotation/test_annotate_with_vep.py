@@ -1,10 +1,10 @@
 import re
 
-from paip.pipelines.annotation import AnnotateWithVEP
+from paip.pipelines.annotation import AnnotateWithVep
 
 
 def test_run(cohort_task_factory):
-    task = cohort_task_factory(AnnotateWithVEP,
+    task = cohort_task_factory(AnnotateWithVep,
                                cohort_name='Cohort1')
     task.run()
     (command, ), kwargs = task.run_command.call_args
@@ -15,6 +15,7 @@ def test_run(cohort_task_factory):
     assert re.search(r'--dir_plugins .+/vep_data', command)
     assert re.search(r'--species homo_sapiens', command)
     assert re.search(r'--assembly GRCh37', command)
+    assert re.search(r'--stats_file .+/Cohort1/Cohort1..+.summary.html', command)
     assert re.search(r'--format vcf', command)
     assert re.search(r'--everything', command)
     assert re.search(r'--offline', command)

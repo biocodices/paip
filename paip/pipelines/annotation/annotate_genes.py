@@ -4,7 +4,7 @@ from inspect import signature
 from anotamela.pipeline import annotate_entrez_gene_ids
 
 from paip.task_types import CohortAnnotationTask
-from paip.pipelines.annotation import AnnotateWithVEP
+from paip.pipelines.annotation import AnnotateWithVep
 from paip.helpers import read_vep_tsv, prettify_JSON_dump
 
 
@@ -13,7 +13,7 @@ class AnnotateGenes(CohortAnnotationTask):
     Annotates all Entrez gene IDs found in the VEP annotation .tsv file.
     Generates a JSON file with the annotations for each gene.
     """
-    REQUIRES = AnnotateWithVEP
+    REQUIRES = AnnotateWithVep
     OUTPUT = 'genes.json'
 
     def run(self):
