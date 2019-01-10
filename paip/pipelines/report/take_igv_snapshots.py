@@ -4,12 +4,12 @@ from os.path import join, basename
 import luigi
 
 from paip.task_types import SampleTask, ReportsTask, CohortTask
-from paip.pipelines.variant_calling import (
-    MarkDuplicates,
-    FilterGenotypes,
-    ExtractSample,
-    KeepReportableGenotypes,
-)
+
+from paip.pipelines.variant_calling import MarkDuplicates
+from paip.pipelines.variant_calling import FilterGenotypes
+from paip.pipelines.report import ExtractSample
+from paip.pipelines.report import KeepReportableGenotypes
+
 from paip.helpers import (
     IGVScriptHelper,
     X_server,

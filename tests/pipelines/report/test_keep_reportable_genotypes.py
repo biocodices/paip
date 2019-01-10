@@ -1,4 +1,4 @@
-from paip.pipelines.variant_calling import KeepReportableGenotypes
+from paip.pipelines.report import KeepReportableGenotypes
 
 
 def test_run(cohort_task_factory, mock_rename):

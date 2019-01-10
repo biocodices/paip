@@ -6,7 +6,7 @@ import pytest
 
 import paip
 from paip.helpers import IGVScriptHelper
-from paip.pipelines.annotation import TakeIGVSnapshots
+from paip.pipelines.report import TakeIGVSnapshots
 
 
 
