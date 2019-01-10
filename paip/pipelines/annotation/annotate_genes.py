@@ -25,7 +25,8 @@ class AnnotateGenes(CohortAnnotationTask):
 
     def gene_symbols_to_entrez_ids(self, gene_symbols):
         annotator = GeneEntrezLocalAnnotator()
-        return sorted(set(annotator.annotate(gene_symbols)['GeneID']))
+        annotations = annotator.annotate(gene_symbols)
+        return sorted(set(ann['GeneID'] for ann in annotations.values()))
 
     def run(self):
         snpeff_annotation = self.requires()

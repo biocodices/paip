@@ -30,7 +30,7 @@ def test_read_gene_symbols(task):
 
 def test_gene_symbols_to_entrez_ids(task):
     result = task.gene_symbols_to_entrez_ids(['A1BG', 'NAT1'])
-    assert result == [1, 9]
+    assert result == ['1', '9']
 
 
 def test_run(task, monkeypatch):
