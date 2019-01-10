@@ -1,5 +1,5 @@
 from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import KeepReportableGenotypes
+from paip.pipelines.report import KeepReportableGenotypes
 
 
 class VariantCallingMetrics(SampleTask):
@@ -18,4 +18,3 @@ class VariantCallingMetrics(SampleTask):
             # ^ The file extension of both output files will be added by Picard
         }
         self.run_program(program_name, program_options)
-

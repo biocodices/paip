@@ -1,4 +1,4 @@
-from paip.pipelines.variant_calling import KeepReportableGenotypes
+from paip.pipelines.report import KeepReportableGenotypes
 from paip.task_types import SampleTask
 
 

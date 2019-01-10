@@ -1,4 +1,4 @@
-from paip.pipelines.variant_calling import KeepReportableGenotypes
+from paip.pipelines.report import KeepReportableGenotypes
 from paip.task_types import SampleTask
 
 
@@ -18,4 +18,3 @@ class VariantEval(SampleTask):
                 'output_file': temp_outfile,
             }
             self.run_program(program_name, program_options)
-

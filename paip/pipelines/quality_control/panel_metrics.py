@@ -1,7 +1,7 @@
 import luigi
 
 from paip.task_types import SampleTask
-from paip.pipelines.variant_calling import KeepReportableGenotypes, ExtractSample
+from paip.pipelines.report import ExtractSample, KeepReportableGenotypes
 from paip.metrics_generation import PanelMetricsGenerator
 from paip.helpers.create_cohort_task import create_cohort_task
 
@@ -56,4 +56,3 @@ class PanelMetrics(SampleTask):
         return [luigi.LocalTarget(self.path(fn)) for fn in outputs]
 
 PanelMetricsCohort = create_cohort_task(PanelMetrics)
-
