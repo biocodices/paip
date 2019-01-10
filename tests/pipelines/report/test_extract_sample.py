@@ -23,5 +23,5 @@ def test_run(task, mock_rename):
     assert 'GenomeAnalysisTK.jar -T SelectVariants'
     assert '--sample_name Sample1'
     assert re.search(r'-V .+Cohort1..+.vcf', command)
-    assert re.search(r'-o .+Cohort1..+.with_filters.vcf-luigi-tmp', command)
+    assert re.search(r'-o .+Sample1..+.with_filters.vcf-luigi-tmp', command)
     assert mock_rename.call_count == 2

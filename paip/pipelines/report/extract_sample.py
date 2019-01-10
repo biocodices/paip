@@ -9,7 +9,7 @@ class ExtractSample(SampleTask):
     Takes a multi-sample VCF and generates a new VCF of keeping the
     genotypes of one sample.
     """
-    OUTPUT_RENAMING = ('.vcf', '.with_filters.vcf')
+    OUTPUT = 'with_filters.vcf'
 
     def requires(self):
         params = self.param_kwargs.copy()
