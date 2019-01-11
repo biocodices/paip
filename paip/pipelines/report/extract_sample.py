@@ -6,7 +6,7 @@ from paip.helpers.create_cohort_task import create_cohort_task
 
 class ExtractSample(SampleTask):
     """
-    Takes a multi-sample VCF and generates a new VCF of keeping the
+    Takes a multi-sample VCF and generates a new VCF keeping the
     genotypes of one sample.
     """
     OUTPUT = 'with_filters.vcf'
@@ -25,9 +25,11 @@ class ExtractSample(SampleTask):
                 'sample_id': self.sample,
                 'output_vcf': self.temp_vcf,
             }
-            self.run_program(program_name, program_options)
+            self.run_program(program_name, program_options,
+                             redirect_stdout_to_path=self.temp_vcf)
 
-        self.rename_temp_idx()
+        # No longer used since GATK writes to STDOUT in this task:
+        # self.rename_temp_idx()
 
 
 ExtractSampleCohort = create_cohort_task(ExtractSample)

@@ -490,14 +490,17 @@ fix contig names and sample name:
 
 
 gatk3 SelectVariants sample:
-    '{executable}
+    "{executable}
      -T SelectVariants
      -nt {num_threads}
      -R {reference_genome}
      -V {input_vcf}
-     --sample_name {sample_id}
-     -o {output_vcf}'
+     --sample_name {sample_id} |
+     grep -v '\\./\\.'"
 
+     # The grep -v removes missing genotypes from the single-sample VCF,
+     # so we need to write to STDOUT for this (no -o option).
+     # Before, I used to have: -o {output_vcf}
 
 gatk3 SelectVariants reportable:
     "{executable}
