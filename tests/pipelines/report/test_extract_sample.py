@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from paip.pipelines.annotation import AnnotateWithClinvarVcf
+from paip.pipelines.annotation import AnnotateWithCosmic
 from paip.pipelines.report import ExtractSample
 
 
@@ -13,7 +13,7 @@ def task(sample_task_factory):
                                cohort_name='Cohort1')
 
 def test_requires(task):
-    assert isinstance(task.requires(), AnnotateWithClinvarVcf)
+    assert isinstance(task.requires(), AnnotateWithCosmic)
 
 def test_run(task, mock_rename):
     task.run()

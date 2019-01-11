@@ -1,6 +1,6 @@
 from paip.task_types import SampleTask
-from paip.pipelines.annotation.annotate_with_clinvar_vcf import \
-    AnnotateWithClinvarVcf
+from paip.pipelines.annotation.annotate_with_cosmic import \
+    AnnotateWithCosmic
 from paip.helpers.create_cohort_task import create_cohort_task
 
 
@@ -15,7 +15,7 @@ class ExtractSample(SampleTask):
         params = self.param_kwargs.copy()
         # 'sample' parameter is not used by CohortTasks upstream:
         del(params['sample'])
-        return AnnotateWithClinvarVcf(**params)
+        return AnnotateWithCosmic(**params)
 
     def run(self):
         with self.output().temporary_path() as self.temp_vcf:

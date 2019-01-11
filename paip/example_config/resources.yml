@@ -48,6 +48,7 @@ human_features: Homo_sapiens.GRCh37.87.gtf
 ##################################################################
 
 gnomad_GRCh37_genomes: gnomad.genomes.r2.1.sites.vcf.bgz
+cosmic_GRCh37: CosmicCodingMuts_hg19.vcf
 
 ##################################################################
 #                                                                #

@@ -96,6 +96,16 @@ snpsift ClinVar:
     {input_vcf}'
     # output goes to STDOUT
 
+snpsift COSMIC:
+  '{executable}
+    annotate
+    -id
+    -noInfo
+    -v
+    {cosmic_GRCh37}
+    {input_vcf}'
+    # output goes to STDOUT
+
 igv snapshots:
   'DISPLAY=:{DISPLAY}
    {executable}

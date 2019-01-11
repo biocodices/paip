@@ -11,4 +11,3 @@ def test_run(cohort_task_factory):
 
     assert 'SnpSift.jar annotate -tabix -noId -v -name CLINVAR_' in command
     assert re.search(r'Cohort1..+.clin.vcf', kwargs['redirect_stdout_to_path'])
-
