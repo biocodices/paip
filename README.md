@@ -28,7 +28,10 @@ paip AnnotateVariants --cache mysql --http-proxy 'socks5://caladan.local:9050' &
 
 ```
 # Java for the pipeline applications that need it
-sudo apt-get install openjdk-8-jdk
+sudo apt install openjdk-8-jdk
+
+# Xvfb for the IGV control
+sudo apt install xvfb
 ```
 
 ## Python and some libraries

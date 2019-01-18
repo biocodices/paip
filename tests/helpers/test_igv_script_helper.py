@@ -94,7 +94,7 @@ def test_write_script():
         'sample_alignment': '/path/to/sample.bam',
         'sample_alignment_trackname': 'sample.bam',
         'sample_all_variants': '/path/to/sample.vcf',
-        'sample_reportable_variants': '/path/to/sample_reportable.vcf',
+        # 'sample_reportable_variants': '/path/to/sample_reportable.vcf',
         'cohort_variants': '/path/to/cohort.vcf',
     }
 

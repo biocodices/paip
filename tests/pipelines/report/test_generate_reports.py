@@ -10,7 +10,7 @@ def test_run(sample_task_factory, mock_rename, monkeypatch):
     extra_params = {
         'min_reportable_category': 'CATEGORY',
         'min_odds_ratio': 1.5,
-        'max_frequency': 0.5,
+        'max_frequency': 1,
         'phenos_regex_list': '["pheno-1"]',
         'phenos_regex_file': '/path/to/phenos',
     }
@@ -41,7 +41,6 @@ def test_run(sample_task_factory, mock_rename, monkeypatch):
         assert init_args[param_name] == param_value
 
     annotation_inputs = {
-        'vep_tsv': 'vep.tsv',
         'genes_json': 'genes.json',
         'variants_json': 'rs_variants.json',
     }
@@ -50,7 +49,7 @@ def test_run(sample_task_factory, mock_rename, monkeypatch):
         assert init_args[name] == expected_file
 
     assert init_args['genotypes_vcf'] == \
-        pytest.helpers.file('Cohort1/Sample1/Sample1.reportable.eff.vcf')
+        pytest.helpers.file('Cohort1/Sample1/Sample1.with_filters.vcf')
     assert init_args['outdir'] == \
         pytest.helpers.file('Cohort1/Sample1')
 

@@ -10,7 +10,7 @@ class ReportsTask:
     # Reportable variants settings
     min_odds_ratio = luigi.FloatParameter(default=1)  # All by default
     max_frequency = luigi.FloatParameter(default=1)  # All by default
-    min_reportable_category = luigi.Parameter(default='DRUG')
+    min_reportable_category = luigi.Parameter(default='NA')
     phenos_regex_list = luigi.Parameter(default=None)
     phenos_regex_file = luigi.Parameter(default=None)
 

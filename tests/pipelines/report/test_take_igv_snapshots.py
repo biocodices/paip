@@ -13,7 +13,8 @@ from paip.pipelines.report import TakeIGVSnapshots
 @pytest.fixture
 def task(sample_task_factory):
     return sample_task_factory(TakeIGVSnapshots,
-                               extra_params={'min_reportable_category': 'PAT'})
+                               extra_params={'min_reportable_category': 'PAT',
+                                             'max_frequency': 1})
 
 
 def test_write_script(task, monkeypatch):
@@ -38,10 +39,10 @@ def test_write_script(task, monkeypatch):
     assert init_tpl['sample_alignment'].endswith('.dupmarked_alignment.bam')
     assert init_tpl['sample_alignment_trackname'].endswith('.dupmarked_alignment.bam')
     assert init_tpl['sample_all_variants'].endswith('.with_filters.vcf')
-    assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
-    assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
+    #assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
+    #assert init_tpl['sample_reportable_variants'].endswith('.reportable.vcf')
     assert init['template_path'].endswith('igv_batch_template')
-    assert init['variants_json'].endswith('report_data_threshold_PAT.json')
+    assert init['variants_json'].endswith('report_data.min-cat-PAT.max-freq-1.json')
 
     # Test how the script helper was used to write the IGV script
     mock_script_helper.write_script.assert_called_once()

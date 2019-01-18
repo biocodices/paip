@@ -53,7 +53,7 @@ load {{ indels_mills }}
 #
 load {{ sample_alignment }}
 load {{ sample_all_variants }}
-load {{ sample_reportable_variants }}
+# load sample_reportable_variants
 load {{ cohort_variants }}
 squish {{ sample_alignment_trackname }}
 #

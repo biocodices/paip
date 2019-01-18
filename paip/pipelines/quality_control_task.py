@@ -19,4 +19,3 @@ class QualityControl(CohortTask, luigi.WrapperTask):
             PlotCoverage(**self.param_kwargs),
             SamtoolsDepthCohort(**self.param_kwargs)
         ]
-
