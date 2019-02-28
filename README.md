@@ -1,6 +1,10 @@
 # Use Cases
 
-- Make sure the `luigi` server is running: `ps -ef | grep luigid`
+- Make sure the `luigi` server is running: `ps -ef | grep luigid`. If not:
+
+```bash
+luigid --pidfile ~/.luigi.pidfile --state-path ~/.luigid/statefile --log ~/.luigi/log --background
+```
 
 ## Ion Torrent panel data from BAMs
 
