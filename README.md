@@ -71,6 +71,7 @@ paip ExtractSampleCohort --workers 10
 Sequencing1
 |
 |—— sequencing_data.yml
+|__ resources.yml
 |
 |—— Sample1
 |   |—— Sample1.R1.fastq.gz
@@ -83,8 +84,24 @@ Sequencing1
 ...
 ```
 
+```yaml
+# resources.yml
+resources_dir: /path/to/paip_resources
+
+panel_regions: Panel-Name.amplicons.g37.bed
+panel_file_for_coverage_report: Panel-Name.merged_amplicons_for_DiagnoseTargets.g37.csv
+
+# sequencing_data.yml
+Sample1:
+  library_id: LIB1
+  platform: ILLLUMINA
+  flowcell_id: 00000000-G1PLL
+  lane_number: 1
+...
+```
+
 - Make sure the `panel_regions` variable is correctly set to the
-  intended panel in ~/.paip/resources.yml
+  intended panel in `Sequencing1/resources.yml`
 
 - `cd` to the sequencing directory and run the variant calling. This will
   take some time, maybe hours, depending on the number of samples:
