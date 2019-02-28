@@ -75,7 +75,6 @@ snpeff annotate:
     -csvStats {output_summary_csv}
     -nodownload
     -datadir {snpeff_datadir}
-    -t
     {input_vcf}'
 
     # -nodownload because you are supposed to download the genome beforehand
@@ -83,7 +82,8 @@ snpeff annotate:
     # -canon: Only use canonical transcripts.
     # -csvStats: this option creates an extra CSV with stats,
     # which can be later used by multiqc
-    # -t to use multi-threading
+    # -t to use multi-threading: REMOVED because it implies -noStats, but we
+    # use the summary stats in the next task!
 
 snpsift ClinVar:
   '{executable}

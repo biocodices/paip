@@ -1,6 +1,83 @@
-# Typical Use
+# Use Cases
 
-- Set the directories as specified [below](#Setting) and make sure the `luigi` server is running.
+- Make sure the `luigi` server is running: `ps -ef | grep luigid`
+
+## Ion Torrent panel data from BAMs
+
+The BAMs we are receiving now are from a thyroid cancer panel and have contigs named `chr1`. The pipeline as of February 2019 reheaders the BAMs to make the contigs have names like `1`, which match the reference genome files we already use.
+
+- Set the directories like below:
+
+```
+Ion-Run-1
+|
+|—— sequencing_data.yml
+|__ resources.yml
+|
+|—— Sample1
+|   |—— Sample1.R1.fastq.gz
+|   |—— Sample1.R2.fastq.gz
+|
+|—— Sample2
+|   |—— Sample2.R1.fastq.gz
+|   |—— Sample2.R2.fastq.gz
+|
+...
+```
+
+- Set the `sequencing_data.yml` configuration file:
+
+```yaml
+Sample1:
+  ion: true
+  external_sample_name: IonXpress_001
+Sample2:
+  ion: true
+  external_sample_name: IonXpress_002
+```
+
+- Set this run `Ion-Run-1/resources.yml`. The `resources_dir` should point to
+  the directory where all paip resources live, independently of this Ion run.
+
+```yaml
+resources_dir: /path/to/paip_resources
+
+error_motifs_file: ionTorrent_files/ampliseqexome_germline_p1_hiq_motifset.txt
+parameters_file: ionTorrent_files/ampliseq_somatic_lowstringency_pgm_parameters.json
+region_bed: rel_path/to/ion-panel-regions.bed
+```
+
+- Run **paip**! Set as many workers as samples (ideally), if your cluster
+  resources allow it.
+
+```bash
+# paip GenerateReportsCohort --workers 10
+
+# As of February 2018, we are delivering CSVs from the with_filters.vcf
+# per sample, so we run:
+
+paip ExtractSampleCohort --workers 10
+```
+
+## Illumina panel data from FASTQs
+
+- Set the run directory:
+
+```
+Sequencing1
+|
+|—— sequencing_data.yml
+|
+|—— Sample1
+|   |—— Sample1.R1.fastq.gz
+|   |—— Sample1.R2.fastq.gz
+|
+|—— Sample2
+|   |—— Sample2.R1.fastq.gz
+|   |—— Sample2.R2.fastq.gz
+|
+...
+```
 
 - Make sure the `panel_regions` variable is correctly set to the
   intended panel in ~/.paip/resources.yml
@@ -23,6 +100,10 @@ paip AnnotateVariants --cache mysql --http-proxy 'socks5://caladan.local:9050' &
 - The data for each sample is at `<Cohort>/<Sample>/report_<Sample>/report_data__threshold_CONFL.json`. Upload that file to `PanelsApp` to generate a PDF report.
 
 - If you want to run the reports generation with different threshold, do it (e.g. change `LPAT` for `CONFL` in the last `GenerateReportsCohort` command and `TakeIGVSnapshotsCohort`, and run both). There will be a new `json` file alongside the previous one, with the corresponding filename (e.g. `report_data__threshold_LPAT.json`), and new IGV snapshots in a different directory.
+
+## Exome data
+
+...
 
 # Installation
 
@@ -319,3 +400,9 @@ paip JointGenotyping --samples Sample1,Sample2
 
 You can use `paip -h` to get a list of the available parameters.
 
+# Diagram of the pipeline
+
+A diagram of the ever changing pipeline lives
+[here](https://drive.google.com/file/d/0B3VPeKEk91OvbVNnRlc5NTkwanM/view?usp=sharing).
+It should updated with each change of code, but this might not always be the
+case :/

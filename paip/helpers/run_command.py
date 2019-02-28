@@ -31,7 +31,7 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
     if logfile:
         start_time = datetime.now()
         with open(logfile, ('a' if log_append else 'w')) as f:
-            add_to_log('TIME', start_time, f)
+            add_to_log('START', start_time, f)
             add_to_log('COMMAND', command, f)
 
     try:
@@ -75,7 +75,7 @@ def run_command(command, logfile=None, log_append=False, log_stdout=True,
                 stderr = stderr.decode().strip()
                 add_to_log('STDERR', stderr, f)
 
-            coda = ('Finished at {}\nTook {}' .format(end_time, elapsed_time))
+            coda = ('{}\nTook {}' .format(end_time, elapsed_time))
             add_to_log('END', coda, f)
 
     return (stdout, stderr)

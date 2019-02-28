@@ -38,13 +38,17 @@ def test_log_to_file():
 
     # Test STDOUT is logged
     run_command('echo foo', logfile=logfile)
-
-    assert 'foo' in read_lines_from_file(logfile)
+    log_lines = read_lines_from_file(logfile)
+    assert 'foo' in log_lines
 
     # Extra checks of command running info
     log_lines = read_lines_from_file(logfile)
+    assert '—————————— START' in log_lines
+    assert '—————————— COMMAND' in log_lines
     assert 'echo foo' in log_lines
-    assert 'Finished at' in log_lines[-3]
+    assert '—————————— STDOUT' in log_lines
+    assert '—————————— STDERR' in log_lines
+    assert '—————————— END' in log_lines
     assert 'Took' in log_lines[-2]
 
     # Test STDERR is logged correctly

@@ -29,8 +29,7 @@ class AnnotateGenes(CohortAnnotationTask):
         return sorted(set(ann['GeneID'] for ann in annotations.values()))
 
     def run(self):
-        snpeff_annotation = self.requires()
-        gene_symbols = self.read_gene_symbols(snpeff_annotation.genes_txt)
+        gene_symbols = self.read_gene_symbols(self.input()['genes'].path)
         entrez_gene_ids = self.gene_symbols_to_entrez_ids(gene_symbols)
 
         # Annotate the entrez gene Ids
