@@ -1,4 +1,4 @@
-from anotamela.recipes import annotate_vcf_rsids_with_clinvar
+from anotala.recipes import annotate_vcf_rsids_with_clinvar
 
 from paip.task_types import CohortAnnotationTask
 from paip.pipelines.variant_calling import FilterGenotypes

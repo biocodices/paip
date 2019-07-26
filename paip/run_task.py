@@ -57,7 +57,7 @@ Options:
     ------------------------
 
     --cache CACHE           Options: 'mysq', 'postgres', 'redis', 'dict'. The
-                            cache must be available! Check the `anotamela`
+                            cache must be available! Check the `anotala`
                             package for details about that.
                             [default: mysql]
 
@@ -66,7 +66,7 @@ Options:
                             default value. [default: socks5://localhost:9050]
 
     --extra-annotation-kwargs JSON  Extra keyword arguments for AnnotateVariants,
-                                    which will be passed to `anotamela`
+                                    which will be passed to `anotala`
                                     AnnotationPipeline. Pass them as a JSON
                                     dictionary. [default: {}]
 

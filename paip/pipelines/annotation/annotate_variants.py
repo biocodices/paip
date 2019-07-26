@@ -1,4 +1,4 @@
-from anotamela import AnnotationPipeline
+from anotala import AnnotationPipeline
 
 from paip.task_types import CohortAnnotationTask
 from paip.pipelines.annotation import AnnotateDbsnpId
@@ -10,7 +10,7 @@ class AnnotateVariants(CohortAnnotationTask):
     Annotates each sample's variants (taken from the reportable-variants VCF)
     and generates some JSON files with the annotations.
 
-    This task will work if `anotamela` Python package is installed.
+    This task will work if `anotala` Python package is installed.
     """
     REQUIRES = AnnotateDbsnpId
     OUTPUT = {

@@ -1,7 +1,7 @@
 from inspect import signature
 
-from anotamela.annotators import GeneEntrezLocalAnnotator
-from anotamela.pipeline import annotate_entrez_gene_ids
+from anotala.annotators import GeneEntrezLocalAnnotator
+from anotala.pipeline import annotate_entrez_gene_ids
 
 from paip.task_types import CohortAnnotationTask
 from paip.pipelines.annotation import AnnotateWithSnpeff

@@ -156,8 +156,8 @@ git clone git@github.com:biocodices/vcf_to_dataframe.git
 cd vcf_to_dataframe
 python setup.py install
 
-git clone git@github.com:biocodices/anotamela.git
-cd anotamela
+git clone git@github.com:biocodices/anotala.git
+cd anotala
 python setup.py install
 
 # Now you should be able to run paip

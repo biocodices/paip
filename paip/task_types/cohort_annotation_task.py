@@ -6,7 +6,7 @@ from paip.task_types import CohortTask
 
 class CohortAnnotationTask(CohortTask):
     """
-    Base luigi task to use anotamela's annotation services.
+    Base luigi task to use anotala's annotation services.
     Deals with extra parameters like proxies and cache.
     """
     cache = luigi.Parameter(default='mysql')  # also: 'postgres', 'redis'
@@ -40,7 +40,7 @@ class CohortAnnotationTask(CohortTask):
             self.param_kwargs[key] = annotation_params[key]
 
         # And do some parsing of the annotation parameters, to facilitate
-        # their use by anotamela's library. This parsed version is stored
+        # their use by anotala's library. This parsed version is stored
         # in self.annotation_kwargs:
         self.annotation_kwargs = \
             json.loads(annotation_params['extra_annotation_kwargs'])

@@ -81,8 +81,8 @@ bin_tvcutils: /software/TS/build/Analysis/tvcutils
 #                                                                #
 ##################################################################
 
-# This should be passed to `anotamela` during AnnotateVariants,
-# but it's not done (we rely on `anotamela`'s own copy of this VCF:
+# This should be passed to `anotala` during AnnotateVariants,
+# but it's not done (we rely on `anotala`'s own copy of this VCF:
 #
 clinvar_GRCh37_VCF: &clinvar_GRCh37_VCF clinvar_20180729.grch37.vcf.gz
 clinvar_GRCh37: *clinvar_GRCh37_VCF
